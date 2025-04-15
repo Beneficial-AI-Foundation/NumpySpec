@@ -4,4 +4,4 @@
 # Ensure dependencies are installed and run the agent
 run:
     uv sync
-    python3 src/gaussianspec/agent.py 
+    uv run src/gaussianspec/agent.py 
