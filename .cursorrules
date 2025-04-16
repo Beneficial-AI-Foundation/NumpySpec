@@ -1,0 +1,6 @@
+This is a specification for just 1 function: that gaussian elimination is an inverse.
+
+Add mathlib as a dependency and `import LeanSearchClient` to use `#search` like `#eval`. It's how you can find theorems and lemmas.
+
+reward shaping list:
+
