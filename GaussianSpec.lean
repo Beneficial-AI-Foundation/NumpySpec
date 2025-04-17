@@ -35,7 +35,7 @@ For now, we leave it abstract.
 -/
 noncomputable def gaussianElimination (A : Matrix (Fin n) (Fin n) K) : Matrix (Fin n) (Fin n) K := sorry
 
-
+r
 
 /--
 Specification: Applying Gaussian elimination to a nonsingular matrix `A` yields its left inverse.

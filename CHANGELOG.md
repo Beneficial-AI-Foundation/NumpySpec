@@ -55,3 +55,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Each is a pure dataclass with a `run()` method and clear feedback/result type.
   - Enables compositional, forkable, feedback-driven agent pipelines.
 - Updated dependencies (`uv.lock`, `pyproject.toml`) for subagent support.
+
+## [0.4.0] - 2025-05-01
+
+### Added
+- Reinforcement‑learning scaffolding (`LeanEnv`, `EditLibrary`) in `src/gaussianspec/rl_env.py`.
+  Provides Gymnasium‑compatible environment exposing Lean build feedback.
+- Exported in package root for easy import `from gaussianspec import LeanEnv`.
+- Added dependencies: `pantograph>=0.3.0` (Lean REPL orchestration) and `gymnasium>=0.29.1`.
