@@ -12,6 +12,10 @@ dependencies = [
     "pytesseract>=0.3.13",
     "pantograph>=0.3.0",
     "gymnasium>=0.29.1",
+    "torch>=2.3.0",
+    "transformers>=4.41.0",
+    "huggingface_hub>=0.23.0",
+    "accelerate>=0.30.0",
 ]
 
 [project.scripts]
