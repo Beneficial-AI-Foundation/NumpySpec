@@ -143,39 +143,43 @@ def ocr_pdf_to_text(
         else:
             return "\n".join(ocr_image(img) for img in imgs)
 
-    methods_to_try: list[str]
-    if method == "auto":
-        methods_to_try = ["openai", "gemini", "tesseract"]
-    else:
-        methods_to_try = [method]
+    methods_to_try: list[str] = (
+        ["openai", "gemini", "tesseract"] if method == "auto" else [method]
+    )
 
-    last_exc: Exception | None = None
-    text: str | None = None
+    def ocr_page(img: Image.Image) -> str:
+        """OCR a single page trying each provider until one succeeds."""
 
-    for m in methods_to_try:
-        try:
-            if m == "openai":
-                text = _openai_ocr_images(images)
-            elif m == "gemini":
-                text = _gemini_ocr_images(images)
-            else:  # tesseract
-                text = _tesseract_ocr(images)
+        last_error: Exception | None = None
+        for m in methods_to_try:
+            try:
+                if m == "openai":
+                    page_text = _openai_ocr_images([img])
+                elif m == "gemini":
+                    page_text = _gemini_ocr_images([img])
+                else:  # tesseract
+                    page_text = _tesseract_ocr([img])
 
-            # Heuristic: provider refused due to policy / copyright?  Detect
-            # common refusal phrases and treat as failure so we can fall back.
-            if _ocr_refused(text):
-                raise RuntimeError(f"{m} provider refused OCR for some pages")
+                if _ocr_refused(page_text):
+                    raise RuntimeError(f"{m} refused due to policy")
 
-            break  # success
-        except Exception as e:
-            last_exc = e
-            continue
+                return page_text
+            except Exception as exc:
+                last_error = exc
+                continue
 
-    if text is None and last_exc is not None:
-        raise last_exc
+        # If we exited loop without returning, raise last error
+        assert last_error is not None
+        raise last_error
 
-    # At this point `text` is definitely a string; assert for type checkers.
-    assert text is not None
+    # Perform OCR page by page (enables split‑on‑error fallback)
+    try:
+        text_pages = [ocr_page(img) for img in images]
+    except Exception as top_exc:
+        # If user explicitly requested single provider, bubble error; otherwise, raise.
+        raise top_exc
+
+    text = "\n".join(text_pages)
 
     txt_path.write_text(text)
     return txt_path
@@ -256,7 +260,7 @@ def _gemini_ocr_images(
             f"Environment variable {_GEMINI_API_ENV} not set; cannot use Gemini OCR."
         )
 
-    genai.configure(api_key=api_key)
+    genai.configure(api_key=api_key)  # type: ignore[attr-defined]
 
     if prompt is None:
         prompt = (
@@ -264,7 +268,7 @@ def _gemini_ocr_images(
             "math and special symbols. Do not add commentary."
         )
 
-    model_obj = genai.GenerativeModel(model)
+    model_obj = genai.GenerativeModel(model)  # type: ignore[attr-defined]
 
     results: list[str] = []
     for img in images:
