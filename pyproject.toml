@@ -28,4 +28,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
-pantograph = { git = "https://github.com/lenianiva/PyPantograph", branch = "fixed/v4.16.0-rc1" }
+pantograph = { git = "https://github.com/lenianiva/PyPantograph", branch = "main" }
