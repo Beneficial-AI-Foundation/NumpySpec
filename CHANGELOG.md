@@ -63,3 +63,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Provides Gymnasium‑compatible environment exposing Lean build feedback.
 - Exported in package root for easy import `from gaussianspec import LeanEnv`.
 - Added dependencies: `pantograph>=0.3.0` (Lean REPL orchestration) and `gymnasium>=0.29.1`.
+
+## [0.4.1] - 2025-05-20
+
+### Added
+
+- Multi‑backend OCR with automatic fallback in `agent.py`:
+  - New `auto` mode tries **OpenAI Vision (GPT‑4o‑mini) → Google Gemini → local Tesseract**.
+  - Copyright / policy refusal detection falls back to next provider.
+  - `pdf_pipeline` CLI exposes `--method auto|openai|gemini|tesseract` (default `auto`).
+  - Helper functions `_openai_ocr_images`, `_ocr_refused`.
+
+### Changed
+
+- Added `openai>=1.30.0` dependency in `pyproject.toml`.
+
+### Fixed
+
+- Type‑checker false positive for `txt_path.write_text` by asserting text not‑None.

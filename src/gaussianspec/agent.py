@@ -14,6 +14,31 @@ import subprocess
 import morphcloud
 from pdf2image import convert_from_path
 import pytesseract
+from concurrent.futures import ThreadPoolExecutor
+from PIL import Image  # type: ignore
+import os
+
+# Optional frontier‑model OCR (Google 1.5 Flash / 2.5 etc.)
+try:
+    import google.generativeai as genai  # type: ignore
+
+    _GEMINI_AVAILABLE = True
+except ModuleNotFoundError:
+    _GEMINI_AVAILABLE = False
+
+# Optional OpenAI Vision model (GPT‑4o‑mini etc.)
+try:
+    import openai  # type: ignore
+
+    _OPENAI_AVAILABLE = True
+except ModuleNotFoundError:
+    _OPENAI_AVAILABLE = False
+
+# ENV var bearing the API key expected by google‑generativeai
+_GEMINI_API_ENV = "GOOGLE_GEMINI_API_KEY"
+
+# ENV var names for API keys
+_OPENAI_API_ENV = "OPENAI_API_KEY"
 
 
 # --- Types ---
@@ -56,23 +81,102 @@ def parse_build_feedback(output: str) -> str:
 
 # --- OCR Preprocessing ---
 def ocr_pdf_to_text(
-    pdf_path: Path, txt_path: Path | None = None, lang: str = "eng"
+    pdf_path: Path,
+    txt_path: Path | None = None,
+    *,
+    lang: str = "eng",
+    start_page: int = 1,
+    end_page: int | None = None,
+    parallel: bool = True,
+    max_workers: int | None = None,
+    method: str = "auto",  # 'auto' | 'openai' | 'gemini' | 'tesseract'
 ) -> Path:
+    """OCR a slice of pages from *pdf_path* into *txt_path*.
+
+    If *txt_path* exists, return it (simple caching).
+
+    Parameters
+    ----------
+    pdf_path : Path
+        PDF file to process.
+    txt_path : Path | None
+        Output text path. Defaults to ``pdf_path.with_suffix('.txt')`` or, if a page
+        range is specified, ``pdf_path.stem_{start}-{end}.txt``.
+    start_page : int, default 1
+        First 1‑indexed page to process
+    end_page : int | None
+        Last page (inclusive). ``None`` means till the end of the document.
+    parallel : bool, default True
+        Whether to OCR pages concurrently (thread‑pool – GIL is released inside
+        Tesseract so threads scale reasonably).
+    max_workers : int | None
+        Overrides default worker count for the ThreadPoolExecutor.
+    method : str, default 'auto'
+        OCR backend to use.  'auto' tries *openai → gemini → tesseract* in that
+        order.  Explicit values 'openai', 'gemini', 'tesseract' force a single
+        engine.
     """
-    OCR the given PDF to a text file. If the text file exists, return it (cache).
-    Args:
-        pdf_path: Path to the PDF file.
-        txt_path: Path to output text file (default: pdf_path.with_suffix('.txt'))
-        lang: Language for OCR (default: 'eng')
-    Returns:
-        Path to the text file with OCR result.
-    """
+
+    # Derive default txt filename that encodes page range so chunks are cached separately
     if txt_path is None:
-        txt_path = pdf_path.with_suffix(".txt")
+        suffix = f"_{start_page}-{end_page}" if end_page is not None else ""
+        txt_path = pdf_path.parent / f"{pdf_path.stem}{suffix}.txt"
+
     if txt_path.exists():
         return txt_path
-    images = convert_from_path(str(pdf_path))
-    text = "\n".join(pytesseract.image_to_string(img, lang=lang) for img in images)
+
+    # Load only the required page range (pdf2image supports this natively)
+    images = convert_from_path(
+        str(pdf_path), first_page=start_page, last_page=end_page or 0
+    )
+
+    def _tesseract_ocr(imgs: list[Image.Image]) -> str:
+        """Local Tesseract OCR (optionally parallel)."""
+
+        def ocr_image(img):
+            return pytesseract.image_to_string(img, lang=lang)
+
+        if parallel and len(imgs) > 1:
+            with ThreadPoolExecutor(max_workers=max_workers) as pool:
+                futures = [pool.submit(ocr_image, img) for img in imgs]
+                return "\n".join(f.result() for f in futures)
+        else:
+            return "\n".join(ocr_image(img) for img in imgs)
+
+    methods_to_try: list[str]
+    if method == "auto":
+        methods_to_try = ["openai", "gemini", "tesseract"]
+    else:
+        methods_to_try = [method]
+
+    last_exc: Exception | None = None
+    text: str | None = None
+
+    for m in methods_to_try:
+        try:
+            if m == "openai":
+                text = _openai_ocr_images(images)
+            elif m == "gemini":
+                text = _gemini_ocr_images(images)
+            else:  # tesseract
+                text = _tesseract_ocr(images)
+
+            # Heuristic: provider refused due to policy / copyright?  Detect
+            # common refusal phrases and treat as failure so we can fall back.
+            if _ocr_refused(text):
+                raise RuntimeError(f"{m} provider refused OCR for some pages")
+
+            break  # success
+        except Exception as e:
+            last_exc = e
+            continue
+
+    if text is None and last_exc is not None:
+        raise last_exc
+
+    # At this point `text` is definitely a string; assert for type checkers.
+    assert text is not None
+
     txt_path.write_text(text)
     return txt_path
 
@@ -124,3 +228,127 @@ if __name__ == "__main__":
     ]
     for feedback in agent_loop(root, edits):
         print("Agent feedback:", feedback)
+
+
+# ---------- helper: Gemini OCR ----------
+
+
+def _gemini_ocr_images(
+    images: list[Image.Image],
+    *,
+    prompt: str | None = None,
+    model: str = "gemini-1.5-flash-latest",
+) -> str:
+    """OCR a list of PIL images using Google Gemini.
+
+    Requires the *google‑generativeai* package and the API key in
+    ``$GOOGLE_GEMINI_API_KEY``.  Concatenates page outputs with newlines.
+    """
+
+    if not _GEMINI_AVAILABLE:
+        raise RuntimeError(
+            "google-generativeai not installed. Run: `uv add google-generativeai`."
+        )
+
+    api_key = os.getenv(_GEMINI_API_ENV)
+    if api_key is None:
+        raise RuntimeError(
+            f"Environment variable {_GEMINI_API_ENV} not set; cannot use Gemini OCR."
+        )
+
+    genai.configure(api_key=api_key)
+
+    if prompt is None:
+        prompt = (
+            "You are a precise OCR engine. Extract the *verbatim* text, including any LaTeX "
+            "math and special symbols. Do not add commentary."
+        )
+
+    model_obj = genai.GenerativeModel(model)
+
+    results: list[str] = []
+    for img in images:
+        resp = model_obj.generate_content([prompt, img])
+        results.append(resp.text)
+
+    return "\n".join(results)
+
+
+# ---------- helper: OpenAI OCR ---------------------------------------------
+
+
+def _openai_ocr_images(
+    images: list[Image.Image],
+    *,
+    prompt: str | None = None,
+    model: str = "gpt-4o-mini",
+) -> str:
+    """OCR a list of images using OpenAI Vision models (e.g. GPT‑4o‑mini).
+
+    Requires the *openai* package and an ``$OPENAI_API_KEY`` environment variable.
+    """
+
+    if not _OPENAI_AVAILABLE:
+        raise RuntimeError("openai package not installed. Run: `uv add openai`. ")
+
+    api_key = os.getenv(_OPENAI_API_ENV)
+    if api_key is None:
+        raise RuntimeError(
+            f"Environment variable {_OPENAI_API_ENV} not set; cannot use OpenAI OCR."
+        )
+
+    # New client API (>=1.0)
+    client = openai.OpenAI(api_key=api_key)
+
+    if prompt is None:
+        prompt = (
+            "You are a precise OCR engine. Extract the *verbatim* text, including any LaTeX "
+            "math and special symbols. Do not add commentary."
+        )
+
+    import base64, io
+
+    results: list[str] = []
+
+    for img in images:
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        b64 = base64.b64encode(buf.getvalue()).decode()
+
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{b64}"},
+                        },
+                    ],
+                }
+            ],
+        )
+
+        results.append(resp.choices[0].message.content)
+
+    return "\n".join(results)
+
+
+# --- refusal heuristics ----------------------------------------------------
+
+
+def _ocr_refused(text: str) -> bool:
+    """Return True if *text* looks like a policy refusal / copyright block."""
+    lowered = text.lower()
+    bad_phrases = [
+        "i'm sorry",
+        "i am sorry",
+        "sorry",
+        "can't help with that",
+        " violate",
+        "copyright",
+        "policy",
+    ]
+    return any(p in lowered for p in bad_phrases)
