@@ -160,7 +160,7 @@ def ocr_pdf_to_text(
                 else:  # tesseract
                     page_text = _tesseract_ocr([img])
 
-                if _ocr_refused(page_text):
+                if _ocr_refused(page_text) or _ocr_refused_llm(page_text):
                     raise RuntimeError(f"{m} refused due to policy")
 
                 return page_text
@@ -335,7 +335,8 @@ def _openai_ocr_images(
             ],
         )
 
-        results.append(resp.choices[0].message.content)
+        msg_content = resp.choices[0].message.content or ""
+        results.append(msg_content)
 
     return "\n".join(results)
 
@@ -356,3 +357,45 @@ def _ocr_refused(text: str) -> bool:
         "policy",
     ]
     return any(p in lowered for p in bad_phrases)
+
+
+# --- LLM-based refusal detection ------------------------------------------
+
+
+def _ocr_refused_llm(text: str, *, model: str = "gpt-4o-mini") -> bool:
+    """Use a small OpenAI model to classify whether *text* is a refusal message.
+
+    Returns False if OpenAI client/key unavailable to avoid blocking.
+    """
+
+    if not _OPENAI_AVAILABLE:
+        return False
+
+    api_key = os.getenv(_OPENAI_API_ENV)
+    if api_key is None:
+        return False
+
+    try:
+        client = openai.OpenAI(api_key=api_key)
+
+        prompt_system = (
+            "You are a text classifier. Respond with exactly 'yes' if the given text is an AI policy "
+            "refusal / apology and not genuine OCR content. Respond with 'no' otherwise."
+        )
+
+        user_text = text[:1000]  # truncate for cost
+
+        resp = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": prompt_system},
+                {"role": "user", "content": user_text},
+            ],
+            max_tokens=1,
+        )
+
+        msg_content = resp.choices[0].message.content or ""
+        answer = msg_content.strip().lower()
+        return answer.startswith("y")
+    except Exception:
+        return False
