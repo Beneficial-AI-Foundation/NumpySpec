@@ -14,6 +14,10 @@ test:
 train steps='1000':
     uv run src/gaussianspec/rl_trainer.py --steps {{steps}}
 
-# OCR pipeline
-ocr pdf:
-    uv run -m gaussianspec.pdf_pipeline {{pdf}}
+# OCR pipeline (defaults to project textbook)
+ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto':
+    uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}}
+
+# OCR entire PDF in chunks
+ocr-all chunk=50 pages_per_chunk=50 pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto':
+    uv run -m gaussianspec.pdf_pipeline {{pdf}} --all --chunk-size {{pages_per_chunk}} --method {{method}}
