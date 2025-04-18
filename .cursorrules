@@ -2,6 +2,16 @@ This is a specification for just 1 function: that gaussian elimination is an inv
 
 To properly add imports: add leansearchclient as a dependency and `import LeanSearchClient` to use `#search` like `#eval`. It's how you can find theorems and lemmas.
 
+example:
+
+```lean
+-- #search queries must end with a period
+#search "nonsingular."
+-- loogle uses type notation not strings
+#loogle List ?a -> ?a
+
+```
+
 reward shaping list: [
  "get import order right",
 ]
