@@ -1,7 +1,7 @@
 [project]
 name = "gaussianspec"
 version = "0.1.0"
-description = "Add your description here"
+description = "Gaussian elimination specification"
 readme = "README.md"
 authors = [{ name = "Alok Singh", email = "alokbeniwal@gmail.com" }]
 requires-python = ">=3.12"
@@ -26,3 +26,6 @@ gaussianspec = "gaussianspec:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+pantograph = { git = "https://github.com/lenianiva/PyPantograph", branch = "fixed/v4.16.0-rc1" }
