@@ -61,6 +61,11 @@ def main():
     )
     args = parser.parse_args()
 
+    # Sanitize common mistakes coming from shell/just variable expansion, e.g.
+    # when `pages="pages=1-2"` leaks through.
+    if isinstance(args.pages, str) and args.pages.startswith("pages="):
+        args.pages = args.pages[len("pages=") :]
+
     # Ensure base output directory exists
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
