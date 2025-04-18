@@ -110,7 +110,7 @@ def agent_pipeline(
     ocr_txt = ocr_fn(pdf_path)
     yield f"OCR complete: {ocr_txt}"
     yield from agent_loop(project_root, edits, build_fn, edit_fn, feedback_fn)
-h
+
 
 # --- Example usage (to be replaced by MorphCloud orchestration) ---
 if __name__ == "__main__":
