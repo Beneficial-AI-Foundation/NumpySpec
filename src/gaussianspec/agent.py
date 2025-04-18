@@ -160,7 +160,11 @@ def ocr_pdf_to_text(
                 else:  # tesseract
                     page_text = _tesseract_ocr([img])
 
-                if _ocr_refused(page_text) or _ocr_refused_llm(page_text):
+                flagged = _ocr_refused(page_text)
+                if m != "tesseract":
+                    flagged = flagged or _ocr_refused_llm(page_text)
+
+                if flagged:
                     raise RuntimeError(f"{m} refused due to policy")
 
                 return page_text
