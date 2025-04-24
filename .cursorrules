@@ -15,3 +15,6 @@ example:
 reward shaping list: [
  "get import order right",
 ]
+
+If a section of the book is inappropriate to translate (like chapter 1 on C programming language conventions), extract any relevant specs and leave it as prose in verso.
+
