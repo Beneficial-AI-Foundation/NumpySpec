@@ -11,5 +11,4 @@ import LeanSearchClient -- Adds #search command
 
 
 
-def main : IO Unit :=
-  IO.println s!"GaussianSpec defined!"
+def main : IO Unit := return ()
