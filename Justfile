@@ -36,9 +36,9 @@ check-poppler:
     fi
 
 # OCR pipeline (defaults to project textbook)
-ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto': check-poppler
-    uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}}
+ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip='1200': check-poppler
+    uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}} --strip-right {{strip}}
 
 # OCR entire PDF in chunks
-ocr-all chunk='50' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto':
-    uv run -m gaussianspec.pdf_pipeline {{pdf}} --all --chunk-size {{chunk}} --method {{method}}
+ocr-all chunk='50' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip='1200':
+    uv run -m gaussianspec.pdf_pipeline {{pdf}} --all --chunk-size {{chunk}} --method {{method}} --strip-right {{strip}}

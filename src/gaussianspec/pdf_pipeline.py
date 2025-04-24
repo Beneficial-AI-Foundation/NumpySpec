@@ -49,6 +49,12 @@ def main():
         help="OCR backend to use",
     )
     parser.add_argument(
+        "--strip-right",
+        type=int,
+        default=0,
+        help="Crop this many pixels from the right margin of each page before OCR",
+    )
+    parser.add_argument(
         "--all",
         action="store_true",
         help="Process the entire PDF in chunks (see --chunk-size) instead of a single range",
@@ -88,6 +94,7 @@ def main():
                 start_page=start_page,
                 end_page=end_page,
                 method=args.method,
+                strip_right_px=args.strip_right,
             )
 
             chunk_lean = create_lean_file(
@@ -127,6 +134,7 @@ def main():
             start_page=start_page,
             end_page=end_page,
             method=args.method,
+            strip_right_px=args.strip_right,
         )
         lean_file = create_lean_file(txt_path, args.out_dir / "Spec")
         print(f"OCR text written to {txt_path}")

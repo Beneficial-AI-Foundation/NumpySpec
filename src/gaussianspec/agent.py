@@ -102,6 +102,7 @@ def ocr_pdf_to_text(
     parallel: bool = True,
     max_workers: int | None = None,
     method: str = "auto",  # 'auto' | 'openai' | 'gemini' | 'tesseract'
+    strip_right_px: int = 0,
 ) -> Path:
     """OCR a slice of pages from *pdf_path* into *txt_path*.
 
@@ -127,6 +128,11 @@ def ocr_pdf_to_text(
         OCR backend to use.  'auto' tries *openai → gemini → tesseract* in that
         order.  Explicit values 'openai', 'gemini', 'tesseract' force a single
         engine.
+    strip_right_px : int, default 0
+        If > 0, crop *strip_right_px* pixels from the right margin of each
+        page image **before** OCR.  This is useful for PDFs like *Numerical
+        Recipes* that contain a vertical "sample page" column on the right
+        which confuses OCR.
     """
 
     # Derive default txt filename that encodes page range so chunks are cached separately
@@ -138,9 +144,21 @@ def ocr_pdf_to_text(
         return txt_path
 
     # Load only the required page range (pdf2image supports this natively)
-    images = convert_from_path(
+    images_raw = convert_from_path(
         str(pdf_path), first_page=start_page, last_page=end_page or 0
     )
+
+    # Optional preprocessing: strip right-hand sample text column that
+    # appears in the Numerical Recipes PDF (and similar).  This greatly
+    # improves OCR fidelity by removing vertically-oriented noise.
+    images: list[Image.Image] = []
+    if strip_right_px > 0:
+        for img in images_raw:
+            # Ensure we don't crop into negative width
+            new_w = max(1, img.width - strip_right_px)
+            images.append(img.crop((0, 0, new_w, img.height)))
+    else:
+        images = list(images_raw)
 
     def _tesseract_ocr(imgs: list[Image.Image]) -> str:
         """Local Tesseract OCR (optionally parallel)."""

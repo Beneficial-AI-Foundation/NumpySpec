@@ -85,3 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - Added runtime guard for optional local Tesseract backend in `agent.py`, removing unconditional `pytesseract` import to fix linter when dependency is absent.
+
+- **Breaking** `ocr_pdf_to_text` now accepts a `strip_right_px` argument that crops a fixed
+  number of pixels from the right margin before OCR.  CLI `pdf_pipeline` exposes
+  `--strip-right` flag.  Useful for textbooks like *Numerical Recipes* whose sample
+  page column interferes with OCR accuracy.
