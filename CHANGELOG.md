@@ -90,3 +90,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   number of pixels from the right margin before OCR.  CLI `pdf_pipeline` exposes
   `--strip-right` flag.  Useful for textbooks like *Numerical Recipes* whose sample
   page column interferes with OCR accuracy.
+
+## [0.4.2] - PLACEHOLDER_DATE
+
+### Added
+
+- Verbose, batched OCR with `tqdm` progress bar in `agent.py`.
+- Parallel page-level OCR using `ThreadPoolExecutor` with `as_completed` preserving page order.
+- Added `tqdm>=4.66.4` dependency to `pyproject.toml`.
+
+### Changed
+
+- `ocr_pdf_to_text` now shows a live progress bar and can process pages concurrently even when using non-Tesseract providers (which release the GIL internally).
