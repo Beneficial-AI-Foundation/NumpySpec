@@ -22,6 +22,9 @@ from concurrent.futures import ThreadPoolExecutor
 from PIL import Image  # type: ignore
 import os
 
+# Rich progress bar for OCR visibility
+from tqdm.auto import tqdm
+
 # Optional frontier‑model OCR (Google 1.5 Flash / 2.5 etc.)
 try:
     import google.generativeai as genai  # type: ignore
@@ -44,13 +47,7 @@ _GEMINI_API_ENV = "GOOGLE_GEMINI_API_KEY"
 # ENV var names for API keys
 _OPENAI_API_ENV = "OPENAI_API_KEY"
 
-# Optional local Tesseract OCR backend
-try:
-    import pytesseract  # type: ignore
-
-    _TESSERACT_AVAILABLE = True
-except ModuleNotFoundError:
-    _TESSERACT_AVAILABLE = False
+# We no longer depend on local Tesseract.
 
 
 # --- Types ---
@@ -101,7 +98,7 @@ def ocr_pdf_to_text(
     end_page: int | None = None,
     parallel: bool = True,
     max_workers: int | None = None,
-    method: str = "auto",  # 'auto' | 'openai' | 'gemini' | 'tesseract'
+    method: str = "auto",  # 'auto' | 'openai' | 'gemini'
     strip_right_px: int = 0,
 ) -> Path:
     """OCR a slice of pages from *pdf_path* into *txt_path*.
@@ -125,9 +122,8 @@ def ocr_pdf_to_text(
     max_workers : int | None
         Overrides default worker count for the ThreadPoolExecutor.
     method : str, default 'auto'
-        OCR backend to use.  'auto' tries *openai → gemini → tesseract* in that
-        order.  Explicit values 'openai', 'gemini', 'tesseract' force a single
-        engine.
+        OCR backend to use.  'auto' tries *openai → gemini* in that order.
+        Explicit values 'openai', 'gemini' force a single engine.
     strip_right_px : int, default 0
         If > 0, crop *strip_right_px* pixels from the right margin of each
         page image **before** OCR.  This is useful for PDFs like *Numerical
@@ -160,72 +156,44 @@ def ocr_pdf_to_text(
     else:
         images = list(images_raw)
 
-    def _tesseract_ocr(imgs: list[Image.Image]) -> str:
-        """Local Tesseract OCR (optionally parallel)."""
+    # --- choose OCR backends ---
+    if method not in {"auto", "openai", "gemini"}:
+        raise ValueError("method must be 'auto', 'openai', or 'gemini'")
 
-        def ocr_image(img):
-            return pytesseract.image_to_string(img, lang=lang)
+    methods_to_try: list[str] = ["openai", "gemini"] if method == "auto" else [method]
 
-        if parallel and len(imgs) > 1:
-            with ThreadPoolExecutor(max_workers=max_workers) as pool:
-                futures = [pool.submit(ocr_image, img) for img in imgs]
-                return "\n".join(f.result() for f in futures)
+    # --- helper: attempt OCR via selected backend over *all* pages ---
+
+    def ocr_with_backend(backend: str) -> list[str]:
+        if backend == "openai":
+            return _openai_ocr_images(images).split("\n")
+        elif backend == "gemini":
+            return _gemini_ocr_images(images).split("\n")
         else:
-            return "\n".join(ocr_image(img) for img in imgs)
+            raise RuntimeError(f"Unknown OCR backend: {backend}")
 
-    methods_to_try: list[str] = (
-        [
-            m
-            for m in ["openai", "gemini", "tesseract"]
-            if (m != "tesseract" or _TESSERACT_AVAILABLE)
-        ]
-        if method == "auto"
-        else ([method] if (method != "tesseract" or _TESSERACT_AVAILABLE) else [])
-    )
+    # Try each backend in turn, respecting policy-refusal detection
+    last_error: Exception | None = None
+    text_pages: list[str] | None = None
+    for backend in methods_to_try:
+        try:
+            text_pages = ocr_with_backend(backend)
 
-    def ocr_page(img: Image.Image) -> str:
-        """OCR a single page trying each provider until one succeeds."""
+            combined = "\n".join(text_pages)
+            if _ocr_refused(combined) or _ocr_refused_llm(combined):
+                raise RuntimeError(f"{backend} refused due to policy")
 
-        last_error: Exception | None = None
-        for m in methods_to_try:
-            try:
-                if m == "openai":
-                    page_text = _openai_ocr_images([img])
-                elif m == "gemini":
-                    page_text = _gemini_ocr_images([img])
-                else:  # tesseract
-                    if not _TESSERACT_AVAILABLE:
-                        raise RuntimeError("Tesseract OCR backend not available")
-                    page_text = _tesseract_ocr([img])
+            break  # success
+        except Exception as exc:
+            last_error = exc
+            continue
 
-                if m == "tesseract":
-                    # Assume Tesseract output is always allowed; no policy checks.
-                    return page_text
-
-                flagged = _ocr_refused(page_text) or _ocr_refused_llm(page_text)
-
-                if flagged:
-                    raise RuntimeError(f"{m} refused due to policy")
-
-                return page_text
-            except Exception as exc:
-                last_error = exc
-                continue
-
-        # If we exited loop without returning, raise last error
+    if text_pages is None:
+        # All backends failed
         assert last_error is not None
         raise last_error
 
-    # Perform OCR page by page (enables split‑on‑error fallback)
-    try:
-        text_pages = [ocr_page(img) for img in images]
-    except Exception as top_exc:
-        # If user explicitly requested single provider, bubble error; otherwise, raise.
-        raise top_exc
-
-    text = "\n".join(text_pages)
-
-    txt_path.write_text(text)
+    txt_path.write_text("\n".join(text_pages))
     return txt_path
 
 
@@ -345,16 +313,14 @@ def _openai_ocr_images(
             f"Environment variable {_OPENAI_API_ENV} not set; cannot use OpenAI OCR."
         )
 
-    # New client API (>=1.0)
-    client = openai.OpenAI(api_key=api_key)
+    # Lazy import to avoid polluting global namespace
+    import base64, io
 
     if prompt is None:
         prompt = (
             "You are a precise OCR engine. Extract the *verbatim* text, including any LaTeX "
             "math and special symbols. Do not add commentary."
         )
-
-    import base64, io
 
     results: list[str] = []
 
@@ -363,7 +329,7 @@ def _openai_ocr_images(
         img.save(buf, format="PNG")
         b64 = base64.b64encode(buf.getvalue()).decode()
 
-        resp = client.chat.completions.create(
+        resp = openai.OpenAI(api_key=api_key).chat.completions.create(
             model=model,
             messages=[
                 {
