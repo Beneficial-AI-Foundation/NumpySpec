@@ -36,7 +36,8 @@ check-poppler:
     fi
 
 # OCR pipeline (defaults to project textbook)
-ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip='1200': check-poppler
+# page 149 is end of chapter 2, the first substantive chapter
+ocr pages='1-149' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip='1200': check-poppler
     uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}} --strip-right {{strip}}
 
 # OCR entire PDF in chunks
