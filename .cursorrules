@@ -18,3 +18,11 @@ reward shaping list: [
 
 If a section of the book is inappropriate to translate (like chapter 1 on C programming language conventions), extract any relevant specs and leave it as prose in verso.
 
+workflow:
+
+1. ocr the book
+2. put the book as comments/prose with verso.
+3. use the agent to write the code
+4. run the code and check the results
+5. loop 3-4 until the code is correct
+
