@@ -395,6 +395,7 @@ dependencies = [
     { name = "pytest" },
     { name = "stable-baselines3" },
     { name = "torch" },
+    { name = "tqdm" },
     { name = "transformers" },
 ]
 
@@ -413,6 +414,7 @@ requires-dist = [
     { name = "pytest", specifier = ">=8.2.1" },
     { name = "stable-baselines3", specifier = ">=2.3.0" },
     { name = "torch", specifier = ">=2.3.0" },
+    { name = "tqdm", specifier = ">=4.66.4" },
     { name = "transformers", specifier = ">=4.41.0" },
 ]
 

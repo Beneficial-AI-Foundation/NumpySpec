@@ -20,6 +20,7 @@ dependencies = [
     "pytest>=8.2.1",
     "google-generativeai>=0.8.5",
     "openai>=1.30.0",
+    "tqdm>=4.66.4",
 ]
 
 [project.scripts]
