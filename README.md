@@ -55,7 +55,7 @@ This project includes a MorphCloud-driven Lean agent (`src/gaussianspec/agent.py
 
 The agent pipeline now includes a pure functional OCR preprocessing step:
 
-- Automatically OCRs the textbook PDF (`textbook/Numerical Recipes in C.pdf`) to a cached `.txt` file before running Lean code.
+- Automatically OCRs the textbook PDF (`textbook/Numerical_Recipes_in_C.pdf`) to a cached `.txt` file before running Lean code.
 - Uses `pdf2image` and `pytesseract` for robust PDF-to-text conversion.
 - Skips OCR if the `.txt` file already exists (caching for reproducibility and speed).
 - The OCR step is fully composable and can be reused or extended in other pipelines.

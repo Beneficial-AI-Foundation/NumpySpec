@@ -17,6 +17,30 @@ train steps='1000':
 # OCR pipeline (defaults to project textbook)
 ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto':
     uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}}
+# Check and install poppler if needed
+check-poppler:
+    #!/usr/bin/env bash
+    if ! command -v pdftoppm &> /dev/null; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            brew install poppler
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            if command -v apt-get &> /dev/null; then
+                sudo apt-get install -y poppler-utils
+            elif command -v yum &> /dev/null; then
+                sudo yum install -y poppler-utils
+            else
+                echo "Unsupported Linux distribution"
+                exit 1
+            fi
+        else
+            echo "Unsupported OS"
+            exit 1
+        fi
+    fi
+
+# OCR pipeline (defaults to project textbook)
+ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto': check-poppler
+    uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}}
 
 # OCR entire PDF in chunks
 ocr-all chunk='50' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto':

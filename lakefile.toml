@@ -17,3 +17,8 @@ rev = "master"
 name = "LeanSearchClient"
 git = "https://github.com/leanprover-community/LeanSearchClient"
 rev = "main"
+
+[[require]]
+name = "verso"
+git = "https://github.com/leanprover/verso"
+rev = "main"

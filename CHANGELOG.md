@@ -81,3 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Type‑checker false positive for `txt_path.write_text` by asserting text not‑None.
+
+## [Unreleased]
+
+- Added runtime guard for optional local Tesseract backend in `agent.py`, removing unconditional `pytesseract` import to fix linter when dependency is absent.

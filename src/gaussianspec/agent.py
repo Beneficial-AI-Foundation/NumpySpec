@@ -11,9 +11,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterator, Sequence, Any
 import subprocess
-import morphcloud
+
+# morphcloud is optional; this module can be imported without it for local builds.
+try:
+    import morphcloud  # type: ignore
+except ModuleNotFoundError:
+    morphcloud = None
 from pdf2image import convert_from_path
-import pytesseract
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image  # type: ignore
 import os
@@ -39,6 +43,14 @@ _GEMINI_API_ENV = "GOOGLE_GEMINI_API_KEY"
 
 # ENV var names for API keys
 _OPENAI_API_ENV = "OPENAI_API_KEY"
+
+# Optional local Tesseract OCR backend
+try:
+    import pytesseract  # type: ignore
+
+    _TESSERACT_AVAILABLE = True
+except ModuleNotFoundError:
+    _TESSERACT_AVAILABLE = False
 
 
 # --- Types ---
@@ -144,7 +156,13 @@ def ocr_pdf_to_text(
             return "\n".join(ocr_image(img) for img in imgs)
 
     methods_to_try: list[str] = (
-        ["openai", "gemini", "tesseract"] if method == "auto" else [method]
+        [
+            m
+            for m in ["openai", "gemini", "tesseract"]
+            if (m != "tesseract" or _TESSERACT_AVAILABLE)
+        ]
+        if method == "auto"
+        else ([method] if (method != "tesseract" or _TESSERACT_AVAILABLE) else [])
     )
 
     def ocr_page(img: Image.Image) -> str:
@@ -158,6 +176,8 @@ def ocr_pdf_to_text(
                 elif m == "gemini":
                     page_text = _gemini_ocr_images([img])
                 else:  # tesseract
+                    if not _TESSERACT_AVAILABLE:
+                        raise RuntimeError("Tesseract OCR backend not available")
                     page_text = _tesseract_ocr([img])
 
                 if m == "tesseract":
