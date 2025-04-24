@@ -14,9 +14,7 @@ test:
 train steps='1000':
     uv run src/gaussianspec/rl_trainer.py --steps {{steps}}
 
-# OCR pipeline (defaults to project textbook)
-ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto':
-    uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}}
+
 # Check and install poppler if needed
 check-poppler:
     #!/usr/bin/env bash
@@ -41,6 +39,7 @@ check-poppler:
 # OCR pipeline (defaults to project textbook)
 ocr pages='1-100' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto': check-poppler
     uv run -m gaussianspec.pdf_pipeline {{pdf}} --pages {{pages}} --method {{method}}
+
 
 # OCR entire PDF in chunks
 ocr-all chunk='50' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto':
