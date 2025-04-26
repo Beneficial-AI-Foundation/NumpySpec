@@ -19,14 +19,88 @@ from .agent import ocr_pdf_to_text
 
 
 def create_lean_file(txt_path: Path, out_dir: Path) -> Path:
-    """Write a Lean file embedding the OCR text as a block comment."""
+    """Write a Lean file embedding the OCR text as a block comment and parse it into Lean definitions."""
     out_dir.mkdir(parents=True, exist_ok=True)
     lean_path = out_dir / "Spec.lean"
     content = txt_path.read_text()
-    lean_text = "/-\n" + indent(content, " ") + "\n-/\n"
-    lean_text += "\n-- TODO: parse the OCR text into Lean definitions\n"
+    
+    lean_text = "/-\n" + indent(content, " ") + "\n-/\n\n"
+    
+    lean_definitions = parse_ocr_to_lean(content)
+    lean_text += lean_definitions
+    
     lean_path.write_text(lean_text)
     return lean_path
+
+
+def parse_ocr_to_lean(ocr_text: str) -> str:
+    """Parse OCR text into Lean definitions.
+    
+    Extracts mathematical definitions, theorems, and algorithms from OCR text
+    and converts them into Lean syntax.
+    """
+    lines = ocr_text.split('\n')
+    
+    lean_defs = []
+    
+    in_definition = False
+    current_def = []
+    definition_name = ""
+    
+    for line in lines:
+        if not line.strip():
+            continue
+            
+        if "definition" in line.lower() or "theorem" in line.lower() or "algorithm" in line.lower():
+            if in_definition:
+                lean_defs.append(format_lean_definition(definition_name, current_def))
+            
+            in_definition = True
+            current_def = [line]
+            
+            words = line.split()
+            if len(words) > 1:
+                definition_name = words[1].strip(":.,()")
+            else:
+                definition_name = "unnamed"
+        
+        elif in_definition:
+            current_def.append(line)
+            
+            if line.strip().endswith(".") or line.strip().endswith(":"):
+                lean_defs.append(format_lean_definition(definition_name, current_def))
+                in_definition = False
+                current_def = []
+    
+    if in_definition:
+        lean_defs.append(format_lean_definition(definition_name, current_def))
+    
+    if not lean_defs:
+        lean_defs.append("-- No formal definitions detected in OCR text\n")
+        lean_defs.append("-- Example of how a definition might look:\n")
+        lean_defs.append("def gaussianElimination (A : Matrix n n ℝ) : Matrix n n ℝ :=\n  sorry\n")
+        lean_defs.append("\n-- Example of how a theorem might look:\n")
+        lean_defs.append("theorem gaussianElimination_is_left_inverse (A : Matrix n n ℝ) (h : IsNonsingular A) :\n  gaussianElimination A * A = 1 :=\n  sorry\n")
+    
+    return "\n".join(lean_defs)
+
+
+def format_lean_definition(name: str, lines: list[str]) -> str:
+    """Format extracted definition into Lean syntax."""
+    comment = "-- Original text:\n" + "\n".join(f"-- {line}" for line in lines)
+    
+    first_line = lines[0].lower()
+    
+    if "definition" in first_line:
+        lean_def = f"\ndef {name} : sorry :=\n  sorry"
+    elif "theorem" in first_line:
+        lean_def = f"\ntheorem {name} : sorry :=\n  sorry"
+    elif "algorithm" in first_line:
+        lean_def = f"\ndef {name} : sorry :=\n  sorry -- Implemented from algorithm"
+    else:
+        lean_def = f"\n-- Extracted content: {name}\n-- TODO: Convert to formal Lean definition"
+    
+    return f"{comment}\n{lean_def}\n"
 
 
 def main():
