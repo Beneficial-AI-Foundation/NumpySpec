@@ -16,9 +16,13 @@ from typing import Optional
 
 from gaussianspec.subagents import (
     OCRSubagent,
+    OCRResult,
     LeanEditSubagent,
+    LeanEditResult,
     LeanBuildSubagent,
+    LeanBuildResult,
     FeedbackParseSubagent,
+    FeedbackParseResult,
 )
 
 
@@ -30,35 +34,84 @@ class PipelineArgs:
     edit: str = "-- edit by pipeline"
 
 
-def run_pipeline(args: PipelineArgs) -> None:
+@dataclass
+class PipelineResult:
+    """Aggregated results of a single pipeline run so downstream agents can reuse them."""
+
+    ocr: OCRResult
+    edit: LeanEditResult
+    build: LeanBuildResult
+    parse: FeedbackParseResult
+
+
+def run_pipeline(args: PipelineArgs) -> PipelineResult:
+    """Run the end-to-end OCR→edit→build pipeline and *return* all intermediate
+    artefacts so that other agents (e.g. RL loops, orchestrators) can inspect
+    them programmatically.
+    """
+
     # OCR step
     ocr_res = OCRSubagent(pdf_path=args.pdf_path).run()
     if not ocr_res.success:
-        print(f"OCR failed: {ocr_res.error}")
-        return
-    print(f"OCR completed -> {ocr_res.txt_path}")
+        # Even on failure we still return a PipelineResult for debuggability
+        return PipelineResult(
+            ocr=ocr_res,
+            edit=LeanEditResult(
+                file=args.lean_file, success=False, error="skipped due to OCR failure"
+            ),
+            build=LeanBuildResult(success=False, output=""),
+            parse=FeedbackParseResult(
+                message=ocr_res.error or "OCR failed", is_success=False
+            ),
+        )
 
     # Lean edit step
     edit_res = LeanEditSubagent(file=args.lean_file, edit=args.edit).run()
-    if not edit_res.success:
-        print(f"Edit failed: {edit_res.error}")
-        return
-    print(f"Edit applied to {edit_res.file}")
 
-    # Build step
-    build_res = LeanBuildSubagent(project_root=args.project_root).run()
-    print("Build finished")
-
-    # Feedback parse step
-    parse_res = FeedbackParseSubagent(output=build_res.output).run()
-    if parse_res.is_success:
-        print("Build success! 🎉")
+    # Build step (only attempted if edit succeeded)
+    build_res: LeanBuildResult
+    if edit_res.success:
+        build_res = LeanBuildSubagent(project_root=args.project_root).run()
     else:
-        print(f"Build failed -> {parse_res.message}")
+        build_res = LeanBuildResult(success=False, output="skipped due to edit failure")
 
-    # Print raw build output for inspection (trimmed)
+    # Parse Lean build feedback for actionable message
+    parse_res = FeedbackParseSubagent(output=build_res.output).run()
+
+    # Side-effect: pretty console log for human operators. Downstream automation
+    # should rely on the returned PipelineResult instead.
+    _pretty_print_pipeline(ocr_res, edit_res, build_res, parse_res)
+
+    return PipelineResult(ocr=ocr_res, edit=edit_res, build=build_res, parse=parse_res)
+
+
+def _pretty_print_pipeline(
+    ocr: OCRResult,
+    edit: LeanEditResult,
+    build: LeanBuildResult,
+    parse: FeedbackParseResult,
+) -> None:
+    """Human-friendly summary of pipeline stages (non-essential side effect)."""
+
+    if ocr.success:
+        print(f"OCR completed   -> {ocr.txt_path}")
+    else:
+        print(f"OCR failed      -> {ocr.error}")
+
+    if edit.success:
+        print(f"Edit applied    -> {edit.file}")
+    else:
+        print(f"Edit failed     -> {edit.error}")
+
+    print("Build finished  ->", "OK" if build.success else "FAILED")
+    if parse.is_success:
+        print("Build status    -> success 🎉")
+    else:
+        print(f"Build status    -> {parse.message}")
+
+    # Trimmed build output for quick inspection
     print("\n--- Raw build output (first 100 lines) ---")
-    lines = build_res.output.splitlines()[:100]
+    lines = build.output.splitlines()[:100]
     print("\n".join(lines))
 
 
@@ -75,7 +128,7 @@ def _cli() -> None:
         help="Lean code snippet to append (default: comment)",
     )
     ns = parser.parse_args()
-    run_pipeline(
+    result = run_pipeline(
         PipelineArgs(
             project_root=Path(ns.project_root).resolve(),
             pdf_path=Path(ns.pdf).resolve(),
@@ -83,6 +136,11 @@ def _cli() -> None:
             edit=ns.edit,
         )
     )
+
+    # Return code is derived from build success so shell scripts can react.
+    import sys
+
+    sys.exit(0 if result.build.success else 1)
 
 
 if __name__ == "__main__":
