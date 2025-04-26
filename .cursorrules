@@ -26,3 +26,8 @@ workflow:
 4. run the code and check the results
 5. loop 3-4 until the code is correct
 
+turn off `relaxedAutoImplicit`. you can set it once and for all in the lakefile. Turn on `linter.missingDocs = true` to ensure you write docstrings. it will also show you WHAT to document in the first place.
+
+unexpected token 'namespace'; expected '#guard_msgs', 'abbrev', 'add_decl_doc', 'axiom', 'binder_predicate', 'builtin_dsimproc', 
+
+My setup for adding context to cursor and morph agents is crude. recommend something better.
