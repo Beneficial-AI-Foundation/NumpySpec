@@ -49,6 +49,8 @@ _OPENAI_API_ENV = "OPENAI_API_KEY"
 
 # We no longer depend on local Tesseract.
 
+from gaussianspec.subagents import LeanEditResult  # type: ignore F401
+
 
 # --- Types ---
 @dataclass(frozen=True)
@@ -73,10 +75,17 @@ def run_lake_build(project_root: Path) -> BuildResult:
     return BuildResult(success=proc.returncode == 0, output=proc.stdout + proc.stderr)
 
 
-def apply_lean_edit(edit: LeanEdit) -> None:
-    """Apply an edit to a Lean file."""
-    with edit.file.open("a") as f:
-        f.write("\n" + edit.edit)
+def apply_lean_edit(edit: LeanEdit) -> LeanEditResult:
+    """Apply *edit* to its target Lean file and return a :class:`LeanEditResult` so
+    that upstream orchestrators can inspect success/failure without having to
+    replicate the file-system side-effects.
+    """
+    try:
+        with edit.file.open("a") as f:
+            f.write("\n" + edit.edit)
+        return LeanEditResult(file=edit.file, success=True)
+    except Exception as exc:
+        return LeanEditResult(file=edit.file, success=False, error=str(exc))
 
 
 def parse_build_feedback(output: str) -> str:
@@ -202,12 +211,12 @@ def agent_loop(
     project_root: Path,
     edits: Sequence[LeanEdit],
     build_fn: Callable[[Path], BuildResult] = run_lake_build,
-    edit_fn: Callable[[LeanEdit], None] = apply_lean_edit,
+    edit_fn: Callable[[LeanEdit], LeanEditResult] = apply_lean_edit,
     feedback_fn: Callable[[str], str] = parse_build_feedback,
 ) -> Iterator[str]:
     """Drive Lean code edits and builds, yielding feedback after each step."""
     for edit in edits:
-        edit_fn(edit)
+        edit_fn(edit)  # result ignored for now; could be yielded later
         result = build_fn(project_root)
         feedback = feedback_fn(result.output)
         yield feedback
@@ -220,7 +229,7 @@ def agent_pipeline(
     edits: Sequence[LeanEdit],
     ocr_fn: Callable[[Path], Path] = lambda pdf: ocr_pdf_to_text(pdf),
     build_fn: Callable[[Path], BuildResult] = run_lake_build,
-    edit_fn: Callable[[LeanEdit], None] = apply_lean_edit,
+    edit_fn: Callable[[LeanEdit], LeanEditResult] = apply_lean_edit,
     feedback_fn: Callable[[str], str] = parse_build_feedback,
 ) -> Iterator[str]:
     """

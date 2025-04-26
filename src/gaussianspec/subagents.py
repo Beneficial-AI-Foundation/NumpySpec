@@ -102,3 +102,59 @@ class FeedbackParseSubagent:
             if "error:" in line:
                 return FeedbackParseResult(line, False)
         return FeedbackParseResult("success", True)
+
+
+# --- Lake Project Init Subagent ---
+@dataclass(frozen=True)
+class LakeInitResult:
+    """Result of initializing a Lake project (e.g. via `lake init`)."""
+
+    project_path: Path
+    success: bool
+    error: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class LakeProjectInitSubagent:
+    """Ensure a Lake project exists at *project_path* with Verso dependency.
+
+    This subagent is *idempotent*: If the project already contains a
+    `lakefile.lean`, it is assumed to be correctly configured and nothing is
+    changed.  Otherwise, it creates the minimal files required for other
+    agents to dump content (Lean source under `Book/`).  The implementation
+    favors explicit file writes over invoking external commands like
+    `lake init`, which can vary across Lean versions and require user
+    interaction.  This keeps the agent deterministic and avoids shelling
+    out when unnecessary.
+    """
+
+    project_path: Path
+
+    def run(self) -> LakeInitResult:
+        try:
+            lakefile = self.project_path / "lakefile.lean"
+            if lakefile.exists():
+                return LakeInitResult(self.project_path, True)
+
+            # --- create directory structure ---
+            book_dir = self.project_path / "Book"
+            book_dir.mkdir(parents=True, exist_ok=True)
+
+            # --- write lakefile.lean ---
+            lakefile.write_text(
+                """import Lake\nopen Lake DSL\n\npackage versobook\nrequire verso from git \"https://github.com/leanprover/verso\" @ \"main\"\n"""
+            )
+
+            # --- sync lean-toolchain ---
+            root_toolchain = Path.cwd() / "lean-toolchain"
+            if root_toolchain.exists():
+                (self.project_path / "lean-toolchain").write_text(
+                    root_toolchain.read_text()
+                )
+
+            # --- write initial Lean file so `lake build` succeeds ---
+            (book_dir / "Main.lean").write_text("import Verso\n")
+
+            return LakeInitResult(self.project_path, True)
+        except Exception as exc:
+            return LakeInitResult(self.project_path, False, str(exc))
