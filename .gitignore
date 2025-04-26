@@ -1,2 +1,12 @@
 /**/.lake/
 external/morphcloud-examples-public/
+
+# Ignore generated artefacts but keep Lean sources
+/generated/**
+!/generated/versobook/
+!/generated/Spec/
+!/generated/versobook/Book/**/*.lean
+!/generated/Spec/**/*.lean
+!/generated/versobook/lakefile.lean
+!/generated/versobook/lake-manifest.json
+!/generated/versobook/lean-toolchain
