@@ -91,6 +91,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `--strip-right` flag.  Useful for textbooks like *Numerical Recipes* whose sample
   page column interferes with OCR accuracy.
 
+### Added
+
+- Added `external/morphcloud-examples-public` git worktree/submodule pointing to
+  `https://github.com/morph-labs/morphcloud-examples-public` to serve as new
+  Pantograph example basis and provide LLM context.
+
+### Changed
+
+- Bumped `morphcloud` dependency to `>=0.1.67` in `pyproject.toml`.
+
 ## [0.4.2] - PLACEHOLDER_DATE
 
 ### Added
@@ -102,3 +112,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `ocr_pdf_to_text` now shows a live progress bar and can process pages concurrently even when using non-Tesseract providers (which release the GIL internally).
+
+## [0.5.0] - 2025-04-24
+
+### Added
+- Introduced `generated/versobook` sub-project for Verso-based documentation.
+  - New `LakeProjectInitSubagent` in `subagents.py` provides idempotent project creation with Verso dependency.
+  - Driver script `src/gaussianspec/build_book_agents.py` populates a stub `Book/Chapter2.lean` from OCR text.
+- Extended Justfile with `build-book` and `refresh-book` targets to compile and regenerate the Verso book.
+
+### Changed
+
+- Updated `lean-toolchain` to `leanprover/lean4:nightly-2025-04-23` to align with Verso nightly requirement.
