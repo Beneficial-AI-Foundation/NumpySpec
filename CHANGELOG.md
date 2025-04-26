@@ -113,6 +113,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `ocr_pdf_to_text` now shows a live progress bar and can process pages concurrently even when using non-Tesseract providers (which release the GIL internally).
 
+## [0.4.3] - 2025-04-26
+
+### Added
+- Ignored `.env` and `.env.*` files in `.gitignore` with an exception for `.env.example` to keep a template in version control.
+
+## [0.4.4] - 2025-04-26
+
+### Added
+- `.gitignore` updated to ignore environment files (`.env`, `.env.*`) while keeping `.env.example`.
+
+### Security
+- Credentials are now loaded from local `.env` and mirrored to GitHub Secrets via `gh secret set`.
+
 ## [0.5.0] - 2025-04-24
 
 ### Added
