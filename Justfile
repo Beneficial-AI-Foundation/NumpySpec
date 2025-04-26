@@ -43,3 +43,15 @@ ocr pages='1-149' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip=
 # OCR entire PDF in chunks
 ocr-all chunk='50' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip='1200':
     uv run -m gaussianspec.pdf_pipeline {{pdf}} --all --chunk-size {{chunk}} --method {{method}} --strip-right {{strip}}
+
+# Build the prose-only Verso book
+build-book:
+    cd generated/versobook && lake build
+
+# Regenerate Chapter 2 via agents
+refresh-book:
+    uv run src/gaussianspec/build_book_agents.py
+
+# Pull latest MorphCloud examples worktree
+pull-morph:
+	git -C external/morphcloud-examples-public pull --ff-only
