@@ -126,6 +126,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - Credentials are now loaded from local `.env` and mirrored to GitHub Secrets via `gh secret set`.
 
+## [0.4.5] - 2025-04-26
+
+### Added
+- CI workflow now exposes secret API keys via `env:`.
+- Package auto-loads `.env` at import time when `python-dotenv` is available.
+- Added `python-dotenv` to dependencies.
+
 ## [0.5.0] - 2025-04-24
 
 ### Added
