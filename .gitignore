@@ -10,3 +10,8 @@ external/morphcloud-examples-public/
 !/generated/versobook/lakefile.lean
 !/generated/versobook/lake-manifest.json
 !/generated/versobook/lean-toolchain
+
+# Environment variables
+.env
+.env.*
+!.env.example
