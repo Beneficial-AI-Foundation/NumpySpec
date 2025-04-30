@@ -1,4 +1,8 @@
-This is a specification for just 1 function: that gaussian elimination is an inverse.
+end goal: port a whole textbook (currently numerical recipe in C) to lean 4 purely with deep RL bootstrapping through lean's dependent verifier.
+
+current goal: This is a specification for just 1 function: that gaussian elimination is an inverse. it occurs at the beginning of chapter 2.
+
+
 
 To properly add imports: add leansearchclient as a dependency and `import LeanSearchClient` to use `#search` like `#eval`. It's how you can find theorems and lemmas.
 
@@ -28,6 +32,7 @@ workflow:
 
 turn off `relaxedAutoImplicit`. you can set it once and for all in the lakefile. Turn on `linter.missingDocs = true` to ensure you write docstrings. it will also show you WHAT to document in the first place.
 
-unexpected token 'namespace'; expected '#guard_msgs', 'abbrev', 'add_decl_doc', 'axiom', 'binder_predicate', 'builtin_dsimproc', 
+`unexpected token 'namespace'; expected '#guard_msgs', 'abbrev', 'add_decl_doc', 'axiom', 'binder_predicate', 'builtin_dsimproc' ` probably means you put a doc or module comment in the wrong place.
 
 My setup for adding context to cursor and morph agents is crude. recommend something better.
+

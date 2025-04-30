@@ -1,6 +1,9 @@
 # GaussianSpec
 
-A Lean 4 project specifying and proving properties of Gaussian elimination.
+GaussianSpec is a **cloud-native Lean 4 research playground**: all compilation and
+goal-state introspection are off-loaded to a **Pantograph Lean 4 server running
+on Morph Cloud**.  This enables millisecond-latency, horizontally scalable
+verification for RL agents while keeping the repo light-weight.
 
 ## Overview
 
@@ -13,14 +16,50 @@ The core specification is found in `GaussianSpec.lean`:
 
 ## Dependencies
 
-- Lean 4 (version specified in `lean-toolchain`)
-- `mathlib`
+Local machine only needs:
 
-## Building
+* Python ≥ 3.12 with [`uv`](https://github.com/astral-sh/uv) (see `Justfile`).
+* [`morphcloud` SDK](https://pypi.org/project/morphcloud/) ≥ 0.1.67 (auto-installed via `uv sync`).
+
+All Lean toolchain bits (elan ± mathlib) live inside the Morph Cloud snapshot;
+you **do not** need Lean installed locally to run the pipeline.
+
+## Local build (optional)
+
+If you really want to compile locally you still can:
 
 ```bash
-lake build
+just build-local   # wrapper around `lake build`
 ```
+
+For day-to-day work we recommend using the cloud pipeline (next section).
+
+## Cloud pipeline quick-start
+
+Run the end-to-end OCR → edit → remote-compile loop:
+
+```bash
+just pipeline --remote \
+    --pdf textbook/Numerical_Recipes_in_C.pdf \
+    --lean-file GaussianSpec.lean \
+    --edit "theorem t : 1 = 1 := by rfl"
+```
+
+First run provisions an *Infinibranch* snapshot (≈ 5 min).  Subsequent runs
+reuse the warmed snapshot/instance.
+
+## Automated multi-agent loop
+
+### Key stages
+
+1. OCR (`OCRSubagent`) – multi-backend (OpenAI Vision → Gemini → Tesseract)
+2. Edit (`LeanEditSubagent`) – templatized edits
+3. **Remote compile (`LeanRemoteBuildSubagent`)** – Pantograph HTTP POST
+4. Feedback parse → RL reward / next action
+
+## Roadmap
+
+See `plan.md` for an up-to-date progress tracker.
 
 ## Usage
 
