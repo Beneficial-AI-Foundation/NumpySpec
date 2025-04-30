@@ -36,3 +36,9 @@ turn off `relaxedAutoImplicit`. you can set it once and for all in the lakefile.
 
 My setup for adding context to cursor and morph agents is crude. recommend something better.
 
+
+See `deepseek-prover.png` for a pipeline workflow.
+
+TODO see deepseek prover 2 and incroporate it.
+
+> to first analyze the mathematical problem in natural language, then decompose the proof into smaller steps, translating each step into a corresponding Lean formal statement. Since general-purpose models are known to struggle with producing complete Lean proofs, we instruct DeepSeek-V3 to generate only a high-level proof sketch with the details omitted. The resulting chain of thought culminates in a Lean theorem composed of a sequence of have statements, each concluded with a sorry placeholder indicating a subgoal to be solved. This approach mirrors the human style of proof construction, in which a complex theorem is incrementally reduced to a sequence of more manageable lemmas.

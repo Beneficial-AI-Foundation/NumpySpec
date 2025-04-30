@@ -24,7 +24,7 @@ __all__ = [
 # *project* root (two levels up from this file – `src/gaussianspec/`).  This
 # keeps the helper robust even when called from a vendored location.
 
-_RULES_DIR = Path(__file__).resolve().parents[2] / ".cursor" / "rules"
+_RULES_DIR = Path(__file__).resolve().parents[2] / ".cursor/rules"
 
 # Mapping from *file suffix* → *rule names* (without .mdc extension).
 # Automatically extracted by globbing the rules directory. New .mdc files

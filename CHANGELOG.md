@@ -175,10 +175,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI output of `pdf_pipeline` now clearly indicates when cropping fails and
   falls back to the original PDF, aiding debugging.
 
-## [0.6.0] - PLACEHOLDER_DATE
+## [0.6.0] - 2025-04-30:18:32 UTC
+
+### Removed
+
+- Dropped `verso` dependency from `lakefile.toml` due to incompatibility with latest `mathlib4`.
+- Commented out `LeanSearchClient` import in `Main.lean` until feature gating reintroduced.
 
 ### Changed
 
-- Morph Cloud Pantograph *remote* compilation is now the default workflow.
-- README and Justfile updated; `just pipeline` wraps the new default.  Local `lake build` relegated to `just build-local`.
-- Added `plan.md` progress tracker with checkbox tasks.
+- Regenerated `lake-manifest.json` via `lake update`.
+- Rebuilt project successfully with only `mathlib`.
