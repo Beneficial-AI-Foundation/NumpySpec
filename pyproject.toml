@@ -23,6 +23,10 @@ dependencies = [
     "openai>=1.30.0",
     "tqdm>=4.66.4",
     "httpx>=0.28.0",
+    "jaxtyping>=0.3.2",
+    "pypdf2>=3.0.1",
+    "pdfminer-six>=20250416",
+    "reportlab>=4.4.0",
 ]
 
 [project.scripts]
@@ -34,3 +38,11 @@ build-backend = "hatchling.build"
 
 [tool.uv.sources]
 pantograph = { git = "https://github.com/lenianiva/PyPantograph", branch = "main" }
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "ruff>=0.11.7",
+]
+[tool.ruff.format]
+docstring-code-format = true
