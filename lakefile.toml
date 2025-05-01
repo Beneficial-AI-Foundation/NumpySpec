@@ -9,6 +9,10 @@ name = "gaussianspec"
 root = "Main"
 
 [[require]]
+name = "verso"
+git = "https://github.com/leanprover/verso"
+
+[[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4"
 
