@@ -10,7 +10,7 @@ dependencies = [
     "pdf2image>=1.17.0",
     "pillow>=11.2.1",
     "pytesseract>=0.3.13",
-    "pantograph>=0.3.1",
+    "pantograph @ git+https://github.com/stanford-centaur/PyPantograph.git@main",
     "gymnasium>=0.29.1",
     "torch>=2.3.0",
     "transformers>=4.41.0",
