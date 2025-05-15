@@ -42,3 +42,6 @@ build-backend = "hatchling.build"
 dev = ["ipykernel>=6.29.5", "ruff>=0.11.7"]
 [tool.ruff.format]
 docstring-code-format = true
+
+[tool.hatch.metadata]
+allow-direct-references = true
