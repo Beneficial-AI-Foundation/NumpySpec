@@ -22,4 +22,8 @@ external/morphcloud-examples-public/
 # Explicitly keep the original source PDF
 !/textbook/Numerical_Recipes_in_C.pdf
 
+# Worktree large files
+.worktrees/*/textbook/*.pdf
+.worktrees/*/textbook/*.txt
+
 _out/

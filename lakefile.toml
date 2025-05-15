@@ -17,10 +17,16 @@ name = "verso"
 git = "https://github.com/leanprover/verso"
 rev = "main"
 
+# must be before mathlib to avoid recompilation of mathlib.
+[[require]]
+name = "Hammer"
+git = "https://github.com/JOSHCLUNE/LeanHammer"
+rev = "temp-v4.21.0-rc3"
 
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4"
+
 
 [[lean_lib]]
 name = "generated"

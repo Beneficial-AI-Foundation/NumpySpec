@@ -1,11 +1,11 @@
+import generated.Spec.Spec
+
 /-!
 # GaussianSpec entry point
 
 This root module simply re-exports everything that lives under the *generated*
 agent-controlled namespace.
 -/
-
-import generated.Spec.Spec
 
 -- noop
 

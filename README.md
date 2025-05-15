@@ -57,28 +57,17 @@ The new `build-all` recipe is defined in the `Justfile` and simply calls
 recommend the cloud pipeline (next section) but the local path is useful when
 working offline.
 
-## Cloud pipeline quick-start
+## Cloud Compilation
 
-Run the end-to-end OCR → edit → remote-compile loop:
-
-```bash
-just pipeline --remote \
-    --pdf textbook/Numerical_Recipes_in_C.pdf \
-    --lean-file GaussianSpec.lean \
-    --edit "theorem t : 1 = 1 := by rfl"
-```
-
-First run provisions an *Infinibranch* snapshot (≈ 5 min).  Subsequent runs
-reuse the warmed snapshot/instance.
+The project supports remote compilation via Pantograph servers on MorphCloud. First run provisions an *Infinibranch* snapshot (≈ 5 min). Subsequent runs reuse the warmed snapshot/instance.
 
 ## Automated multi-agent loop
 
 ### Key stages
 
-1. OCR (`OCRSubagent`) – multi-backend (OpenAI Vision → Gemini → Tesseract)
-2. Edit (`LeanEditSubagent`) – templatized edits
-3. **Remote compile (`LeanRemoteBuildSubagent`)** – Pantograph HTTP POST
-4. Feedback parse → RL reward / next action
+1. Edit (`LeanEditSubagent`) – templatized edits
+2. **Remote compile (`LeanRemoteBuildSubagent`)** – Pantograph HTTP POST
+3. Feedback parse → RL reward / next action
 
 ## Roadmap
 
@@ -115,12 +104,6 @@ This project includes a MorphCloud-driven Lean agent (`src/gaussianspec/agent.py
 - Compositional, pure functional design: all logic is broken into small, typed units for easy extension.
 - Example usage included; ready for integration with MorphCloud and `.cursorrules` for meta-programmatic Lean development.
 
-The agent pipeline now includes a pure functional OCR preprocessing step:
-
-- Automatically OCRs the textbook PDF (`textbook/Numerical_Recipes_in_C.pdf`) to a cached `.txt` file before running Lean code.
-- Uses `pdf2image` and `pytesseract` for robust PDF-to-text conversion.
-- Skips OCR if the `.txt` file already exists (caching for reproducibility and speed).
-- The OCR step is fully composable and can be reused or extended in other pipelines.
 
 To use or extend the agent:
 
@@ -133,14 +116,15 @@ To use or extend the agent:
 The agent system is now built from modular, composable subagents, each with a clear goal and feedback interface. See `src/gaussianspec/subagents.py` for details.
 
 **Subagents:**
-- `OCRSubagent`: OCRs a PDF to text, with caching and error feedback.
 - `LeanEditSubagent`: Applies edits to Lean files, reporting success or error.
 - `LeanBuildSubagent`: Runs `lake build` and returns build output and status.
+- `LeanRemoteBuildSubagent`: Compiles via remote Pantograph server.
 - `FeedbackParseSubagent`: Parses Lean build output for actionable feedback.
+- `LakeProjectInitSubagent`: Initializes Lake projects with dependencies.
 
 Each subagent is a pure dataclass with a `run()` method and a result type. Subagents can be composed into pipelines, forked for retries or escalation, and orchestrated for robust, feedback-driven development.
 
 **Example composition:**
-- OCR textbook → edit Lean file → build → parse feedback → (repeat or escalate)
+- Edit Lean file → build → parse feedback → (repeat or escalate)
 
 This enables fine-grained automation, traceability, and easy extension for new tasks or agent types.
