@@ -21,7 +21,7 @@ build-local:
 # namespace (useful when you want to ensure that OCR-derived chunks compile).
 build-all:
     lake build
-    lake build Generated
+    lake build generated
 
 # Test suite
 test:
