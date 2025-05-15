@@ -33,15 +33,14 @@ At present the implementation is a placeholder – it simply returns the inverse
 important part is the *type* signature, which will stay stable as we tighten the
 implementation.
 
-```
-
 # Specification
 
 The key lemma we want to expose is that the result of Gaussian elimination is a **left inverse**
 of the input matrix whenever the determinant is non-zero.
 
-```lean
+```
 #check gaussianElimination
+#check gaussianElimination_is_left_inverse
 ```
 
 The proof is currently a one-liner `simp` because of our placeholder definition.  Replacing the
@@ -64,10 +63,8 @@ Stay tuned!
 
 ## Theorem (outline)
 
-```lean
-theorem popcount_correct : popcount = popcountSpec := by
-  funext x
-  -- `bv_decide` can solve the goal in one line:
-  -- bv_decide
-  sorry
 ```
+@@
+-```lean
++```
+@@
