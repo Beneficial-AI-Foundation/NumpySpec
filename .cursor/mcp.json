@@ -10,10 +10,9 @@
             }
         },
         "leantool": {
-            "command": "uvx",
+            "command": "uv",
             "args": [
-                "python",
-                "-m",
+                "run",
                 "leanmcp"
             ]
         }
