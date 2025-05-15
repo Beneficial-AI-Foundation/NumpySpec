@@ -20,12 +20,6 @@ from gaussianspec.subagents import LeanEditResult
 
 from tqdm.auto import tqdm
 
-# Optional frontier‑model OCR (Google 1.5 Flash / 2.5 etc.)
-try:
-    import google.generativeai as genai  # type: ignore
-# Optional frontier‑model OCR (Google 1.5 Flash / 2.5 etc.)
-try:
-    import google.generativeai as genai  # type: ignore
 # ---------------- utility: ensure a package is installed ---------------- #
 
 
@@ -49,6 +43,7 @@ openai = _ensure_package("openai")
 # We no longer depend on local Tesseract.
 
 from gaussianspec.subagents import LeanEditResult  # type: ignore F401
+
 # Optional local Tesseract OCR backend
 try:
     import pytesseract  # type: ignore
