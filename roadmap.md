@@ -97,3 +97,10 @@ Key points:
 * Extend agents to handle images (feed relevant page scans).
 * Migrate further chapters iteratively.
 * Implement testing harness that ensures Verso book builds in CI.
+
+## Next Up (2025-05-14:22:39)
+
+* Bump versions of all dependencies (Lean toolchain, mathlib, Verso, etc.) so that Verso can be added "with canonical".
+* Integrate Verso into the canonical dependency set and verify that `lake build` succeeds end-to-end on the upgraded stack.
+* Publish the rendered textbook as a static website served by a lightweight HTTP server (e.g. `python -m http.server` or Caddy) so that a demo link can be shared easily (goal: showcase progress to stakeholders).
+* Automate deployment via a `just deploy-site` target and a GitHub Pages workflow.
