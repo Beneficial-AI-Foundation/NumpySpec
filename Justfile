@@ -1,10 +1,17 @@
 # Justfile for GaussianSpec project
 # Usage: just run
 
-# Ensure dependencies are installed and run the agent
-run:
+# Remote compile pipeline with sensible defaults
+pipeline pdf='textbook/Numerical_Recipes_in_C.pdf' lean='GaussianSpec.lean' edit='-- edit by pipeline':
     uv sync
-    uv run src/gaussianspec/agent.py
+    uv run -m gaussianspec.pipeline --remote \
+        --pdf {{pdf}} \
+        --lean-file {{lean}} \
+        --edit '{{edit}}'
+
+# Local lake build (rare)
+build-local:
+    lake build
 
 # Test suite
 test:

@@ -14,16 +14,63 @@ This will:
 import argparse
 from pathlib import Path
 from textwrap import indent
+import re
 
 from .agent import ocr_pdf_to_text
+from gaussianspec.subagents import (
+    PDFCropSubagent,
+    PDFCropResult,
+    TranslatePageSubagent,
+    TranslatePageResult,
+)
 
 
 def create_lean_file(txt_path: Path, out_dir: Path) -> Path:
-    """Write a Lean file embedding the OCR text as a block comment."""
+    """Write a Lean file embedding (roughly) the first chapter of the OCR text.
+
+    Rather than dumping the *entire* OCR output (which can be tens of
+    thousands of lines and slows Lean considerably), we embed only the
+    content up to the start of the next chapter plus a short look-ahead
+    snippet.  A naive heuristic is good enough: search for the first
+    occurrence of "Chapter 2." (case-insensitive) or a line that begins
+    with "2.0" (common in Numerical Recipes' layout).  If no boundary is
+    found, fall back to the first ~4000 characters.
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
     lean_path = out_dir / "Spec.lean"
+
     content = txt_path.read_text()
-    lean_text = "/-\n" + indent(content, " ") + "\n-/\n"
+
+    # --------------------------------------------------------------
+    #  Detect the start of the second chapter to limit inclusion
+    # --------------------------------------------------------------
+
+    boundary_patterns = [
+        re.compile(r"^Chapter\s+2\.", re.IGNORECASE | re.MULTILINE),
+        re.compile(r"^2\.0", re.MULTILINE),
+    ]
+
+    boundary_idx: int | None = None
+    for pat in boundary_patterns:
+        m = pat.search(content)
+        if m:
+            boundary_idx = m.start()
+            break
+
+    if boundary_idx is None:
+        # Fallback: take the first 4000 characters.
+        boundary_idx = min(len(content), 4000)
+        lookahead = ""
+    else:
+        # Include a small look-ahead after the boundary (e.g. 400 chars).
+        snippet_end = min(len(content), boundary_idx + 400)
+        lookahead = content[boundary_idx:snippet_end]
+
+    truncated = content[:boundary_idx]
+    lean_block = truncated + "\n...[snip]...\n" + lookahead
+
+    # Wrap inside a Lean block comment so Lean ignores the raw OCR text.
+    lean_text = "/-\n" + indent(lean_block, " ") + "\n-/\n"  # keep trailing NL
     lean_text += "\n-- TODO: parse the OCR text into Lean definitions\n"
     lean_path.write_text(lean_text)
     return lean_path
@@ -65,6 +112,12 @@ def main():
         default=50,
         help="Number of pages per chunk when using --all",
     )
+    parser.add_argument(
+        "--translate-page",
+        type=int,
+        metavar="N",
+        help="Translate page N (1-indexed) of the *original PDF* after OCR.  Must lie inside the selected --pages range when not using --all.",
+    )
     args = parser.parse_args()
 
     # Sanitize common mistakes coming from shell/just variable expansion, e.g.
@@ -75,10 +128,28 @@ def main():
     # Ensure base output directory exists
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
+    # ------------------------------------------------------------------
+    # 1️⃣  Pre-processing: crop right-hand margin of the PDF *once* so that
+    #     downstream OCR sees a clean page without sideways annotations.
+    # ------------------------------------------------------------------
+
+    crop_res: PDFCropResult = PDFCropSubagent(pdf_path=args.pdf).run()
+
+    # Decide which PDF path subsequent stages should consume.
+    input_pdf: Path
+    if crop_res.success:
+        input_pdf = crop_res.out_pdf
+        print(f"PDF cropped  -> {input_pdf}")
+    else:
+        input_pdf = args.pdf
+        print(
+            f"[WARN] PDF crop failed: {crop_res.error}. Falling back to original PDF."
+        )
+
     if args.all:
         from pdf2image import pdfinfo_from_path
 
-        info = pdfinfo_from_path(str(args.pdf))
+        info = pdfinfo_from_path(str(input_pdf))
         total_pages = int(info["Pages"])
 
         spec_dir = args.out_dir / "Spec"
@@ -89,8 +160,8 @@ def main():
             end_page = min(start_page + args.chunk_size - 1, total_pages)
 
             txt_path = ocr_pdf_to_text(
-                args.pdf,
-                args.out_dir / (args.pdf.stem + f"_{start_page}-{end_page}.txt"),
+                input_pdf,
+                args.out_dir / (input_pdf.stem + f"_{start_page}-{end_page}.txt"),
                 start_page=start_page,
                 end_page=end_page,
                 method=args.method,
@@ -102,6 +173,26 @@ def main():
             )
             chunk_files.append(chunk_lean)
             print(f"Chunk {start_page}-{end_page}: {txt_path} -> {chunk_lean}")
+
+            # Inline translation when requested and the target page falls into this chunk
+            if (
+                args.translate_page is not None
+                and start_page <= args.translate_page <= end_page
+            ):
+                offset_page = args.translate_page - start_page + 1
+                trans_res: TranslatePageResult = TranslatePageSubagent(
+                    txt_path=txt_path,
+                    page_num=offset_page,
+                    out_dir=args.out_dir / "Spec",
+                ).run()
+                if trans_res.success:
+                    print(
+                        f"Page {args.translate_page} translated -> {trans_res.out_file}"
+                    )
+                else:
+                    print(f"[WARN] Translation failed: {trans_res.error}")
+                # No need to translate again in other chunks
+                args.translate_page = None
 
         # Create root Spec.lean that imports chunks
         root_spec = spec_dir / "Spec.lean"
@@ -129,8 +220,8 @@ def main():
             end_page = start_page
 
         txt_path = ocr_pdf_to_text(
-            args.pdf,
-            args.out_dir / (args.pdf.stem + f"_{start_page}-{end_page}.txt"),
+            input_pdf,
+            args.out_dir / (input_pdf.stem + f"_{start_page}-{end_page}.txt"),
             start_page=start_page,
             end_page=end_page,
             method=args.method,
@@ -139,6 +230,28 @@ def main():
         lean_file = create_lean_file(txt_path, args.out_dir / "Spec")
         print(f"OCR text written to {txt_path}")
         print(f"Lean skeleton written to {lean_file}")
+
+        # Optional translation step (same logic as branch above, but start_page==1 always for single-range default)
+        if args.translate_page is not None:
+            offset_page = args.translate_page - start_page + 1
+            if offset_page < 1 or (
+                end_page and offset_page > (end_page - start_page + 1)
+            ):
+                print(
+                    f"[WARN] --translate-page {args.translate_page} outside selected page range {start_page}-{end_page}. Skipping translation."
+                )
+            else:
+                trans_res: TranslatePageResult = TranslatePageSubagent(
+                    txt_path=txt_path,
+                    page_num=offset_page,
+                    out_dir=args.out_dir / "Spec",
+                ).run()
+                if trans_res.success:
+                    print(
+                        f"Page {args.translate_page} translated -> {trans_res.out_file}"
+                    )
+                else:
+                    print(f"[WARN] Translation failed: {trans_res.error}")
 
 
 if __name__ == "__main__":

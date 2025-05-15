@@ -1,5 +1,6 @@
 import GaussianSpec
-import LeanSearchClient -- Adds #search command
+-- import LeanSearchClient -- Adds #search command
+
 
 
 /-!
