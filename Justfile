@@ -126,3 +126,16 @@ bootstrap rc_file='$HOME/.zshrc':
 
 sync:
     uv sync
+
+# ---------------------------------------------
+#  Linting & Git hooks (Ruff)
+# ---------------------------------------------
+
+# Run Ruff with auto-fix, then format.  Useful in CI or locally.
+lint:
+    uv run ruff check --fix .
+    uv run ruff format .
+
+# Install local git hooks (points core.hooksPath to .githooks)
+install-hooks:
+    git config core.hooksPath .githooks
