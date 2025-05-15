@@ -1,6 +1,9 @@
 # GaussianSpec
 
-A Lean 4 project specifying and proving properties of Gaussian elimination.
+GaussianSpec is a **cloud-native Lean 4 research playground**: all compilation and
+goal-state introspection are off-loaded to a **Pantograph Lean 4 server running
+on Morph Cloud**.  This enables millisecond-latency, horizontally scalable
+verification for RL agents while keeping the repo light-weight.
 
 ## Overview
 
@@ -13,14 +16,73 @@ The core specification is found in `GaussianSpec.lean`:
 
 ## Dependencies
 
-- Lean 4 (version specified in `lean-toolchain`)
-- `mathlib`
+Local machine only needs:
 
-## Building
+* Python ≥ 3.12 with [`uv`](https://github.com/astral-sh/uv) (see `Justfile`).
+* [`morphcloud` SDK](https://pypi.org/project/morphcloud/) ≥ 0.1.67 (auto-installed via `uv sync`).
+
+## Installation
 
 ```bash
-lake build
+git clone https://github.com/alok/GaussianSpec.git
+cd GaussianSpec
+just sync   # one-liner: installs all Python deps (Pantograph, LeanTool, …)
 ```
+
+Everything else (Elan, Lean toolchain) is provisioned automatically in the
+remote Pantograph snapshot when you invoke any `just pipeline` or
+`just build-*` target.
+
+## Local build (optional)
+
+If you really want to compile locally you still can.  **Important**: the
+pipeline produces Lean files under the `Generated` namespace (e.g.
+`generated/Spec/Chunk0001_0050.lean`).  These files are *not* part of the
+default `lake build` target, so you must request them explicitly or build all
+targets:
+
+```bash
+# Build the root package (default)
+just build-local              # → `lake build`
+
+# Additionally build everything under the `Generated` namespace
+lake build Generated           # or `lake build Generated.*` for a sub-tree
+
+# Convenience — build both in one step
+just build-all
+```
+
+The new `build-all` recipe is defined in the `Justfile` and simply calls
+`lake build` followed by `lake build Generated`.  For day-to-day work we still
+recommend the cloud pipeline (next section) but the local path is useful when
+working offline.
+
+## Cloud pipeline quick-start
+
+Run the end-to-end OCR → edit → remote-compile loop:
+
+```bash
+just pipeline --remote \
+    --pdf textbook/Numerical_Recipes_in_C.pdf \
+    --lean-file GaussianSpec.lean \
+    --edit "theorem t : 1 = 1 := by rfl"
+```
+
+First run provisions an *Infinibranch* snapshot (≈ 5 min).  Subsequent runs
+reuse the warmed snapshot/instance.
+
+## Automated multi-agent loop
+
+### Key stages
+
+1. OCR (`OCRSubagent`) – multi-backend (OpenAI Vision → Gemini → Tesseract)
+2. Edit (`LeanEditSubagent`) – templatized edits
+3. **Remote compile (`LeanRemoteBuildSubagent`)** – Pantograph HTTP POST
+4. Feedback parse → RL reward / next action
+
+## Roadmap
+
+See `plan.md` for an up-to-date progress tracker.
 
 ## Usage
 

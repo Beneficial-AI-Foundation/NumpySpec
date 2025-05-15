@@ -11,45 +11,46 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterator, Sequence, Any
 import subprocess
-
-# morphcloud is optional; this module can be imported without it for local builds.
-try:
-    import morphcloud  # type: ignore
-except ModuleNotFoundError:
-    morphcloud = None
+import importlib, sys, os
 from pdf2image import convert_from_path
 from concurrent.futures import ThreadPoolExecutor
-from PIL import Image  # type: ignore
-import os
+from PIL import Image
+from tqdm.auto import tqdm
+from gaussianspec.subagents import LeanEditResult
 
-# Rich progress bar for OCR visibility
 from tqdm.auto import tqdm
 
-# Optional frontier‑model OCR (Google 1.5 Flash / 2.5 etc.)
-try:
-    import google.generativeai as genai  # type: ignore
+# ---------------- utility: ensure a package is installed ---------------- #
 
-    _GEMINI_AVAILABLE = True
-except ModuleNotFoundError:
-    _GEMINI_AVAILABLE = False
 
-# Optional OpenAI Vision model (GPT‑4o‑mini etc.)
-try:
-    import openai  # type: ignore
+def _ensure_package(pkg: str, import_name: str | None = None):
+    """Import *pkg*, installing via `uv` if necessary, and return the module."""
 
-    _OPENAI_AVAILABLE = True
-except ModuleNotFoundError:
-    _OPENAI_AVAILABLE = False
+    name = import_name or pkg
+    try:
+        return importlib.import_module(name)
+    except ModuleNotFoundError:
+        print(f"[agent] Installing missing dependency '{pkg}' via uv…", file=sys.stderr)
+        subprocess.run(["uv", "add", pkg], check=True)
+        return importlib.import_module(name)
 
-# ENV var bearing the API key expected by google‑generativeai
-_GEMINI_API_ENV = "GOOGLE_GEMINI_API_KEY"
 
-# ENV var names for API keys
-_OPENAI_API_ENV = "OPENAI_API_KEY"
+# Third-party deps (installed on-demand)
+morphcloud = _ensure_package("morphcloud")
+genai = _ensure_package("google-generativeai", "google.generativeai")
+openai = _ensure_package("openai")
 
 # We no longer depend on local Tesseract.
 
 from gaussianspec.subagents import LeanEditResult  # type: ignore F401
+
+# Optional local Tesseract OCR backend
+try:
+    import pytesseract  # type: ignore
+
+    _TESSERACT_AVAILABLE = True
+except ModuleNotFoundError:
+    _TESSERACT_AVAILABLE = False
 
 
 # --- Types ---
@@ -90,9 +91,12 @@ def apply_lean_edit(edit: LeanEdit) -> LeanEditResult:
 
 def parse_build_feedback(output: str) -> str:
     """Extract error or success message from build output."""
-    # Simple heuristic: return first error or 'success'
     for line in output.splitlines():
-        if "error:" in line:
+        low = line.lower()
+        if "error:" in low or low.startswith("error"):
+            return line
+        # Pantograph summariser prefixes messages with "ERROR @" (caps)
+        if line.strip().startswith("ERROR"):
             return line
     return "success"
 
@@ -270,15 +274,12 @@ def _gemini_ocr_images(
     ``$GOOGLE_GEMINI_API_KEY``.  Concatenates page outputs with newlines.
     """
 
-    if not _GEMINI_AVAILABLE:
-        raise RuntimeError(
-            "google-generativeai not installed. Run: `uv add google-generativeai`."
-        )
+    # at this point genai import succeeded via _ensure_package
 
-    api_key = os.getenv(_GEMINI_API_ENV)
+    api_key = os.getenv("GOOGLE_GEMINI_API_KEY")
     if api_key is None:
         raise RuntimeError(
-            f"Environment variable {_GEMINI_API_ENV} not set; cannot use Gemini OCR."
+            f"Environment variable GOOGLE_GEMINI_API_KEY not set; cannot use Gemini OCR."
         )
 
     genai.configure(api_key=api_key)  # type: ignore[attr-defined]
@@ -313,13 +314,12 @@ def _openai_ocr_images(
     Requires the *openai* package and an ``$OPENAI_API_KEY`` environment variable.
     """
 
-    if not _OPENAI_AVAILABLE:
-        raise RuntimeError("openai package not installed. Run: `uv add openai`. ")
+    # openai import already ensured
 
-    api_key = os.getenv(_OPENAI_API_ENV)
+    api_key = os.getenv("OPENAI_API_KEY")
     if api_key is None:
         raise RuntimeError(
-            f"Environment variable {_OPENAI_API_ENV} not set; cannot use OpenAI OCR."
+            f"Environment variable OPENAI_API_KEY not set; cannot use OpenAI OCR."
         )
 
     # Lazy import to avoid polluting global namespace
@@ -387,10 +387,9 @@ def _ocr_refused_llm(text: str, *, model: str = "gpt-4o-mini") -> bool:
     Returns False if OpenAI client/key unavailable to avoid blocking.
     """
 
-    if not _OPENAI_AVAILABLE:
-        return False
+    # openai import ensured above
 
-    api_key = os.getenv(_OPENAI_API_ENV)
+    api_key = os.getenv("OPENAI_API_KEY")
     if api_key is None:
         return False
 

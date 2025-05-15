@@ -17,9 +17,12 @@ from typing import Optional
 from gaussianspec.subagents import (
     OCRSubagent,
     OCRResult,
+    PDFCropSubagent,
+    PDFCropResult,
     LeanEditSubagent,
     LeanEditResult,
     LeanBuildSubagent,
+    LeanRemoteBuildSubagent,
     LeanBuildResult,
     FeedbackParseSubagent,
     FeedbackParseResult,
@@ -32,6 +35,7 @@ class PipelineArgs:
     pdf_path: Path
     lean_file: Path
     edit: str = "-- edit by pipeline"
+    remote: bool = False  # compile via remote Pantograph server
 
 
 @dataclass
@@ -42,6 +46,7 @@ class PipelineResult:
     edit: LeanEditResult
     build: LeanBuildResult
     parse: FeedbackParseResult
+    crop: PDFCropResult
 
 
 def run_pipeline(args: PipelineArgs) -> PipelineResult:
@@ -50,8 +55,14 @@ def run_pipeline(args: PipelineArgs) -> PipelineResult:
     them programmatically.
     """
 
-    # OCR step
-    ocr_res = OCRSubagent(pdf_path=args.pdf_path).run()
+    # --- new: crop the PDF before OCR ---
+    crop_res = PDFCropSubagent(pdf_path=args.pdf_path).run()
+
+    # Decide which PDF path the OCR step should use.
+    pdf_for_ocr = crop_res.out_pdf if crop_res.success else args.pdf_path
+
+    # OCR step (now uses *cropped* PDF when crop succeeded)
+    ocr_res = OCRSubagent(pdf_path=pdf_for_ocr).run()
     if not ocr_res.success:
         # Even on failure we still return a PipelineResult for debuggability
         return PipelineResult(
@@ -63,6 +74,7 @@ def run_pipeline(args: PipelineArgs) -> PipelineResult:
             parse=FeedbackParseResult(
                 message=ocr_res.error or "OCR failed", is_success=False
             ),
+            crop=crop_res,
         )
 
     # Lean edit step
@@ -71,7 +83,10 @@ def run_pipeline(args: PipelineArgs) -> PipelineResult:
     # Build step (only attempted if edit succeeded)
     build_res: LeanBuildResult
     if edit_res.success:
-        build_res = LeanBuildSubagent(project_root=args.project_root).run()
+        if args.remote:
+            build_res = LeanRemoteBuildSubagent(lean_file=args.lean_file).run()
+        else:
+            build_res = LeanBuildSubagent(project_root=args.project_root).run()
     else:
         build_res = LeanBuildResult(success=False, output="skipped due to edit failure")
 
@@ -80,9 +95,11 @@ def run_pipeline(args: PipelineArgs) -> PipelineResult:
 
     # Side-effect: pretty console log for human operators. Downstream automation
     # should rely on the returned PipelineResult instead.
-    _pretty_print_pipeline(ocr_res, edit_res, build_res, parse_res)
+    _pretty_print_pipeline(ocr_res, edit_res, build_res, parse_res, crop_res)
 
-    return PipelineResult(ocr=ocr_res, edit=edit_res, build=build_res, parse=parse_res)
+    return PipelineResult(
+        ocr=ocr_res, edit=edit_res, build=build_res, parse=parse_res, crop=crop_res
+    )
 
 
 def _pretty_print_pipeline(
@@ -90,6 +107,7 @@ def _pretty_print_pipeline(
     edit: LeanEditResult,
     build: LeanBuildResult,
     parse: FeedbackParseResult,
+    crop: PDFCropResult,
 ) -> None:
     """Human-friendly summary of pipeline stages (non-essential side effect)."""
 
@@ -114,6 +132,11 @@ def _pretty_print_pipeline(
     lines = build.output.splitlines()[:100]
     print("\n".join(lines))
 
+    if crop.success:
+        print(f"PDF cropped    -> {crop.out_pdf}")
+    else:
+        print(f"PDF crop failed -> {crop.error}")
+
 
 def _cli() -> None:
     parser = argparse.ArgumentParser(description="Run concrete Lean agent pipeline")
@@ -127,6 +150,11 @@ def _cli() -> None:
         default="-- edit by pipeline",
         help="Lean code snippet to append (default: comment)",
     )
+    parser.add_argument(
+        "--remote",
+        action="store_true",
+        help="Compile via remote Pantograph Lean server instead of local lake build.",
+    )
     ns = parser.parse_args()
     result = run_pipeline(
         PipelineArgs(
@@ -134,6 +162,7 @@ def _cli() -> None:
             pdf_path=Path(ns.pdf).resolve(),
             lean_file=Path(ns.lean_file).resolve(),
             edit=ns.edit,
+            remote=ns.remote,
         )
     )
 

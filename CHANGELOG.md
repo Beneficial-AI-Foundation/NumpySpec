@@ -144,3 +144,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated `lean-toolchain` to `leanprover/lean4:nightly-2025-04-23` to align with Verso nightly requirement.
+
+### Added
+
+- **Remote Lean build**: new `LeanRemoteBuildSubagent` in `gaussianspec.subagents` compiles Lean code via a Pantograph Lean server provisioned on Morph Cloud.  Uses infrastructure from `external/morphcloud-examples-public/lean-server` and wraps provisioning logic in `gaussianspec.lean_server`.
+- `pipeline.py` gains `--remote` flag to switch build stage from local `lake build` to remote Pantograph compilation.
+  Example:
+  ```bash
+  uv run -m gaussianspec.pipeline --pdf textbook/Numerical_Recipes_in_C.pdf \
+      --lean-file GaussianSpec.lean \
+      --remote --edit "theorem t : 1 = 1 := by rfl"
+  ```
+
+### Changed
+
+- `subagents.py` now imports `asyncio`, `gaussianspec.lean_server`.
+
+## [0.5.1] - 2025-04-28:23:55 UTC
+
+### Added
+
+- `pdf_pipeline.py` now **reuses the shared `PDFCropSubagent`** so that OCR is
+  performed on the *cropped* PDF rather than the original source.  The
+  subagent is executed once per run and is idempotent.
+- Updated `pipeline.md` with a **mermaid diagram** of the OCR preprocessor flow
+  showing the new cropping stage.
+
+### Fixed
+
+- CLI output of `pdf_pipeline` now clearly indicates when cropping fails and
+  falls back to the original PDF, aiding debugging.
+
+## [0.6.0] - 2025-04-30:18:32 UTC
+
+### Removed
+
+- Dropped `verso` dependency from `lakefile.toml` due to incompatibility with latest `mathlib4`.
+- Commented out `LeanSearchClient` import in `Main.lean` until feature gating reintroduced.
+
+### Changed
+
+- Regenerated `lake-manifest.json` via `lake update`.
+- Rebuilt project successfully with only `mathlib`.
+
+## [0.6.1] - 2025-05-15:07:23 UTC
+
+### Changed
+
+- Removed `scripts/install_leantool.py`, `scripts/ensure_pantograph_wheel.py` and the `.wheels` directory. Dependency flow is now fully declarative.
+- Simplified `Justfile` `sync` target to a single `uv sync` command.
+- Bumped Pantograph to `>=0.3.1` and introduced LeanTool via git tag `v0.3.0+packaging-fix` in `pyproject.toml`.
+
+### Added
+
+- Documentation updates in README to reflect simplified installation.

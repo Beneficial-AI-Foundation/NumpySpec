@@ -20,6 +20,7 @@ from typing import List, Tuple, Dict, Any, Optional
 
 import gymnasium as gym
 from gymnasium import spaces
+import numpy as np
 
 from .agent import (
     LeanEdit,
@@ -62,20 +63,31 @@ class LeanEnv(gym.Env):
 
         # Discrete action space over edit templates
         self.action_space = spaces.Discrete(len(edit_library))
-        # Observation: build feedback string (variable length). We expose raw text.
-        # Use gym Text space with max length 1024.
-        self.observation_space = spaces.Text(max_length=1024)
+        # Observation: fixed-length uint8 vector (ASCII codes) so that Stable
+        # Baselines's VecEnv can stack them into NumPy arrays.  We reserve 0 as
+        # padding; printable ASCII starts at 32.
+        self.obs_len = 1024
+        self.observation_space = spaces.Box(
+            low=0,
+            high=255,
+            shape=(self.obs_len,),
+            dtype=np.uint8,
+        )
 
         # Internal state
         self._step_count: int = 0
         self._last_feedback: str = "start"
         self._current_edit_idx: Optional[int] = None
+        self._last_obs: np.ndarray = self._encode_obs("start")
 
-    def reset(self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None):
+    def reset(
+        self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
+    ):
         super().reset(seed=seed)
         self._step_count = 0
         self._last_feedback = "start"
-        obs = self._last_feedback
+        self._last_obs = self._encode_obs(self._last_feedback)
+        obs = self._last_obs
         info = {}
         return obs, info
 
@@ -87,6 +99,7 @@ class LeanEnv(gym.Env):
         build_result = run_lake_build(self.project_root)
         feedback = parse_build_feedback(build_result.output)
         self._last_feedback = feedback
+        self._last_obs = self._encode_obs(feedback)
 
         # Reward shaping
         done = False
@@ -102,7 +115,7 @@ class LeanEnv(gym.Env):
         if self._step_count >= self.max_steps:
             done = True
 
-        return feedback, reward, done, False, {}
+        return self._last_obs, reward, done, False, {}
 
     def render(self, mode: str = "ansi"):
         if mode != "ansi":
@@ -110,4 +123,13 @@ class LeanEnv(gym.Env):
         return self._last_feedback
 
     def close(self):
-        pass 
+        pass
+
+    # --- helpers -------------------------------------------------
+
+    def _encode_obs(self, text: str) -> np.ndarray:
+        """Convert *text* into fixed-size ASCII-encoded NumPy vector."""
+        arr = np.zeros(self.obs_len, dtype=np.uint8)
+        encoded = text.encode("ascii", "ignore")[: self.obs_len]
+        arr[: len(encoded)] = list(encoded)
+        return arr
