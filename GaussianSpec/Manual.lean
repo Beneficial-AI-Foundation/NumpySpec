@@ -1,5 +1,6 @@
 import VersoManual
 import generated.Spec.Basic
+import Std.Tactic.BVDecide
 
 open Verso Doc
 open Verso.Genre Manual
@@ -39,6 +40,8 @@ implementation.
 The key lemma we want to expose is that the result of Gaussian elimination is a **left inverse**
 of the input matrix whenever the determinant is non-zero.
 
+```lean
+#check gaussianElimination
 ```
 
 The proof is currently a one-liner `simp` because of our placeholder definition.  Replacing the
@@ -57,18 +60,14 @@ Stay tuned!
 
 #doc (Manual) "Appendix A — Popcount example" =>
 
-### Popcount example
+# Popcount example
 
-#  Theorem (outline)
+## Theorem (outline)
 
 ```lean
-import Std.Tactic.BVDecide
-
 theorem popcount_correct : popcount = popcountSpec := by
   funext x
-  /- `bv_decide` from `Std.Tactic.BVDecide` can solve the goal outright; we
-     leave the call commented so that the file still compiles without the
-     additional dependency. -/
+  -- `bv_decide` can solve the goal in one line:
   -- bv_decide
   sorry
 ```
