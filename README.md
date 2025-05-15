@@ -21,8 +21,17 @@ Local machine only needs:
 * Python ≥ 3.12 with [`uv`](https://github.com/astral-sh/uv) (see `Justfile`).
 * [`morphcloud` SDK](https://pypi.org/project/morphcloud/) ≥ 0.1.67 (auto-installed via `uv sync`).
 
-All Lean toolchain bits (elan ± mathlib) live inside the Morph Cloud snapshot;
-you **do not** need Lean installed locally to run the pipeline.
+## Installation
+
+```bash
+git clone https://github.com/alok/GaussianSpec.git
+cd GaussianSpec
+just sync   # one-liner: installs all Python deps (Pantograph, LeanTool, …)
+```
+
+Everything else (Elan, Lean toolchain) is provisioned automatically in the
+remote Pantograph snapshot when you invoke any `just pipeline` or
+`just build-*` target.
 
 ## Local build (optional)
 

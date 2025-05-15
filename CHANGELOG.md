@@ -186,3 +186,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Regenerated `lake-manifest.json` via `lake update`.
 - Rebuilt project successfully with only `mathlib`.
+
+## [0.6.1] - 2025-05-15:07:23 UTC
+
+### Changed
+
+- Removed `scripts/install_leantool.py`, `scripts/ensure_pantograph_wheel.py` and the `.wheels` directory. Dependency flow is now fully declarative.
+- Simplified `Justfile` `sync` target to a single `uv sync` command.
+- Bumped Pantograph to `>=0.3.1` and introduced LeanTool via git tag `v0.3.0+packaging-fix` in `pyproject.toml`.
+
+### Added
+
+- Documentation updates in README to reflect simplified installation.

@@ -13,10 +13,6 @@ pipeline pdf='textbook/Numerical_Recipes_in_C.pdf' lean='GaussianSpec.lean' edit
 build-local:
     lake build
 
-# Build the root Lean package
-build-local:
-    lake build
-
 # Build *all* Lean targets including the dynamically generated `Generated.*`
 # namespace (useful when you want to ensure that OCR-derived chunks compile).
 build-all:
@@ -113,13 +109,20 @@ bootstrap rc_file='$HOME/.zshrc':
     uv --version
 
     # 4. Persist PATH additions -------------------------------------
-    grep -q "# Devin toolchain" "{{rc_file}}" 2>/dev/null || cat >> "{{rc_file}}" <<'EOF'
-    # Devin toolchain — cargo / elan / uv
-    export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-EOF
+    if ! grep -q "# Devin toolchain" "{{rc_file}}" 2>/dev/null; then
+        echo '# Devin toolchain — cargo / elan / uv' >> "{{rc_file}}"
+        echo 'export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"' >> "{{rc_file}}"
+    fi
 
     # 5. Final verification -----------------------------------------
     echo "✔ Installed tools:"
     which cargo
     which elan
     which uv
+
+# ---------------------------------------------
+#  Dependency management
+# ---------------------------------------------
+
+sync:
+    uv sync
