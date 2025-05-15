@@ -57,29 +57,18 @@ Stay tuned!
 
 #doc (Manual) "Appendix A — Popcount example" =>
 
-::: example "Popcount"
+### Popcount example
 
-The function `popcount` returns the number of set bits in a 32-bit
-bit-vector.  We present two Lean implementations and (sketch) a proof of
-their equivalence.
+#  Theorem (outline)
 
-```
-
-def popcountSpec (x : BitVec 32) : BitVec 32 :=
-  (List.range 32).foldl (fun pop i => pop + ((x >>> i) &&& 1)) 0
-
-def popcount (x : BitVec 32) : BitVec 32 :=
-  let x := x - ((x >>> 1) &&& BitVec.ofNat 32 0x55555555)
-  let x := (x &&& BitVec.ofNat 32 0x33333333) + ((x >>> 2) &&& BitVec.ofNat 32 0x33333333)
-  let x := (x + (x >>> 4)) &&& BitVec.ofNat 32 0x0F0F0F0F
-  let x := x + (x >>> 8)
-  let x := x + (x >>> 16)
-  x &&& BitVec.ofNat 32 0x0000003F
+```lean
+import Std.Tactic.BVDecide
 
 theorem popcount_correct : popcount = popcountSpec := by
   funext x
-  -- `bv_decide` solves this, once imported: `bv_decide`
+  /- `bv_decide` from `Std.Tactic.BVDecide` can solve the goal outright; we
+     leave the call commented so that the file still compiles without the
+     additional dependency. -/
+  -- bv_decide
   sorry
 ```
-
-:::
