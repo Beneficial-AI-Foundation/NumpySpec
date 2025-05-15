@@ -51,6 +51,10 @@ ocr pages='1-149' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip=
 ocr-all chunk='50' pdf='textbook/Numerical_Recipes_in_C.pdf' method='auto' strip='1200':
     uv run -m gaussianspec.pdf_pipeline {{pdf}} --all --chunk-size {{chunk}} --method {{method}} --strip-right {{strip}}
 
+# ---------------------------------------------
+#  Book-building targets (Verso)
+# ---------------------------------------------
+
 # Build the prose-only Verso book
 build-book:
     cd generated/versobook && lake build
@@ -62,3 +66,50 @@ refresh-book:
 # Pull latest MorphCloud examples worktree
 pull-morph:
 	git -C external/morphcloud-examples-public pull --ff-only
+
+# ---------------------------------------------
+#  Developer environment bootstrapping
+# ---------------------------------------------
+
+# Install Rust/cargo, elan (Lean toolchain manager) and uv (Python dependency
+# manager) in one go. By default PATH additions are appended to `$HOME/.zshrc`.
+#
+# Usage:
+#   just bootstrap
+#   just bootstrap rc_file="$HOME/.bashrc"
+bootstrap rc_file='$HOME/.zshrc':
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # 1. Rust + cargo -------------------------------------------------
+    if ! command -v cargo >/dev/null; then
+        curl https://sh.rustup.rs -sSf | sh -s -- -y
+        source "$HOME/.cargo/env"
+    fi
+    cargo --version
+
+    # 2. Elan (Lean toolchain manager) -------------------------------
+    if ! command -v elan >/dev/null; then
+        curl -fL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | bash -s -- --default-toolchain leanprover/lean4:stable --no-modify-path -y
+        source "$HOME/.elan/env"
+    fi
+    elan --version
+
+    # 3. uv (Python dep manager) -------------------------------------
+    if ! command -v uv >/dev/null; then
+        curl -Ls https://astral.sh/uv/install.sh | bash
+    fi
+    uv --version
+
+    # 4. Persist PATH additions -------------------------------------
+    grep -q "# Devin toolchain" "{{rc_file}}" 2>/dev/null || cat >> "{{rc_file}}" <<'EOF'
+    # Devin toolchain — cargo / elan / uv
+    export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+EOF
+
+    # 5. Final verification -----------------------------------------
+    echo "✔ Installed tools:"
+    which cargo
+    which elan
+    which uv

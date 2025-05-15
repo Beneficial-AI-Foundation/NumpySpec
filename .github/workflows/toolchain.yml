@@ -1,0 +1,40 @@
+name: Toolchain Bootstrap
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  bootstrap:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install just
+      uses: extractions/setup-just@v1
+      
+    - name: Set shell RC file based on OS
+      id: set-rc
+      run: |
+        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+          echo "rc_file=$HOME/.bashrc" >> $GITHUB_OUTPUT
+        else
+          echo "rc_file=$HOME/.zshrc" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Bootstrap toolchain
+      run: |
+        just bootstrap ${{ steps.set-rc.outputs.rc_file }}
+    
+    - name: Verify installation
+      run: |
+        cargo --version
+        elan --version
+        uv --version
