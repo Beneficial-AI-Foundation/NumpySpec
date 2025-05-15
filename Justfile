@@ -13,6 +13,16 @@ pipeline pdf='textbook/Numerical_Recipes_in_C.pdf' lean='GaussianSpec.lean' edit
 build-local:
     lake build
 
+# Build the root Lean package
+build-local:
+    lake build
+
+# Build *all* Lean targets including the dynamically generated `Generated.*`
+# namespace (useful when you want to ensure that OCR-derived chunks compile).
+build-all:
+    lake build
+    lake build Generated
+
 # Test suite
 test:
     uv run -m pytest -q

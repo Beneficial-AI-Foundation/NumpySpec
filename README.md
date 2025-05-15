@@ -26,13 +26,27 @@ you **do not** need Lean installed locally to run the pipeline.
 
 ## Local build (optional)
 
-If you really want to compile locally you still can:
+If you really want to compile locally you still can.  **Important**: the
+pipeline produces Lean files under the `Generated` namespace (e.g.
+`generated/Spec/Chunk0001_0050.lean`).  These files are *not* part of the
+default `lake build` target, so you must request them explicitly or build all
+targets:
 
 ```bash
-just build-local   # wrapper around `lake build`
+# Build the root package (default)
+just build-local              # → `lake build`
+
+# Additionally build everything under the `Generated` namespace
+lake build Generated           # or `lake build Generated.*` for a sub-tree
+
+# Convenience — build both in one step
+just build-all
 ```
 
-For day-to-day work we recommend using the cloud pipeline (next section).
+The new `build-all` recipe is defined in the `Justfile` and simply calls
+`lake build` followed by `lake build Generated`.  For day-to-day work we still
+recommend the cloud pipeline (next section) but the local path is useful when
+working offline.
 
 ## Cloud pipeline quick-start
 
