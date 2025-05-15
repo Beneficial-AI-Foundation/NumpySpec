@@ -8,6 +8,10 @@ name = "GaussianSpec"
 name = "gaussianspec"
 root = "Main"
 
+[[lean_exe]]
+name = "gaussianspecmanual"
+root = "GaussianSpec.ManualMain"
+
 [[require]]
 name = "verso"
 git = "https://github.com/leanprover/verso"
