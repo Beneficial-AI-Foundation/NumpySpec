@@ -102,20 +102,21 @@ class LeanEnv(gym.Env):
         self._last_obs = self._encode_obs(feedback)
 
         # Reward shaping
-        done = False
+        terminated = False
+        truncated = False
         reward = -0.1  # small step penalty
         if feedback == "success":
             reward = 1.0
-            done = True
+            terminated = True
         elif "error:" in feedback:
             reward = -1.0
-            done = True
+            terminated = True
 
         self._step_count += 1
-        if self._step_count >= self.max_steps:
-            done = True
+        if self._step_count >= self.max_steps and not terminated:
+            truncated = True
 
-        return self._last_obs, reward, done, False, {}
+        return self._last_obs, reward, terminated, truncated, {}
 
     def render(self, mode: str = "ansi"):
         if mode != "ansi":
