@@ -8,12 +8,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, List, Dict
-from pdf2image import convert_from_path
-import pytesseract
+try:
+    from pdf2image import convert_from_path
+except ModuleNotFoundError:  # optional dependency
+    convert_from_path = None  # type: ignore
+
+try:
+    import pytesseract  # type: ignore
+except ModuleNotFoundError:  # optional dependency
+    pytesseract = None  # type: ignore
 import subprocess
 from gaussianspec.lean_server import deploy_and_get_client, LeanServerClient  # type: ignore
 import asyncio
-from httpx import HTTPStatusError
+try:
+    from httpx import HTTPStatusError
+except ModuleNotFoundError:  # optional dependency
+    HTTPStatusError = Exception  # type: ignore
 
 
 # --- OCR Subagent ---

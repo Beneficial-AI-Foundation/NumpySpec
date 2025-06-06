@@ -18,8 +18,21 @@ from pathlib import Path
 from functools import lru_cache
 from typing import Tuple, List
 
-import torch  # type: ignore
-from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig  # type: ignore
+try:
+    import torch  # type: ignore
+except ModuleNotFoundError:  # optional dependency
+    torch = None  # type: ignore
+
+try:
+    from transformers import (
+        AutoModelForCausalLM,
+        AutoTokenizer,
+        GenerationConfig,
+    )  # type: ignore
+except ModuleNotFoundError:  # optional dependency
+    AutoModelForCausalLM = None  # type: ignore
+    AutoTokenizer = None  # type: ignore
+    GenerationConfig = None  # type: ignore
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -27,8 +40,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig  
 
 def load_model(
     model_name: str = "AI-MO/Kimina-Prover-Preview-Distill-1.5B",
-    dtype: torch.dtype | None = torch.bfloat16,
-    device: str | torch.device | None = None,
+    dtype: "torch.dtype | None" = None,
+    device: "str | torch.device | None" = None,
     trust_remote_code: bool = True,
 ):
     """Load a causal‑LM model + tokenizer pair with sensible defaults.
@@ -49,6 +62,9 @@ def load_model(
     model : AutoModelForCausalLM
     tokenizer : AutoTokenizer
     """
+    if AutoModelForCausalLM is None or AutoTokenizer is None or torch is None:
+        raise RuntimeError("transformers/torch not available")
+
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -81,6 +97,8 @@ def generate(
     do_sample: bool = True,
 ) -> str:
     """Generate completion text from *prompt* using *model* and *tokenizer*."""
+    if GenerationConfig is None or torch is None:
+        raise RuntimeError("transformers/torch not available")
     input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(model.device)
     gen_cfg = GenerationConfig(
         max_new_tokens=max_new_tokens,
