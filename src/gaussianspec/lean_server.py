@@ -4,7 +4,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List
 
-import httpx
+try:
+    import httpx
+except ModuleNotFoundError:  # optional dependency
+    httpx = None  # type: ignore
 
 try:
     from morphcloud.api import MorphCloudClient, console, InstanceStatus  # type: ignore

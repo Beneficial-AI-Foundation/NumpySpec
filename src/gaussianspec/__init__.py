@@ -1,4 +1,8 @@
-from .rl_env import LeanEnv, EditLibrary
+try:
+    from .rl_env import LeanEnv, EditLibrary
+except ModuleNotFoundError:  # optional gymnasium dependency
+    LeanEnv = None  # type: ignore
+    EditLibrary = None  # type: ignore
 
 # Auto-load environment variables from a local .env if present
 try:
