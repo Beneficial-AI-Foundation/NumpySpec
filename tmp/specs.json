@@ -1,0 +1,1 @@
+[{"docstring": "Add one function", "python": "def add_one(n: int) -> int:\n    return n + 1", "lean_function": "def addOne (n : Nat) : Nat := n + 1", "lean_spec": "theorem addOne_spec (n : Nat) : addOne n = n + 1 := by rfl"}]

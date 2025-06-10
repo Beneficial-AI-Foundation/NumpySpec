@@ -27,3 +27,9 @@ def test_verify_specs(tmp_path: Path):
     assert isinstance(res, SpecEvaluation)
     assert res.docstring == "Add one function"
     assert res.success
+
+def main():
+    test_verify_specs(Path("tmp"))
+
+if __name__ == "__main__":
+    main()
