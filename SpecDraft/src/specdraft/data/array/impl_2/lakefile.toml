@@ -1,0 +1,10 @@
+name = "LeanArrayLib"
+version = "0.1.0"
+defaultTargets = ["leanarraylib"]
+
+[[lean_lib]]
+name = "LeanArrayLib"
+
+[[lean_exe]]
+name = "leanarraylib"
+root = "Main"

@@ -12,9 +12,8 @@ Created: 2025-06-11
 from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
-from .hf_utils import load_model, generate
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from typing import Optional, Union, Dict, Any
+from .model_deployment import ModelDeployment, ModelConfig
 
 # @dataclass(frozen=True)
 class LeanCodeGenerationResult:
@@ -50,36 +49,54 @@ class LLMCodeSpecGenerator:
     1. Python program/docstring -> Lean implementation
     2. Lean implementation -> Lean specification
     
-    Uses nvidia/Nemotron-Research-Reasoning-Qwen-1.5B by default.
+    Supports both local and API models through unified deployment interface.
     """
     
-    _model: AutoModelForCausalLM | None = None
-    _tokenizer: AutoTokenizer | None = None
+    _deployment: ModelDeployment | None = None
     _load_error: str | None = None
-    model_name: str = "nvidia/Nemotron-Research-Reasoning-Qwen-1.5B"
-    max_new_tokens: int = 512
-    temperature: float = 0.2
-    top_p: float = 0.9
+    model_config: ModelConfig
+    debug_save_responses: bool = False
+    debug_output_dir: Path
 
 
-    def __init__(self, model_name: str = "nvidia/Nemotron-Research-Reasoning-Qwen-1.5B", max_new_tokens: int = 512, temperature: float = 0.2, top_p: float = 0.9, debug_save_responses: bool = False, debug_output_dir: Optional[Path] = None):
-        self.model_name = model_name
-        self.max_new_tokens = max_new_tokens
-        self.temperature = temperature
-        self.top_p = top_p
+    def __init__(self, 
+                 model_config: Union[Dict[str, Any], ModelConfig, None] = None,
+                 model_name: Optional[str] = None,  # For backward compatibility
+                 max_new_tokens: int = 512, 
+                 temperature: float = 0.2, 
+                 top_p: float = 0.9, 
+                 debug_save_responses: bool = False, 
+                 debug_output_dir: Optional[Path] = None):
+        
+        # Handle backward compatibility and different config options
+        if model_config is None:
+            # Use default local model configuration
+            model_name = model_name or "nvidia/Nemotron-Research-Reasoning-Qwen-1.5B"
+            self.model_config = ModelConfig(
+                type="local",
+                model_name_or_path=model_name,
+                max_tokens=max_new_tokens,
+                temperature=temperature,
+                top_p=top_p
+            )
+        elif isinstance(model_config, dict):
+            # Fill in missing generation parameters
+            config_dict = model_config.copy()
+            config_dict.setdefault("max_tokens", max_new_tokens)
+            config_dict.setdefault("temperature", temperature)
+            config_dict.setdefault("top_p", top_p)
+            self.model_config = ModelConfig(**config_dict)
+        else:
+            self.model_config = model_config
+        
         self.debug_save_responses = debug_save_responses
         self.debug_output_dir = debug_output_dir or Path("debug_llm_responses")
 
         try:
-            self._model, self._tokenizer = load_model(
-                self.model_name,
-                trust_remote_code=True
-            )
+            self._deployment = ModelDeployment(self.model_config)
         except Exception as e:
             print(f"Error loading model: {e}")
-            # Store error for later reporting
-            self._model = None
-            self._tokenizer = None
+            self._deployment = None
             self._load_error = str(e)
        
     
@@ -96,22 +113,14 @@ class LLMCodeSpecGenerator:
         LeanCodeGenerationResult
             Generated Lean code with success status
         """
-        if self._model is None or self._tokenizer is None:
+        if self._deployment is None or not self._deployment.is_available():
             return LeanCodeGenerationResult(
-                "", False, f"Model loading failed: {getattr(self, '_load_error', 'Unknown error')}"
+                "", False, f"Model deployment failed: {getattr(self, '_load_error', 'Unknown error')}"
             )
         
         prompt = self._build_code_generation_prompt(python_input)
         
-        completion = generate(
-            self._model,
-            self._tokenizer,
-            prompt,
-            max_new_tokens=self.max_new_tokens,
-            temperature=self.temperature,
-            top_p=self.top_p,
-            do_sample=True
-        )
+        completion = self._deployment.generate(prompt)
         
         # Save debug information if requested
         if self.debug_save_responses:
@@ -135,23 +144,15 @@ class LLMCodeSpecGenerator:
         LeanSpecGenerationResult
             Generated Lean specification with success status
         """
-        if self._model is None or self._tokenizer is None:
+        if self._deployment is None or not self._deployment.is_available():
             return LeanSpecGenerationResult(
-                "", False, f"Model loading failed: {getattr(self, '_load_error', 'Unknown error')}"
+                "", False, f"Model deployment failed: {getattr(self, '_load_error', 'Unknown error')}"
             )
         
         try:
             prompt = self._build_spec_generation_prompt(lean_code)
             
-            completion = generate(
-                self._model,
-                self._tokenizer,
-                prompt,
-                max_new_tokens=self.max_new_tokens,
-                temperature=self.temperature,
-                top_p=self.top_p,
-                do_sample=True
-            )
+            completion = self._deployment.generate(prompt)
             
             # Save debug information if requested
             if self.debug_save_responses:
@@ -295,7 +296,7 @@ class LLMCodeSpecGenerator:
         
         debug_content = f"""# LLM Debug Log - {stage.title()}
 Generated: {timestamp}
-Model: {self.model_name}
+Model: {self.model_config.model_name_or_path or self.model_config.model_type}
 
 ## Input Context
 ```
@@ -412,19 +413,37 @@ class LLMCodeSpecSubagent:
     """
     
     python_input: str
-    model_name: str = "nvidia/Nemotron-Research-Reasoning-Qwen-1.5B"
+    model_config: Union[Dict[str, Any], ModelConfig]
     output_dir: Optional[Path] = None
     
-    def __init__(self, python_input: str, model_name: str = "nvidia/Nemotron-Research-Reasoning-Qwen-1.5B", output_dir: Optional[Path] = None, debug_save_responses: bool = False):
+    def __init__(self, 
+                 python_input: str, 
+                 model_config: Union[Dict[str, Any], ModelConfig, None] = None,
+                 model_name: Optional[str] = None,  # For backward compatibility
+                 output_dir: Optional[Path] = None, 
+                 debug_save_responses: bool = False):
         self.python_input = python_input
-        self.model_name = model_name
         self.output_dir = output_dir
         self.debug_save_responses = debug_save_responses
+        
+        # Handle backward compatibility
+        if model_config is None and model_name is not None:
+            self.model_config = ModelConfig(
+                type="local",
+                model_name_or_path=model_name
+            )
+        elif model_config is None:
+            self.model_config = ModelConfig(
+                type="local",
+                model_name_or_path="nvidia/Nemotron-Research-Reasoning-Qwen-1.5B"
+            )
+        else:
+            self.model_config = model_config
     
     def run(self) -> tuple[LeanCodeGenerationResult, LeanSpecGenerationResult]:
         """Run the LLM generation pipeline."""
         generator = LLMCodeSpecGenerator(
-            model_name=self.model_name,
+            model_config=self.model_config,
             debug_save_responses=self.debug_save_responses,
             debug_output_dir=self.output_dir / "debug" if self.output_dir else None
         )

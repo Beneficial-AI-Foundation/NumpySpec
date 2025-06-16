@@ -10,6 +10,7 @@ from gaussianspec.llm_generator import (
     LeanCodeGenerationResult,
     LeanSpecGenerationResult,
 )
+from gaussianspec.model_deployment import ModelConfig, create_openai_deployment
 
 
 def test_llm_generator_basic():
@@ -127,6 +128,124 @@ def test_extraction_functions():
     spec_completion = "Some analysis\n[[OUTPUT]]theorem add_comm : add a b = add b a := by sorry[[\\OUTPUT]]"
     extracted_spec = generator._extract_lean_spec(spec_completion)
     assert "theorem add_comm" in extracted_spec
+
+
+def test_llm_generator_with_local_model():
+    """Test LLM generator with explicit local model configuration."""
+    python_input = """
+def multiply(a: int, b: int) -> int:
+    '''Multiply two integers.'''
+    return a * b
+"""
+    
+    # Test with local model config
+    local_config = ModelConfig(
+        type="local",
+        model_name_or_path="sshleifer/tiny-gpt2",  # Use small model for testing
+        max_tokens=64,
+        temperature=0.1
+    )
+    
+    generator = LLMCodeSpecGenerator(model_config=local_config)
+    code_result = generator.generate_lean_code(python_input)
+    
+    assert isinstance(code_result, LeanCodeGenerationResult)
+    # The result may fail if model is not available, which is expected in test environment
+
+
+def test_llm_generator_with_api_model():
+    """Test LLM generator with API model configuration."""
+    python_input = """
+def divide(a: int, b: int) -> float:
+    '''Divide two numbers.'''
+    return a / b
+"""
+    
+    # Test with API model config (this will fail without real API key, which is expected)
+    api_config = ModelConfig(
+        type="api",
+        api_key="test-key",
+        url="https://api.openai.com/v1/chat/completions",
+        model_type="openai",
+        max_tokens=64,
+        temperature=0.1
+    )
+    
+    generator = LLMCodeSpecGenerator(model_config=api_config)
+    code_result = generator.generate_lean_code(python_input)
+    
+    assert isinstance(code_result, LeanCodeGenerationResult)
+    # The result will fail without valid API key, which is expected in test environment
+
+
+def test_llm_generator_backward_compatibility():
+    """Test that old interface still works (backward compatibility)."""
+    python_input = """
+def power(base: int, exp: int) -> int:
+    '''Calculate base raised to the power of exp.'''
+    return base ** exp
+"""
+    
+    # Test old interface with just model_name
+    generator = LLMCodeSpecGenerator(model_name="sshleifer/tiny-gpt2")
+    code_result = generator.generate_lean_code(python_input)
+    
+    assert isinstance(code_result, LeanCodeGenerationResult)
+
+
+def test_llm_subagent_with_config():
+    """Test subagent with model configuration."""
+    python_input = """
+def absolute(x: int) -> int:
+    '''Return absolute value.'''
+    return abs(x)
+"""
+    
+    # Test with model config
+    config = ModelConfig(
+        type="local",
+        model_name_or_path="sshleifer/tiny-gpt2",
+        max_tokens=32
+    )
+    
+    subagent = LLMCodeSpecSubagent(
+        python_input=python_input,
+        model_config=config
+    )
+    
+    code_result, spec_result = subagent.run()
+    
+    assert isinstance(code_result, LeanCodeGenerationResult)
+    assert isinstance(spec_result, LeanSpecGenerationResult)
+
+
+def test_deployment_integration_demo():
+    """Demonstrate how to use different deployment types."""
+    python_input = "def demo(): return 42"
+    
+    # Local deployment example
+    local_config = {
+        "type": "local",
+        "model_name_or_path": "sshleifer/tiny-gpt2",
+        "max_tokens": 32,
+        "temperature": 0.1
+    }
+    
+    generator_local = LLMCodeSpecGenerator(model_config=local_config)
+    assert generator_local.model_config.type == "local"
+    
+    # API deployment example (for demonstration - will fail without real key)
+    api_config = {
+        "type": "api",
+        "api_key": "dummy-key-for-testing",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "model_type": "openai",
+        "max_tokens": 64
+    }
+    
+    generator_api = LLMCodeSpecGenerator(model_config=api_config)
+    assert generator_api.model_config.type == "api"
+    assert generator_api.model_config.model_type == "openai"
 
 
 if __name__ == "__main__":
