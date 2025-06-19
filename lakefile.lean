@@ -1,9 +1,8 @@
 import Lake
 open Lake DSL
 
--- Main GaussianSpec package
-package «GaussianSpec» where
-  version := "0.1.0"
+/-- Main GaussianSpec package -/
+package GaussianSpec where
   -- Lean options (typechecked!)
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩,
@@ -12,41 +11,37 @@ package «GaussianSpec» where
     ⟨`linter.missingDocs, true⟩
   ]
 
--- Dependencies (order matters for compilation)
+/-! Dependencies (order matters for compilation) -/
+
+/-- Used for documentation generation -/
 require verso from git "https://github.com/leanprover/verso" @ "main"
+
+/-- Used for theorem proving. *Must* come before `mathlib` to avoid recompiling `mathlib`. --/
 require Hammer from git "https://github.com/JOSHCLUNE/LeanHammer" @ "temp-v4.21.0-rc3"
+
+/--Used for math library--/
 require mathlib from git "https://github.com/leanprover-community/mathlib4"
 
 -- Main library
-lean_lib «GaussianSpec» where
+lean_lib GaussianSpec where
   -- Include the root module and all submodules
   globs := #[.andSubmodules `GaussianSpec]
 
+-- FuncTracker sublibrary for 2D function tracking tables
+lean_lib FuncTracker where
+  -- Include all FuncTracker modules
+  globs := #[.andSubmodules `FuncTracker]
+
 -- Generated code library
-lean_lib «Generated» where
-  srcDir := "generated"
-  -- Include all Spec modules
-  globs := #[.andSubmodules `Spec]
+lean_lib Generated where
+  srcDir := "."
+  -- Include all Spec modules from generated/Spec directory
+  globs := #[.andSubmodules `generated]
 
 -- Executables
 @[default_target]
-lean_exe «gaussianspec» where
+lean_exe gaussianspec where
   root := `Main
 
-lean_exe «gaussianspecmanual» where
+lean_exe gaussianspecmanual where
   root := `GaussianSpec.ManualMain
-
--- Targets for building specific components
-target allLibs : Unit := do
-  let libs ← [
-    findLeanLib? `GaussianSpec,
-    findLeanLib? `Generated
-  ].filterMapM id
-  libs.forM fun lib => fetch <| lib.target
-  return .nil
-
--- Convenience target for building just generated code
-target generated : Unit := do
-  if let some lib ← findLeanLib? `Generated then
-    fetch lib.target
-  return .nil

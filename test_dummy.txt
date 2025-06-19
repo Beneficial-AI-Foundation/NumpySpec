@@ -1,0 +1,4 @@
+This is a dummy file for testing diff functionality.
+Line 2: This content has been updated using Edit tool.
+Line 3: Another line of text.
+Line 4: Final line of the original file.

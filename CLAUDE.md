@@ -161,3 +161,13 @@ The project uses Pantograph servers on MorphCloud for fast, scalable compilation
 - Run `lake build` before committing Lean changes
 - Use `rg` and `fd` instead of grep/find
 - Make atomic commits and use branches liberally
+
+## Development Strategies
+
+### Lean 4 Development Approach
+- Read the reference manual more assiduously. ultrathink. 
+- Figure out the parser by interactively building up toy components. 
+- Install `uvx lean-lsp-mcp` and spam it to get intermediate state (not just tactics). 
+- Spam it to verify the pieces work and build up FUNCTORIALLY. 
+- You are a functional programmer
+```
