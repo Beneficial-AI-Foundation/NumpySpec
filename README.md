@@ -35,18 +35,23 @@ remote Pantograph snapshot when you invoke any `just pipeline` or
 
 ## Local build (optional)
 
-If you really want to compile locally you still can.  **Important**: the
-pipeline produces Lean files under the `Generated` namespace (e.g.
-`generated/Spec/Chunk0001_0050.lean`).  These files are *not* part of the
-default `lake build` target, so you must request them explicitly or build all
-targets:
+If you really want to compile locally you still can. The project uses a unified
+`lakefile.lean` (type-checked!) that manages both the main codebase and generated
+code in a workspace-like structure.
+
+**Important**: the pipeline produces Lean files under the `Generated` namespace
+(e.g. `generated/Spec/Chunk0001_0050.lean`). These files are *not* part of the
+default `lake build` target, so you must request them explicitly:
 
 ```bash
 # Build the root package (default)
 just build-local              # → `lake build`
 
-# Additionally build everything under the `Generated` namespace
-lake build Generated           # or `lake build Generated.*` for a sub-tree
+# Build all libraries (main + generated)
+just build-all                # → `lake build allLibs`
+
+# Build only generated code
+lake build generated
 
 # Convenience — build both in one step
 just build-all
