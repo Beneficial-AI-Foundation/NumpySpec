@@ -40,6 +40,14 @@ morphcloud = _ensure_package("morphcloud")
 genai = _ensure_package("google-generativeai", "google.generativeai")
 openai = _ensure_package("openai")
 
+# Import Codex utilities
+try:
+    from gaussianspec.codex_utils import CodexClient, VoiceMode, OnlineCodexSetup, best_of_n_completion, setup_codex_environment
+    _CODEX_AVAILABLE = True
+except ImportError as e:
+    print(f"[agent] Codex utilities not available: {e}", file=sys.stderr)
+    _CODEX_AVAILABLE = False
+
 # We no longer depend on local Tesseract.
 
 from gaussianspec.subagents import LeanEditResult  # type: ignore F401
@@ -99,6 +107,184 @@ def parse_build_feedback(output: str) -> str:
         if line.strip().startswith("ERROR"):
             return line
     return "success"
+
+
+# --- Codex-Enhanced Proof Generation ---
+def create_lean_edit_with_codex(
+    file: Path,
+    theorem_statement: str,
+    *,
+    use_voice: bool = False,
+    use_best_of_n: bool = True,
+    n_completions: int = 3,
+    description: str = "",
+) -> LeanEdit:
+    """Create a LeanEdit using Codex with optional voice input and best-of-n selection.
+    
+    Parameters
+    ----------
+    file : Path
+        Target Lean file for the edit.
+    theorem_statement : str
+        The theorem statement to complete, or empty string for voice input.
+    use_voice : bool
+        Whether to use voice input for the theorem statement.
+    use_best_of_n : bool
+        Whether to generate multiple completions and select the best.
+    n_completions : int
+        Number of completions to generate if using best-of-n.
+    description : str
+        Description of the edit.
+    
+    Returns
+    -------
+    LeanEdit
+        The generated Lean edit.
+    """
+    if not _CODEX_AVAILABLE:
+        raise RuntimeError("Codex utilities not available. Check dependencies.")
+    
+    final_statement = theorem_statement
+    
+    # Voice input mode
+    if use_voice and not final_statement:
+        try:
+            voice_mode = VoiceMode()
+            voice_input = voice_mode.listen_for_theorem()
+            final_statement = voice_mode.theorem_from_voice(voice_input)
+            print(f"[agent] Voice input converted to: {final_statement}")
+        except Exception as e:
+            print(f"[agent] Voice input failed: {e}", file=sys.stderr)
+            final_statement = "-- Voice input failed, please provide theorem manually"
+    
+    if not final_statement:
+        raise ValueError("No theorem statement provided and voice input not available")
+    
+    # Generate proof using Codex
+    client = CodexClient()
+    
+    if use_best_of_n:
+        completions = best_of_n_completion(
+            client=client,
+            prompt=final_statement,
+            n=n_completions,
+            context="Complete this Lean theorem with a rigorous proof"
+        )
+        proof_completion = completions[0].text if completions else "by sorry"
+    else:
+        completion = client.complete_lean_code(
+            prompt=final_statement,
+            context="Complete this Lean theorem with a rigorous proof"
+        )
+        proof_completion = completion.text
+    
+    # Combine statement and proof
+    full_edit = f"{final_statement}\n{proof_completion}"
+    
+    return LeanEdit(
+        file=file,
+        edit=full_edit,
+        description=description or f"Codex-generated proof for theorem"
+    )
+
+
+def enhanced_proof_generation(
+    theorem_statement: str,
+    context: str = "",
+    *,
+    methods: list[str] = ["codex", "hf"],
+    use_best_of_n: bool = True,
+) -> str:
+    """Generate proofs using multiple AI backends and select the best.
+    
+    Parameters
+    ----------
+    theorem_statement : str
+        The theorem statement to prove.
+    context : str
+        Additional context about the theorem.
+    methods : list[str]
+        List of methods to try: "codex", "hf" (HuggingFace).
+    use_best_of_n : bool
+        Whether to use best-of-n selection for Codex.
+    
+    Returns
+    -------
+    str
+        The best generated proof.
+    """
+    proofs = []
+    
+    # Try Codex if available
+    if "codex" in methods and _CODEX_AVAILABLE:
+        try:
+            client = CodexClient()
+            if use_best_of_n:
+                completions = best_of_n_completion(
+                    client=client,
+                    prompt=theorem_statement,
+                    n=3,
+                    context=context
+                )
+                if completions:
+                    proofs.append(("codex", completions[0].text))
+            else:
+                completion = client.complete_lean_code(theorem_statement, context)
+                proofs.append(("codex", completion.text))
+        except Exception as e:
+            print(f"[agent] Codex proof generation failed: {e}", file=sys.stderr)
+    
+    # Try HuggingFace model if available
+    if "hf" in methods:
+        try:
+            from gaussianspec.hf_utils import load_model, propose_proof
+            model, tokenizer = load_model()
+            hf_proof = propose_proof(
+                model=model,
+                tokenizer=tokenizer,
+                problem_statement=context or "Prove the given theorem",
+                formal_statement=theorem_statement
+            )
+            proofs.append(("hf", hf_proof))
+        except Exception as e:
+            print(f"[agent] HuggingFace proof generation failed: {e}", file=sys.stderr)
+    
+    if not proofs:
+        return "by sorry -- No proof generation methods available"
+    
+    # For now, prefer Codex over HuggingFace
+    codex_proofs = [p for method, p in proofs if method == "codex"]
+    if codex_proofs:
+        return codex_proofs[0]
+    
+    return proofs[0][1]
+
+
+def setup_online_codex_assistant(project_root: Path) -> OnlineCodexSetup | None:
+    """Setup online Codex assistant for interactive proof development.
+    
+    Parameters
+    ----------
+    project_root : Path
+        Root directory of the Lean project.
+    
+    Returns
+    -------
+    OnlineCodexSetup | None
+        The online assistant, or None if not available.
+    """
+    if not _CODEX_AVAILABLE:
+        print("[agent] Codex not available for online assistance", file=sys.stderr)
+        return None
+    
+    try:
+        client = CodexClient()
+        assistant = OnlineCodexSetup(client=client, auto_complete=True)
+        print(f"[agent] Online Codex assistant ready for {project_root}")
+        return assistant
+    except Exception as e:
+        print(f"[agent] Failed to setup online Codex assistant: {e}", file=sys.stderr)
+        return None
 
 
 # --- OCR Preprocessing ---
@@ -248,6 +434,8 @@ def agent_pipeline(
 # --- Example usage (to be replaced by MorphCloud orchestration) ---
 if __name__ == "__main__":
     root = Path(__file__).parent.parent.parent
+    
+    # Traditional example
     edits = [
         LeanEdit(
             file=root / "GaussianSpec.lean",
@@ -255,8 +443,55 @@ if __name__ == "__main__":
             description="Add a comment for testing.",
         )
     ]
+    
+    print("=== Traditional Agent Loop ===")
     for feedback in agent_loop(root, edits):
         print("Agent feedback:", feedback)
+    
+    # Codex-enhanced examples
+    if _CODEX_AVAILABLE:
+        print("\n=== Codex Environment Status ===")
+        status = setup_codex_environment()
+        print(f"Features available: {status['features']}")
+        
+        if status['features']['code_completion']:
+            print("\n=== Codex-Enhanced Proof Generation ===")
+            try:
+                # Example: Create a proof using Codex with best-of-n
+                codex_edit = create_lean_edit_with_codex(
+                    file=root / "GaussianSpec.lean",
+                    theorem_statement="theorem add_zero (n : ℕ) : n + 0 = n := ",
+                    use_best_of_n=True,
+                    n_completions=2,
+                    description="Codex-generated proof with best-of-n selection"
+                )
+                print(f"Generated edit: {codex_edit.edit}")
+                
+                # Example: Enhanced proof generation with multiple backends
+                enhanced_proof = enhanced_proof_generation(
+                    theorem_statement="theorem zero_add (n : ℕ) : 0 + n = n := ",
+                    context="This is a basic theorem about natural number addition",
+                    methods=["codex", "hf"],
+                    use_best_of_n=True
+                )
+                print(f"Enhanced proof: {enhanced_proof}")
+                
+            except Exception as e:
+                print(f"Codex example failed: {e}")
+        
+        if status['features']['online_setup']:
+            print("\n=== Online Codex Assistant ===")
+            assistant = setup_online_codex_assistant(root)
+            if assistant:
+                print("Online assistant ready for interactive development")
+        
+        if status['features']['voice_mode']:
+            print("\n=== Voice Mode Available ===")
+            print("Voice input can be used with: use_voice=True in create_lean_edit_with_codex")
+    
+    else:
+        print("\n=== Codex Features Not Available ===")
+        print("Install dependencies: uv add speechrecognition pyaudio")
 
 
 # ---------- helper: Gemini OCR ----------

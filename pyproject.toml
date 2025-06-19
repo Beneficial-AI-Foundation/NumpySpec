@@ -28,6 +28,8 @@ dependencies = [
     "pdfminer-six>=20250416",
     "reportlab>=4.4.0",
     "litellm>=1.34.10",
+    "speechrecognition>=3.10.0",
+    "pyaudio>=0.2.11",
     "leantool @ git+https://github.com/alok/LeanTool.git@v0.4.3+uv",
 ]
 
