@@ -8,8 +8,7 @@ build-local:
 
 # Build all Lean targets
 build-all:
-    lake build
-    lake build generated
+    lake build allLibs
 
 # Test suite
 test:
