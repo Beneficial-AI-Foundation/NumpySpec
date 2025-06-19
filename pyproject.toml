@@ -28,6 +28,9 @@ dependencies = [
     "pdfminer-six>=20250416",
     "reportlab>=4.4.0",
     "litellm>=1.34.10",
+    "sounddevice>=0.4.6",
+    "soundfile>=0.12.1",
+    "numpy>=1.24.0",
     "leantool @ git+https://github.com/alok/LeanTool.git@v0.4.3+uv",
 ]
 
