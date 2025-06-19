@@ -1,6 +1,7 @@
 import FuncTracker.BasicV2
 import FuncTracker.GridParserV2
 import FuncTracker.SimpleValidation
+import FuncTracker.RegionPredicates
 
 /-!
 # FuncTracker
@@ -10,8 +11,9 @@ A Lean 4 library for tracking function implementation progress using table synta
 ## Core Components
 
 - `BasicV2`: Core data structures (Status, TrackedFunction, FunctionTable)
-- `GridParserV2`: Parser for ASCII table format with borders
+- `GridParserV2`: Parser for ASCII table format with borders  
 - `SimpleValidation`: Validated elaborator that checks function names exist
+- `RegionPredicates`: Compositional predicate checking for table regions
 
 ## Usage
 
@@ -27,6 +29,11 @@ def myProgress := funcTable! "╔═══════════════�
 
 -- Check progress
 #eval myProgress.computeProgress.percentComplete
+
+-- Validate with predicates
+let region := myProgress.wholeRegion.get!
+let predicate := (statusAtLeast .implemented).and testedHasComplexity
+validateTableRegion myProgress predicate region
 ```
 
 ## Status Symbols
@@ -46,5 +53,6 @@ namespace FuncTracker
 open BasicV2 (Status TrackedFunction FunctionTable Progress)
 open GridParserV2 (Grid GridCell)
 open SimpleValidation (elabFuncTableValidated)
+open RegionPredicates (Region Position RegionPredicate PredicateResult validateTableRegion statusAtLeast testedHasComplexity)
 
 end FuncTracker

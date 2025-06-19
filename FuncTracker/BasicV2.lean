@@ -26,6 +26,24 @@ def Status.toSymbol : Status → String
   | .tested => "✓✓"
   | .documented => "✓✓✓"
 
+/-- Convert a status to a number for comparison -/
+def Status.toNat : Status → Nat
+  | .notStarted => 0
+  | .inProgress => 1
+  | .implemented => 2
+  | .tested => 3
+  | .documented => 4
+
+/-- Status has a natural ordering: notStarted < inProgress < implemented < tested < documented -/
+instance : LE Status where
+  le s1 s2 := s1.toNat ≤ s2.toNat
+
+instance : LT Status where
+  lt s1 s2 := s1.toNat < s2.toNat
+
+instance : DecidableRel (· ≤ · : Status → Status → Prop) := 
+  fun a b => inferInstanceAs (Decidable (a.toNat ≤ b.toNat))
+
 /-- A tracked function with its implementation status -/
 structure TrackedFunction where
   /-- Name of the function as a Lean Name -/

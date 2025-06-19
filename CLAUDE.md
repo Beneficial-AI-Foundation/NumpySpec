@@ -170,4 +170,24 @@ The project uses Pantograph servers on MorphCloud for fast, scalable compilation
 - Install `uvx lean-lsp-mcp` and spam it to get intermediate state (not just tactics). 
 - Spam it to verify the pieces work and build up FUNCTORIALLY. 
 - You are a functional programmer
+
+## FuncTracker Development Progress
+
+### Completed Features
+- ✓ **Compositional Table Parser**: ASCII table parsing with box-drawing characters using Parsec combinators
+- ✓ **Compile-time Validation**: Function name validation at elaboration time with helpful error messages
+- ✓ **Type-safe Data Structures**: Status tracking with Progress computation and table manipulation
+- ✓ **Custom Elaborator**: `funcTable!` syntax with environment-aware identifier checking
+
+### Next Feature: Predicate Region Checking
+**Goal**: Implement semantic validation for table regions based on predicates
+
+The next development phase will add compositional predicate checking to table regions:
+- **Region Predicates**: Define predicates that apply to rectangular regions of the table
+- **Semantic Validation**: Check relationships between cells (e.g., tested functions should have test files)
+- **Compositional Checking**: Build complex region checks from simple predicate combinators
+- **Error Localization**: Report validation errors with precise table coordinates
+
+**Design Approach**: Follow the same compositional parser pattern but for semantic validation.
+Build small predicate combinators that can be composed into larger region checkers.
 ```
