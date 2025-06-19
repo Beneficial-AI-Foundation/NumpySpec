@@ -37,21 +37,17 @@ def tableToTerm (table : FunctionTable) : MacroM (TSyntax `term) := do
   
   `({ functions := #[$functions,*] : FunctionTable })
 
-/-- Main macro for function tables -/
-macro_rules
-  | `(funcTable! ╔ $(_)* ╗ $rows:table_row* ╚ $(_)* ╝) => do
-    let parsedTable ← parseTableRows rows
-    tableToTerm parsedTable
+/-- Macro for function tables -/
+macro "funcTable!" "╔" "═"* "╗" rows:table_row* "╚" "═"* "╝" : term => do
+  let parsedTable ← parseTableRows rows
+  tableToTerm parsedTable
 
 /-- Command to define a function tracking table -/
-syntax "track" "functions" (ident)? ":" "╔" "═"* "╗" table_row* "╚" "═"* "╝" : command
-
-macro_rules
-  | `(track functions $[$name:ident]? : ╔ $(_)* ╗ $rows:table_row* ╚ $(_)* ╝) => do
-    let name := name.getD (mkIdent `myFunctions)
-    let parsedTable ← parseTableRows rows
-    let tableTerm ← tableToTerm parsedTable
-    `(def $name : FunctionTable := $tableTerm)
+macro "track" "functions" name:(ident)? ":" "╔" "═"* "╗" rows:table_row* "╚" "═"* "╝" : command => do
+  let name := name.getD (mkIdent `myFunctions)
+  let parsedTable ← parseTableRows rows
+  let tableTerm ← tableToTerm parsedTable
+  `(def $name : FunctionTable := $tableTerm)
 
 /-- Check that all functions in a table are implemented -/
 def checkAllImplemented (table : FunctionTable) : Except String Unit := do
@@ -65,13 +61,10 @@ def checkAllImplemented (table : FunctionTable) : Except String Unit := do
     .ok ()
 
 /-- Macro to enforce that all functions are implemented at compile time -/
-syntax "require" "all" "implemented" term : command
-
-macro_rules
-  | `(require all implemented $table:term) => do
-    `(command|
-      #eval match checkAllImplemented $table with
-        | Except.ok () => "All functions implemented ✓"
-        | Except.error msg => panic! msg)
+macro "require" "all" "implemented" table:term : command =>
+  `(command| 
+    #eval match checkAllImplemented $table with
+      | Except.ok () => "All functions implemented ✓"
+      | Except.error msg => panic! msg)
 
 end FuncTracker

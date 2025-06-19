@@ -8,29 +8,28 @@ open Lean Lean.Macro
 
 /-- Parse a single cell -/
 def parseCell (stx : Syntax) : MacroM String := do
-  if stx.isIdent then
-    pure stx.getId.toString
-  else if stx.isStrLit then
-    pure stx.getSubstring?.get!.toString
-  else if stx.isToken "✗" then
-    pure "✗"
-  else if stx.isToken "⋯" then
-    pure "⋯"
-  else if stx.isToken "✓✓✓" then
-    pure "✓✓✓"
-  else if stx.isToken "✓✓" then
-    pure "✓✓"
-  else if stx.isToken "✓" then
-    pure "✓"
-  else if stx.isToken "-" then
-    pure "-"
-  else if stx.getNumArgs == 3 && stx[1].isToken "-" then
-    -- num - num pattern  
-    let start := stx[0].toNat
-    let «end» := stx[2].toNat
-    pure s!"{start}-{«end»}"
-  else
-    Macro.throwError s!"Unknown cell type: {stx}"
+  match stx with
+  | .ident _ _ n _ => pure n.toString
+  | .atom _ val => 
+    -- Check for specific tokens
+    if val == "✗" || val == "⋯" || val == "✓✓✓" || val == "✓✓" || val == "✓" || val == "-" then
+      pure val
+    else
+      Macro.throwError s!"Unknown atom: {val}"
+  | .node _ _ args =>
+    -- Check for num - num pattern
+    if args.size == 3 && args[1]!.isToken "-" then
+      match args[0]!, args[2]! with
+      | .atom _ n1, .atom _ n2 => pure s!"{n1}-{n2}"
+      | _, _ => Macro.throwError "Invalid line range format"
+    else if args.size == 1 then
+      -- String literal
+      match args[0]! with
+      | .atom _ s => pure (s.drop 1 |>.dropRight 1)  -- Remove quotes
+      | _ => Macro.throwError "Invalid string format"
+    else
+      Macro.throwError s!"Unknown cell node with {args.size} args"
+  | _ => Macro.throwError s!"Unknown cell type: {stx}"
 
 /-- Extract cells from a row -/
 def extractRowCells (row : Syntax) : MacroM (Array String) := do
