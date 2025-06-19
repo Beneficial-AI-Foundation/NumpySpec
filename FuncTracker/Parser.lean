@@ -10,7 +10,7 @@ open Lean Lean.Macro
 def parseCell (stx : Syntax) : MacroM String := do
   match stx with
   | .ident _ _ n _ => pure n.toString
-  | .atom _ val => 
+  | .atom _ val =>
     -- Check for specific tokens
     if val == "✗" || val == "⋯" || val == "✓✓✓" || val == "✓✓" || val == "✓" || val == "-" then
       pure val
@@ -33,16 +33,16 @@ def parseCell (stx : Syntax) : MacroM String := do
 
 /-- Extract cells from a row -/
 def extractRowCells (row : Syntax) : MacroM (Array String) := do
-  -- Row format: │ cell (│ cell)* │
+  -- Row format: `│ cell (│ cell)* │`
   let mut cells : Array String := #[]
-  let mut i := 1  -- Skip first │
-  
-  while i < row.getNumArgs - 1 do  -- Skip last │
+  let mut i := 1  -- Skip first `│`
+
+  while i < row.getNumArgs - 1 do  -- Skip last `│`
     if row[i].isOfKind `table_cell then
       let cell ← parseCell row[i]
       cells := cells.push cell
-    i := i + 2  -- Skip │ separator
-  
+    i := i + 2  -- Skip `│` separator
+
   pure cells
 
 /-- Parse a status symbol into a Status value -/
@@ -58,36 +58,36 @@ def parseStatus (s : String) : Option Status :=
 /-- Parse table rows -/
 def parseTableRows (rows : Array Syntax) : MacroM FunctionTable := do
   let mut allRows : Array (Array String) := #[]
-  
+
   for row in rows do
     if row.isOfKind `table_row then
       let cells ← extractRowCells row
       allRows := allRows.push cells
-  
+
   if allRows.size == 0 then
     Macro.throwError "Table must have at least one row"
-  
+
   -- Skip header row if it looks like a header
   let dataRows := if allRows.size > 0 && allRows[0]!.any (fun s => s.trim == "Status" || s.trim == "status") then
     allRows.extract 1 allRows.size
   else
     allRows
-  
+
   -- Parse function data from rows
   let functions ← dataRows.mapM fun row => do
     if row.size < 2 then
       Macro.throwError "Row must have at least name and status columns"
-    
+
     let name := row[0]!.trim
     let statusStr := row[1]!.trim
-    
+
     let some status := parseStatus statusStr
       | Macro.throwError s!"Invalid status symbol: {statusStr}"
-    
-    let file := if row.size > 2 && row[2]!.trim != "-" 
+
+    let file := if row.size > 2 && row[2]!.trim != "-"
                 then some row[2]!.trim else none
-    
-    let lines := if row.size > 3 && row[3]!.trim != "-" then 
+
+    let lines := if row.size > 3 && row[3]!.trim != "-" then
       -- Parse "10-20" format
       let parts := row[3]!.trim.splitOn "-"
       if parts.length = 2 then
@@ -96,12 +96,12 @@ def parseTableRows (rows : Array Syntax) : MacroM FunctionTable := do
         | _, _ => none
       else none
     else none
-    
-    let complexity := if row.size > 4 && row[4]!.trim != "-" 
+
+    let complexity := if row.size > 4 && row[4]!.trim != "-"
                       then some row[4]!.trim else none
-    
+
     pure { name, status, file, lines, complexity : TrackedFunction }
-  
+
   pure { functions }
 
 end FuncTracker

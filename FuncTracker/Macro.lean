@@ -16,25 +16,25 @@ def tableToTerm (table : FunctionTable) : MacroM (TSyntax `term) := do
       | .implemented => `(Status.implemented)
       | .tested => `(Status.tested)
       | .documented => `(Status.documented)
-    
+
     let file ← match f.file with
       | some f => `(some $(quote f))
       | none => `(none)
-    
+
     let lines ← match f.lines with
       | some (s, e) => `(some ($(quote s), $(quote e)))
       | none => `(none)
-    
+
     let complexity ← match f.complexity with
       | some c => `(some $(quote c))
       | none => `(none)
-    
+
     `({ name := $(quote f.name),
         status := $status,
         file := $file,
         lines := $lines,
         complexity := $complexity : TrackedFunction })
-  
+
   `({ functions := #[$functions,*] : FunctionTable })
 
 /-- Macro for function tables -/
@@ -51,9 +51,9 @@ macro "track" "functions" name:(ident)? ":" "╔" "═"* "╗" rows:table_row* "
 
 /-- Check that all functions in a table are implemented -/
 def checkAllImplemented (table : FunctionTable) : Except String Unit := do
-  let unimplemented := table.functions.filter fun f => 
+  let unimplemented := table.functions.filter fun f =>
     f.status != .implemented && f.status != .tested && f.status != .documented
-  
+
   if unimplemented.size > 0 then
     let names := unimplemented.map (·.name)
     .error s!"The following functions are not implemented: {names}"
@@ -62,7 +62,7 @@ def checkAllImplemented (table : FunctionTable) : Except String Unit := do
 
 /-- Macro to enforce that all functions are implemented at compile time -/
 macro "require" "all" "implemented" table:term : command =>
-  `(command| 
+  `(command|
     #eval match checkAllImplemented $table with
       | Except.ok () => "All functions implemented ✓"
       | Except.error msg => panic! msg)
