@@ -92,53 +92,33 @@ install_rust() {
 install_agent_cli_tools() {
     echo "🛠️ Installing agent CLI tools..."
     
-    # Try uv/cargo first for tools that support it
-    local tools_installed=false
-    
-    if command -v cargo >/dev/null; then
-        echo "📦 Installing tools via cargo..."
-        # Install ripgrep and fd via cargo (faster, more reliable)
-        cargo install ripgrep fd-find 2>/dev/null && tools_installed=true || echo "⚠️ Some cargo installs failed"
-    fi
-    
-    # Fallback to system package managers for remaining tools or if cargo failed
-    if [[ "$tools_installed" == "false" ]]; then
-        case "$OS" in
-            Linux*)
-                if command -v apt-get >/dev/null; then
-                    echo "📦 Installing essential tools (Ubuntu/Debian)..."
-                    sudo apt-get install -y -qq ripgrep fd-find jq tree git-delta
-                    # Create symlinks for fd on Ubuntu
-                    if command -v fdfind >/dev/null && [ ! -e /usr/local/bin/fd ]; then
-                        sudo ln -sf $(which fdfind) /usr/local/bin/fd 2>/dev/null || echo "⚠️ Failed to create fd symlink"
-                    fi
-                elif command -v yum >/dev/null; then
-                    echo "📦 Installing essential tools (RHEL/CentOS)..."
-                    sudo yum install -y epel-release
-                    sudo yum install -y ripgrep fd-find jq tree git-delta
-                elif command -v apk >/dev/null; then
-                    echo "📦 Installing essential tools (Alpine)..."
-                    sudo apk add --no-cache ripgrep fd jq tree git-delta
+    case "$OS" in
+        Linux*)
+            if command -v apt-get >/dev/null; then
+                echo "📦 Installing essential tools (Ubuntu/Debian)..."
+                # Install all tools via apt - most reliable for Ubuntu
+                sudo apt-get install -y -qq ripgrep fd-find jq tree git-delta
+                
+                # Create symlink for fd command (Ubuntu names it fdfind)
+                if command -v fdfind >/dev/null && [ ! -e /usr/local/bin/fd ]; then
+                    sudo ln -sf $(which fdfind) /usr/local/bin/fd 2>/dev/null || echo "⚠️ Failed to create fd symlink"
                 fi
-                ;;
-            Darwin*)
-                echo "📦 Installing essential tools (macOS)..."
-                if ! brew install ripgrep fd jq tree git-delta 2>/dev/null; then
-                    echo "⚠️ Some macOS tools may have failed to install"
-                fi
-                ;;
-        esac
-    else
-        # Still need jq, tree, and git-delta from system packages
-        case "$OS" in
-            Linux*)
-                if command -v apt-get >/dev/null; then
-                    echo "📦 Installing remaining tools (jq, tree, git-delta)..."
-                    sudo apt-get install -y -qq jq tree git-delta
-                fi
-                ;;
-        esac
-    fi
+            elif command -v yum >/dev/null; then
+                echo "📦 Installing essential tools (RHEL/CentOS)..."
+                sudo yum install -y epel-release
+                sudo yum install -y ripgrep fd-find jq tree git-delta
+            elif command -v apk >/dev/null; then
+                echo "📦 Installing essential tools (Alpine)..."
+                sudo apk add --no-cache ripgrep fd jq tree git-delta
+            fi
+            ;;
+        Darwin*)
+            echo "📦 Installing essential tools (macOS)..."
+            if ! brew install ripgrep fd jq tree git-delta 2>/dev/null; then
+                echo "⚠️ Some macOS tools may have failed to install"
+            fi
+            ;;
+    esac
     
     echo "✅ Agent CLI tools installed"
 }
@@ -167,9 +147,6 @@ install_codex_cli() {
 install_github_cli() {
     echo "🐙 Installing GitHub CLI..."
     
-    # GitHub CLI is not available via cargo, use system packages
-    
-    # Fallback to system package managers
     case "$OS" in
         Darwin*)
             if ! brew install gh 2>/dev/null; then
@@ -178,12 +155,17 @@ install_github_cli() {
             ;;
         Linux*)
             if command -v apt-get >/dev/null; then
-                if curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null; then
-                    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-                    sudo apt-get update -qq && sudo apt-get install -y gh
-                else
-                    echo "⚠️ GitHub CLI keyring setup failed"
-                fi
+                echo "📦 Installing GitHub CLI (official method)..."
+                # Official GitHub CLI installation command
+                (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
+                && sudo mkdir -p -m 755 /etc/apt/keyrings \
+                && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+                && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+                && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+                && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
+                && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+                && sudo apt update \
+                && sudo apt install gh -y
             fi
             ;;
     esac
@@ -406,8 +388,59 @@ EOF
 # Verify run script exists
 check_run_script() {
     if [ ! -f run.sh ]; then
-        echo "⚠️ run.sh not found - should be in repository"
-        return 1
+        echo "⚠️ run.sh not found - creating basic run script..."
+        cat > run.sh << 'EOF'
+#!/usr/bin/env bash
+# NumpySpec runner script for Codex environments
+
+set -euo pipefail
+
+# Load environment if available
+if [ -f .env ]; then
+    set -a
+    source .env
+    set +a
+fi
+
+# Ensure PATH includes Lean tools
+export PATH="$HOME/.elan/bin:$HOME/.local/bin:$PATH"
+export PYTHONPATH="${PYTHONPATH:-}:src"
+
+case "${1:-help}" in
+    build)
+        echo "🔨 Building Lean project..."
+        lake build
+        ;;
+    test)
+        echo "🧪 Running tests..."
+        uv run -m pytest -v
+        ;;
+    clean)
+        echo "🧹 Cleaning build artifacts..."
+        lake clean
+        rm -rf .cache logs/*.log
+        ;;
+    info)
+        echo "📊 System information:"
+        echo "Python: $(python --version 2>&1)"
+        echo "Lean: $(lean --version 2>&1)"
+        echo "Lake: $(lake --version 2>&1)"
+        echo "UV: $(uv --version 2>&1)"
+        ;;
+    *)
+        echo "NumpySpec - Formally verified numpy operations"
+        echo ""
+        echo "Usage: ./run.sh [command]"
+        echo ""
+        echo "Commands:"
+        echo "  build   - Build the Lean project"
+        echo "  test    - Run all tests"
+        echo "  clean   - Clean build artifacts"
+        echo "  info    - Show system information"
+        echo "  help    - Show this help"
+        ;;
+esac
+EOF
     fi
     chmod +x run.sh
     echo "✅ Run script verified"
