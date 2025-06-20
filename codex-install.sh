@@ -505,7 +505,9 @@ verify_installation() {
     
     # Verify elan toolchain
     if elan show >/dev/null 2>&1; then
-        echo "✅ Elan toolchain: $(elan show active | head -1)"
+        echo "✅ Elan toolchain available"
+        # Show the active toolchain info
+        elan show | tail -2 | head -1
     else
         echo "⚠️ Elan toolchain issues detected"
     fi
