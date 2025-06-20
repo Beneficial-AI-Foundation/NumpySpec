@@ -1,4 +1,14 @@
+-- All imports must be at the beginning of the file before any documentation
 import Lean -- Lean's metaprogramming
+
+-- Optional imports - conditional on available dependencies
+#if haveLakeDep?[batteries]
+import Batteries
+#endif
+
+#if haveLakeDep?[Qq]
+import Qq -- convenient term building / matching
+#endif
 
 /-!
 # Lean Tactic Programming Guide
@@ -12,15 +22,6 @@ require batteries from git "https://github.com/leanprover-community/batteries" @
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 ```
 -/
-
--- Optional imports - these will only be used if available in the environment
-#if haveLakeDep?[batteries]
-import Batteries
-#endif
-
-#if haveLakeDep?[Qq]
-import Qq -- convenient term building / matching
-#endif
 
 namespace MetaProgrammingTutorial
 
