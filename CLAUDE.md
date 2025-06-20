@@ -233,6 +233,16 @@ These are built separately from the main package - use `lake build Generated` or
 - Make atomic commits and use branches liberally
 - Focus on mathematical correctness over performance optimization initially
 
+### General Programming Philosophy
+
+Programming is about onomastics (naming), composition (functoriality), and caching. Think conformally at every scale and across scales.
+
+Build a pit of success: internal systems that grow as a whole outwards, never allowing the fallible external world to leak in except at boundaries. Meet the external world at well-defined interfaces.
+
+When solving problems, write tooling/linters/auto-fixers to widen the pit of success. Use rigid compiler error messages and linter warnings to guide future users (including AI) toward correct solutions.
+
+Favor statically typed functional programming but use mutability where it makes sense or is easier to port.
+
 ## Development Strategies
 
 ### Lean 4 Development Approach
@@ -242,6 +252,19 @@ These are built separately from the main package - use `lake build Generated` or
 - Install `uvx lean-lsp-mcp` and spam it to get intermediate state (not just tactics).
 - Spam it to verify the pieces work and build up FUNCTORIALLY.
 - You are a functional programmer
+- Use compiler tooling like extensible error messages, `simproc` (pattern guided reductions), and metaprogramming for pit of success
+- If you solve a hard problem, write a tactic or simproc to pave the way
+- Try harder to index without `!` or `?` - name `match`/`if` branches for better inference
+- Raw string syntax: `r#".."#`, multiline strings use `\` continuation
+- Use `lakefile.lean` over `lakefile.toml` for better AI introspection and metaprogramming
+- Incorporate positive surprises into memories - stay curious!
+
+### Debugging and Development Process
+
+- Use named holes like `?holeName` for well-typed fragment programs
+- Make mermaid diagrams with labeled edges describing data flow
+- Category theory wiring diagram style for complex systems
+- Apply the scientific method for debugging
 
 ## Numpy Porting Progress
 
@@ -265,5 +288,49 @@ These are built separately from the main package - use `lake build Generated` or
 - **Performance Later**: Focus on mathematical correctness before optimization
 - **Compositionality**: Build complex operations from verified primitives
 - **Type Safety**: Use Lean's type system to prevent numerical errors
+
+## Development Tools and Workflow
+
+### Task Delegation
+
+- Use `codex` for delegating tasks to sub-agents: `codex -q --project-doc CLAUDE.md -a full-auto "<task>"`
+- Sub-agents can recursively invoke other sub-agents
+- Use `terminal-notifier` to get completion notifications
+
+### Version Control
+
+**Jujutsu (jj) Setup for GitHub-friendly Development:**
+
+- Use `jj git init --colocate` for existing git repos (recommended for this project)
+- Colocated repos automatically sync jj and git on every command
+- Enables mixing `jj` and `git` commands seamlessly
+- Tools expecting `.git` directory continue to work
+
+**Essential jj configuration:**
+```bash
+jj config edit --user
+```
+
+Add these settings:
+```toml
+[git]
+auto-local-bookmark = true  # Import all remote bookmarks automatically
+
+[snapshot]  
+auto-update-stale = true    # Auto-update stale working copies when switching contexts
+```
+
+**Key workflow improvements over git:**
+- Anonymous branches - no need to name every small change
+- Better conflict resolution and interactive rebase
+- `jj absorb` automatically squashes changes into relevant ancestor commits
+- `jj undo` and `jj op restore` for powerful history manipulation
+- Empty commit on top by default (enables easier experimentation)
+
+**GitHub integration commands:**
+- `jj git fetch` + `jj rebase -d main` (replaces `git pull`)
+- `jj bookmark create <name>` for named branches
+- SSH keys recommended for GitHub (as of Oct 2023)
+- Support for both "add commits" and "rewrite commits" review workflows
 
 ```
