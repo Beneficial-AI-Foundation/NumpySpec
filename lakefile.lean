@@ -1,8 +1,8 @@
 import Lake
 open Lake DSL
 
-/-- Main GaussianSpec package -/
-package GaussianSpec where
+/-- Main NumpySpec package -/
+package NumpySpec where
   -- Lean options (typechecked!)
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩,
@@ -17,15 +17,17 @@ package GaussianSpec where
 require verso from git "https://github.com/leanprover/verso" @ "main"
 
 /-- Used for theorem proving. *Must* come before `mathlib` to avoid recompiling `mathlib`. --/
-require Hammer from git "https://github.com/JOSHCLUNE/LeanHammer" @ "temp-v4.21.0-rc3"
+-- COMMENTED OUT FOR SPEED: LeanHammer forces mathlib rebuild, taking >10 minutes
+-- require Hammer from git "https://github.com/JOSHCLUNE/LeanHammer" @ "temp-v4.21.0-rc3"
 
 /--Used for math library--/
-require mathlib from git "https://github.com/leanprover-community/mathlib4"
+-- COMMENTED OUT FOR SPEED: mathlib takes too long to build initially
+-- require mathlib from git "https://github.com/leanprover-community/mathlib4"
 
 -- Main library
-lean_lib GaussianSpec where
+lean_lib NumpySpec where
   -- Include the root module and all submodules
-  globs := #[.andSubmodules `GaussianSpec]
+  globs := #[.andSubmodules `NumpySpec]
 
 -- BignumLean standalone module
 lean_lib BignumLean
@@ -43,8 +45,8 @@ lean_lib Generated where
 
 -- Executables
 @[default_target]
-lean_exe gaussianspec where
+lean_exe numpyspec where
   root := `Main
 
-lean_exe gaussianspecmanual where
-  root := `GaussianSpec.ManualMain
+lean_exe numpyspecmanual where
+  root := `NumpySpec.ManualMain

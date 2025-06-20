@@ -14,4 +14,4 @@ except ModuleNotFoundError:
 
 
 def main() -> None:
-    print("Hello from gaussianspec!")
+    print("Hello from numpyspec!")

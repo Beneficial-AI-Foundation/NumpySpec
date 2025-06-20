@@ -145,12 +145,47 @@ uv run -m pytest -q
 lake build --verbose
 ```
 
-### Development Focus
+## Numpy Port Roadmap
 
-- **Priority 1**: Core mathematical definitions in `GaussianSpec.lean` and `GaussianSpec/` directory
-- **Priority 2**: Numerical types and arithmetic in `BignumLean.lean`
-- **Priority 3**: Theorem proving and verification of numerical algorithms
-- **Deferred**: Cloud infrastructure, RL training, documentation systems
+To provide a clear, actionable plan for porting numpy-style linear algebra to Lean 4, this roadmap addresses core matrix types, verification strategy, API design, and next implementation steps.
+
+### 1. Matrix Types and Core Operations
+
+- **Dense matrices** (`Matrix (m : Nat) (n : Nat) α`): fixed-size, nested `Fin`-indexed `Vec` or `Array`.
+- **Sparse matrices** (`SparseMatrix α`): map-based representation for mostly-zero data.
+- **Block matrices & views**: support submatrix slicing and block composition.
+- **Key operations to port first**:
+  - Matrix multiplication (`mmul`)
+  - Transpose (`transpose`)
+  - LU decomposition / Gaussian elimination (`lu` / `gaussianElim`)
+  - Linear solve (`solve`)
+  - Determinant (`determinant`) and inverse (`inverse`)
+
+### 2. Verification vs. Performance Strategy
+
+- **Spec vs. Exec separation**: `MatrixSpec` module for pure proofs; `MatrixExec` for efficient code.
+- **Refinement proofs**: each executable function has a correctness theorem linking back to the spec.
+- **Performance tuning**: use Lean 4 `Array`/`UArray`, `@[inline]`, and `@[specialize]` pragmas for critical loops.
+- **Numeric backend**: integrate `BignumLean` and bitvectors for safe low-level arithmetic.
+
+### 3. Numpy-Compatible API Design
+
+- **Indexing & shape**: 0-based `(i, j)`, `.shape : (m, n)` accessor.
+- **Operator overloading**: `*`, `+`, `-`, `.*`, `./` with standard Lean typeclass instances (`Mul`, `Add`, …).
+- **Constructors / converters**:
+  - `Matrix.ofList` / `SparseMatrix.ofList`: from nested lists.
+  - `.toList`: back to Lean lists.
+- **Convenience methods**: `.T` for transpose, `.dot` for inner products, broadcasting helpers later.
+
+### 4. Next Steps
+
+1. **Core types**: implement `Matrix` & `SparseMatrix` in `GaussianSpec.Matrix`.
+2. **Spec module**: define `mmul_spec`, `lu_spec`, `solve_spec`, etc. with `theorem …_correct`.
+3. **Exec module**: write executable versions, prove `refines` the spec.
+4. **API layer**: add `GaussianSpec.NumpyCompat` exporting constructors, notation, and overloaded ops.
+5. **Benchmark & test**: small-scale benchmarks (`#eval`, `timeIt`) and `pytest` examples in Python.
+6. **Docs & examples**: notebook-style tutorials showing numpy-to-Lean translation.
+7. **Iterate**: profile, optimize, and extend to broadcasting & batched operations.
 
 ## Lean Development Guidelines
 

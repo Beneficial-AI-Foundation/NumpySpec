@@ -2,7 +2,7 @@ from __future__ import annotations
 """Simple PPO trainer for LeanEnv.
 
 Usage:
-    uv run src/gaussianspec/rl_trainer.py --steps 10000
+    uv run src/numpyspec/rl_trainer.py --steps 10000
 
 The trainer loads a tiny GPT‑2 policy via stable‑baselines3's MLP (text encoded)
 for now. This is a placeholder until we integrate Kimina‑Prover as policy.

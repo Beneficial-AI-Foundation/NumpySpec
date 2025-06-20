@@ -21,7 +21,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 # Root directory that stores Markdown rule cards.  We resolve relative to the
-# *project* root (two levels up from this file – `src/gaussianspec/`).  This
+# *project* root (two levels up from this file – `src/numpyspec/`).  This
 # keeps the helper robust even when called from a vendored location.
 
 _RULES_DIR = Path(__file__).resolve().parents[2] / ".cursor/rules"

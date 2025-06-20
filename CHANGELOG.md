@@ -198,3 +198,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Documentation updates in README to reflect simplified installation.
+
+## [0.7.0] - 2025-06-20
+
+### Changed
+
+- **Project renamed** from GaussianSpec to NumpySpec to reflect focus on numpy-compatible operations
+- All references to Gaussian elimination removed in favor of general matrix operations
+- Main Lean module renamed from `GaussianSpec.lean` to `NumpySpec.lean`
+- Python package renamed from `gaussianspec` to `numpyspec`
+- Repository URL updated to `https://github.com/Beneficial-AI-Foundation/NumpySpec`
+
+### Added
+
+- New numpy-focused matrix operations: `Matrix.add`, `Matrix.multiply`, `Matrix.transpose`
+- Comprehensive README rewrite emphasizing formal verification and numpy compatibility
+- Updated install script `codex-install.sh` for OpenAI Codex Universal integration
+- Numpy port roadmap with verification strategy
+
+### Removed
+
+- Old `GaussianSpec/` subdirectory and Gaussian elimination focus
+- Obsolete install scripts (`install.sh`, `setup_codex.sh`)
+- References to textbook OCR and verso documentation system

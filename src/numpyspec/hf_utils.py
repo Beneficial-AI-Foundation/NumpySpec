@@ -8,7 +8,7 @@ area.
 
 Example
 -------
->>> from gaussianspec.hf_utils import load_model, generate
+>>> from numpyspec.hf_utils import load_model, generate
 >>> model, tok = load_model("sshleifer/tiny-gpt2")
 >>> print(generate(model, tok, "Hello", max_new_tokens=5))
 "Hello..."  # doctest: +SKIP

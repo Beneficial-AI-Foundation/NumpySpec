@@ -1,7 +1,7 @@
 [project]
-name = "gaussianspec"
+name = "numpyspec"
 version = "0.1.0"
-description = "Gaussian elimination specification"
+description = "Formally verified numpy-compatible operations"
 readme = "README.md"
 authors = [{ name = "Alok Singh", email = "alokbeniwal@gmail.com" }]
 requires-python = ">=3.12"
@@ -24,7 +24,7 @@ dependencies = [
 ]
 
 [project.scripts]
-gaussianspec = "gaussianspec:main"
+numpyspec = "numpyspec:main"
 
 [build-system]
 requires = ["hatchling"]

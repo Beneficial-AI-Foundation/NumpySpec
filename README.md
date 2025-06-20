@@ -1,47 +1,56 @@
-# GaussianSpec
+# NumpySpec
 
-GaussianSpec is a **cloud-native Lean 4 research playground**: all compilation and
-goal-state introspection are off-loaded to a **Pantograph Lean 4 server running
-on Morph Cloud**.  This enables millisecond-latency, horizontally scalable
-verification for RL agents while keeping the repo light-weight.
+NumpySpec is a **formally verified numpy-compatible library** for Lean 4, providing mathematically proven implementations of matrix operations with numpy-style APIs.
 
 ## Overview
 
-This project aims to formally specify that Gaussian elimination, when applied to a nonsingular square matrix `A`, produces its left inverse.
+This project aims to port essential numpy functionality to Lean 4 with formal verification, starting with core matrix operations. Unlike traditional numpy implementations, every operation comes with mathematical proofs of correctness.
 
-The core specification is found in `GaussianSpec.lean`:
+The core specification is found in `NumpySpec.lean`:
 
-- `gaussianElimination`: A (currently sorried) function representing the Gaussian elimination algorithm.
-- `gaussianElimination_is_left_inverse`: A theorem stating that `gaussianElimination A * A = 1` for a nonsingular matrix `A`.
+- `Matrix.add`: Element-wise matrix addition with type-safe dimensions
+- `Matrix.multiply`: Matrix multiplication with dimension checking  
+- `Matrix.transpose`: Matrix transposition preserving mathematical properties
+- Future: Broadcasting, linear algebra decompositions, and advanced operations
+
+## Key Features
+
+- **Formal Verification**: Every operation is mathematically proven correct
+- **Numpy Compatibility**: Familiar API design for numpy users
+- **Type Safety**: Lean's type system prevents dimension mismatches
+- **Cloud-Native**: Compilation and verification offloaded to Pantograph servers on MorphCloud
+- **RL Training**: Reinforcement learning agents for automated theorem proving
 
 ## Dependencies
 
 Local machine only needs:
 
-* Python ≥ 3.12 with [`uv`](https://github.com/astral-sh/uv) (see `Justfile`).
-* [`morphcloud` SDK](https://pypi.org/project/morphcloud/) ≥ 0.1.67 (auto-installed via `uv sync`).
+* Python ≥ 3.12 with [`uv`](https://github.com/astral-sh/uv) (see `Justfile`)
+* [`morphcloud` SDK](https://pypi.org/project/morphcloud/) ≥ 0.1.67 (auto-installed via `uv sync`)
 
 ## Installation
 
 ```bash
-git clone https://github.com/alok/GaussianSpec.git
-cd GaussianSpec
-just sync   # one-liner: installs all Python deps (Pantograph, LeanTool, …)
+git clone https://github.com/Beneficial-AI-Foundation/NumpySpec.git
+cd NumpySpec
+just sync   # installs all Python deps (Pantograph, LeanTool, …)
 ```
 
 Everything else (Elan, Lean toolchain) is provisioned automatically in the
 remote Pantograph snapshot when you invoke any `just pipeline` or
 `just build-*` target.
 
+### Alternative: One-Click Setup with Codex
+
+For automated cloud environments:
+
+```bash
+./codex-install.sh  # Non-interactive setup for OpenAI Codex Universal
+```
+
 ## Local build (optional)
 
-If you really want to compile locally you still can. The project uses a unified
-`lakefile.lean` (type-checked!) that manages both the main codebase and generated
-code in a workspace-like structure.
-
-**Important**: the pipeline produces Lean files under the `Generated` namespace
-(e.g. `generated/Spec/Chunk0001_0050.lean`). These files are *not* part of the
-default `lake build` target, so you must request them explicitly:
+If you want to compile locally, the project uses a unified `lakefile.lean` that manages both the main codebase and generated code:
 
 ```bash
 # Build the root package (default)
@@ -52,84 +61,94 @@ just build-all                # → `lake build allLibs`
 
 # Build only generated code
 lake build generated
-
-# Convenience — build both in one step
-just build-all
 ```
-
-The new `build-all` recipe is defined in the `Justfile` and simply calls
-`lake build` followed by `lake build Generated`.  For day-to-day work we still
-recommend the cloud pipeline (next section) but the local path is useful when
-working offline.
 
 ## Cloud Compilation
 
 The project supports remote compilation via Pantograph servers on MorphCloud. First run provisions an *Infinibranch* snapshot (≈ 5 min). Subsequent runs reuse the warmed snapshot/instance.
 
-## Automated multi-agent loop
+## Numpy Port Roadmap
 
-### Key stages
+### 1. Core Matrix Operations (Current Focus)
+- ✅ Basic matrix types with fixed dimensions
+- 🚧 Matrix addition, multiplication, transpose
+- 📋 Element access and slicing
+- 📋 Broadcasting support
 
-1. Edit (`LeanEditSubagent`) – templatized edits
-2. **Remote compile (`LeanRemoteBuildSubagent`)** – Pantograph HTTP POST
-3. Feedback parse → RL reward / next action
+### 2. Linear Algebra
+- 📋 LU decomposition
+- 📋 Matrix inversion
+- 📋 Eigenvalue computation
+- 📋 SVD decomposition
 
-## Roadmap
+### 3. Advanced Features
+- 📋 Sparse matrix support
+- 📋 Batch operations
+- 📋 GPU computation integration
+- 📋 Performance optimization
 
-See `plan.md` for an up-to-date progress tracker.
+### 4. Verification Strategy
+- **Spec vs. Exec separation**: Pure mathematical specifications with efficient implementations
+- **Refinement proofs**: Each executable function proven correct against its specification
+- **Property-based testing**: Integration with Lean's testing framework
 
-## Usage
+## Automated Agent System
 
-The primary goal is library development and formal proof. You can explore the definitions and theorems within the Lean environment.
+NumpySpec includes RL-powered agents for automated development:
+
+### Multi-Agent Architecture
+
+**Core Agents:**
+- `LeanEditSubagent`: Applies edits to Lean files with error handling
+- `LeanBuildSubagent`: Runs local `lake build` and parses output  
+- `LeanRemoteBuildSubagent`: Cloud compilation via Pantograph
+- `FeedbackParseSubagent`: Extracts actionable information from build output
+- `LakeProjectInitSubagent`: Project initialization and dependency management
+
+**RL Training:**
+- PPO-based theorem proving agent
+- Custom Lean environment for proof search
+- Integration with state-of-the-art language models
+
+### Usage
+
+```python
+from numpyspec.rl_env import LeanEnv
+from numpyspec.rl_trainer import train_agent
+
+# Train an RL agent for theorem proving
+train_agent(steps=10000)
+
+# Use subagents for development automation
+from numpyspec.subagents import LeanEditSubagent, LeanBuildSubagent
+
+edit_agent = LeanEditSubagent()
+build_agent = LeanBuildSubagent()
+```
 
 ## Contributing
 
-Contributions are welcome! Please focus on:
+Contributions welcome! Focus areas:
 
-1. Implementing the `gaussianElimination` function based on standard algorithms or `mathlib` components.
-2. Proving the `gaussianElimination_is_left_inverse` theorem.
-3. Adding further specifications or related matrix properties.
+1. **Core Operations**: Implement matrix operations with formal proofs
+2. **API Design**: Ensure numpy compatibility while maintaining mathematical rigor
+3. **Performance**: Optimize implementations without sacrificing correctness
+4. **Documentation**: Examples showing numpy-to-Lean translation
+
+## Research Applications
+
+NumpySpec enables:
+- **Verified Scientific Computing**: Mathematical guarantees for numerical algorithms
+- **Educational Tool**: Learn formal methods through familiar numpy operations  
+- **AI Safety Research**: Provably correct implementations for safety-critical applications
+- **Automated Theorem Proving**: RL agents learning to prove mathematical properties
 
 ## License
 
 This project is licensed under the Apache-2.0 license - see the LICENSE file for details.
 
-## TODO
+## Related Projects
 
-- [ ] Implement `gaussianElimination` function.
-- [ ] Prove `gaussianElimination_is_left_inverse`.
-- [ ] Consider specifying properties related to row echelon form.
-
-## Automated Agent Feedback Loop
-
-This project includes a MorphCloud-driven Lean agent (`src/gaussianspec/agent.py`) that automates the feedback loop for Lean code development:
-
-- Drives Lean code edits, builds, and parses feedback for the Gaussian elimination spec.
-- Uses the [morphcloud](https://pypi.org/project/morphcloud/) SDK for orchestration (ready for cloud/VM integration).
-- Compositional, pure functional design: all logic is broken into small, typed units for easy extension.
-- Example usage included; ready for integration with MorphCloud and `.cursorrules` for meta-programmatic Lean development.
-
-
-To use or extend the agent:
-
-1. Edit `src/gaussianspec/agent.py` to add new edit strategies or feedback parsing.
-2. Run the agent as a script or import its functions in your own orchestration code.
-3. The agent can be extended to drive Lean code via MorphCloud VMs, automate theorem search, and more.
-
-## Modular Subagent Architecture (v0.3.0)
-
-The agent system is now built from modular, composable subagents, each with a clear goal and feedback interface. See `src/gaussianspec/subagents.py` for details.
-
-**Subagents:**
-- `LeanEditSubagent`: Applies edits to Lean files, reporting success or error.
-- `LeanBuildSubagent`: Runs `lake build` and returns build output and status.
-- `LeanRemoteBuildSubagent`: Compiles via remote Pantograph server.
-- `FeedbackParseSubagent`: Parses Lean build output for actionable feedback.
-- `LakeProjectInitSubagent`: Initializes Lake projects with dependencies.
-
-Each subagent is a pure dataclass with a `run()` method and a result type. Subagents can be composed into pipelines, forked for retries or escalation, and orchestrated for robust, feedback-driven development.
-
-**Example composition:**
-- Edit Lean file → build → parse feedback → (repeat or escalate)
-
-This enables fine-grained automation, traceability, and easy extension for new tasks or agent types.
+- **FuncTracker**: ASCII table parsing for development progress tracking (separate module)
+- **BignumLean**: Verified bignum arithmetic for numerical stability
+- **LeanTool**: Integration utilities for Lean development workflows
