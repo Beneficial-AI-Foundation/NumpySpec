@@ -239,10 +239,8 @@ install_lean_dev_tools() {
     
     # Install additional Lean tooling
     export PATH="$HOME/.elan/bin:$PATH"
-    if command -v lake >/dev/null; then
-        echo "📦 Setting up Lean cache..."
-        lake exe cache get 2>/dev/null || echo "⚠️ Lean cache setup failed"
-    fi
+    # Note: Skipping 'lake exe cache get' since mathlib is commented out for speed
+    echo "📦 Lean cache skipped (no mathlib dependency)"
     
     echo "✅ Lean development tools installed"
 }
