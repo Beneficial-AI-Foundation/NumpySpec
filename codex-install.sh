@@ -209,13 +209,13 @@ install_jujutsu() {
         Darwin*)
             brew install jj 2>/dev/null || {
                 echo "⚠️ Jujutsu not available via brew, trying cargo..."
-                cargo install --git https://github.com/martinvonz/jj.git --bin jj 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
+                cargo install --locked --bin jj jj-cli 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
             }
             ;;
         Linux*)
             # Try cargo install first
             if command -v cargo >/dev/null; then
-                cargo install --git https://github.com/martinvonz/jj.git --bin jj 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
+                cargo install --locked --bin jj jj-cli 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
             fi
             ;;
     esac
