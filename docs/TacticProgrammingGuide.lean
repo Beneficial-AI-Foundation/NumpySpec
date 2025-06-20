@@ -1,6 +1,26 @@
 import Lean -- Lean's metaprogramming
+
+/-!
+# Lean Tactic Programming Guide
+
+NOTE: This file is for documentation purposes only. It may contain code that requires
+additional dependencies. CI builds may skip validation of this file.
+To fully use this file locally, install the required packages with:
+
+```
+require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
+require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
+```
+-/
+
+-- Optional imports - these will only be used if available in the environment
+#if haveLakeDep?[batteries]
 import Batteries
+#endif
+
+#if haveLakeDep?[Qq]
 import Qq -- convenient term building / matching
+#endif
 
 namespace MetaProgrammingTutorial
 
