@@ -27,6 +27,9 @@ lean_lib GaussianSpec where
   -- Include the root module and all submodules
   globs := #[.andSubmodules `GaussianSpec]
 
+-- BignumLean standalone module
+lean_lib BignumLean
+
 -- FuncTracker sublibrary for 2D function tracking tables
 lean_lib FuncTracker where
   -- Include all FuncTracker modules

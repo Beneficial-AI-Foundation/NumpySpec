@@ -1,4 +1,5 @@
 import generated.Spec.Spec
+import BignumLean
 
 /-!
 # GaussianSpec entry point

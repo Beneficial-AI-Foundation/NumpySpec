@@ -11,7 +11,7 @@ A Lean 4 library for tracking function implementation progress using table synta
 ## Core Components
 
 - `BasicV2`: Core data structures (Status, TrackedFunction, FunctionTable)
-- `GridParserV2`: Parser for ASCII table format with borders  
+- `GridParserV2`: Parser for ASCII table format with borders
 - `SimpleValidation`: Validated elaborator that checks function names exist
 - `RegionPredicates`: Compositional predicate checking for table regions
 
@@ -39,7 +39,7 @@ validateTableRegion myProgress predicate region
 ## Status Symbols
 
 - `✗` - Not started
-- `⋯` - In progress  
+- `⋯` - In progress
 - `✓` - Implemented
 - `✓✓` - Tested
 - `✓✓✓` - Documented
