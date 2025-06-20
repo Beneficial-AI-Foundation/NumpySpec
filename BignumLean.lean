@@ -4,16 +4,17 @@ import Mathlib.Tactic.Linarith
 import Init.Data.BitVec.Basic
 import Init.Data.Nat.Log2  -- Nat.log2 & lemmas
 
-import Init.Data.BitVec.Basic
-import Init.Data.Nat.Log2
 open scoped BitVec
 
-open scoped BitVec
-/-
-  BitVec Arithmetic and Verification in Lean 4
-  ---------------------------------------------
+/-!
+  # BitVec Arithmetic Demo for Max
+
+  This file demonstrates BitVec arithmetic and verification in Lean 4.
   Using Lean's native BitVec type for fixed-width arithmetic operations.
   Includes: addition, subtraction, multiplication, and modular operations.
+
+  **Note**: This was created as a demo for Max to show Lean 4's capabilities
+  with bitvector arithmetic and formal verification.
 -/
 
 /-- Convert a natural number to a BitVec of width w -/
