@@ -1,6 +1,6 @@
-# Compositional Parser Combinators in Lean 4
+# FuncTracker: Progress Presentation System in Lean
 
-This guide explains how to write parsers using parser combinators in a compositional (functorial) way, based on studying Lean 4's internal Parsec library and the lean4-parser package.
+This system demonstrates compositional parser combinators in Lean 4 for parsing ASCII tables and tracking function development progress. Built as a way to present development progress to management directly within Lean itself, providing formal validation of project status and function tracking.
 
 ## Core Concepts
 

@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Lean 4 / mathlib Naming Conventions
 
 ### Case Styles by Declaration Type
+
 - **`snake_case`**: Terms of `Prop` (theorems, lemmas, proofs)
   - Example: `add_comm`, `lt_of_succ_le`
 - **`UpperCamelCase`**: `Prop`s, `Type`s, inductive types, structures, classes
@@ -14,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Functions should be named like their return values
 
 ### Variable Naming Conventions
+
 - Universes: `u`, `v`, `w`
 - Generic types: `α`, `β`, `γ`, `δ`
 - Elements of generic types: `x`, `y`, `z`
@@ -24,12 +26,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Functions: `f`, `g`
 
 ### Theorem and Lemma Naming Patterns
+
 - Describe the conclusion concisely
 - Use `_of_` to indicate "derived from"
 - Order: conclusion first, then hypotheses
 - Example: `lt_of_succ_le` means "less than, derived from successor ≤"
 
 ### Special Suffixes and Prefixes
+
 - Extensionality: `.ext`
 - Injectivity: `_injective` or `_inj`
 - Induction principles: include `induction`
@@ -38,12 +42,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Constructor lemmas: `mk`
 
 ### Predicate and Class Naming
+
 - Predicates on types typically use prefixes (e.g., `isClosed_Icc`)
 - Prop-valued classes:
   - Use `Is` prefix for noun-like classes: `IsTopologicalRing`
   - Adjective-like classes can omit `Is`: `Normal`, `Finite`
 
 ### Common Patterns
+
 - `intro` lemmas: Introduce a property (e.g., `continuous_intro`)
 - `elim` lemmas: Eliminate/use a property
 - `_iff_` for bi-implications
@@ -52,6 +58,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `_ne_` for inequalities
 
 ### Practical Examples
+
 ```lean
 -- Good theorem names
 theorem add_le_add_left (a b c : ℕ) (h : a ≤ b) : c + a ≤ c + b := ...
@@ -63,6 +70,7 @@ def mapWithIndex (f : ℕ → α → β) : List α → List β := ...
 ```
 
 ### Key Principles
+
 - Prioritize clarity and mathematical intuition
 - Be consistent with existing mathlib patterns
 - Make names predictable and searchable
@@ -85,6 +93,7 @@ flowchart TD
 ```
 
 **Key Components:**
+
 - **Mathematical Core** (`GaussianSpec.lean`, `GaussianSpec/`): Core linear algebra definitions and theorems
 - **Numerical Types** (`BignumLean.lean`): Bignum and bitvector arithmetic for numerical computing
 - **Verification**: Formal proofs ensuring correctness of numerical algorithms
@@ -94,24 +103,29 @@ flowchart TD
 The following files have drifted from the main objective and can be considered for removal or archival:
 
 **Cloud Infrastructure** (can be re-introduced later):
+
 - `src/gaussianspec/lean_server.py` - MorphCloud/Pantograph remote compilation
 - `src/gaussianspec/subagents.py` - Remote build agents
 - `src/gaussianspec/agent.py` - Cloud orchestration
 
 **Textbook/Educational Content** (dead/obsolete):
+
 - `textbook/` - Numerical Recipes PDFs
 - `generated/versobook/` - Verso documentation system
 - `_out/` - Generated HTML docs
 
-**Reinforcement Learning** (separate research direction):
-- `src/gaussianspec/rl_env.py` - RL training environment
-- `src/gaussianspec/rl_trainer.py` - PPO trainer
+**Reinforcement Learning** (upcoming integration):
+
+- `src/gaussianspec/rl_env.py` - RL training environment for theorem proving
+- `src/gaussianspec/rl_trainer.py` - PPO trainer for proof search
 - `models/ppo_leanenv.zip` - Trained RL model
 
-**Table Parsing System** (separate project):
-- `FuncTracker.lean` and `FuncTracker/` directory - ASCII table parsing, unrelated to numpy
+**Progress Presentation System** (management reporting):
+
+- `FuncTracker.lean` and `FuncTracker/` directory - ASCII table parsing for presenting development progress to management in Lean
 
 **Development/Setup Scripts** (may need cleanup):
+
 - Various setup and installation scripts
 - OCR-related files (`plan.md`, `notes.md`)
 - Browser logs and test reports
@@ -119,6 +133,7 @@ The following files have drifted from the main objective and can be considered f
 ## Development Commands
 
 ### Building and Testing
+
 ```bash
 # Local Lean build (primary workflow)
 lake build
@@ -131,6 +146,7 @@ lake build --verbose
 ```
 
 ### Development Focus
+
 - **Priority 1**: Core mathematical definitions in `GaussianSpec.lean` and `GaussianSpec/` directory
 - **Priority 2**: Numerical types and arithmetic in `BignumLean.lean`
 - **Priority 3**: Theorem proving and verification of numerical algorithms
@@ -139,16 +155,19 @@ lake build --verbose
 ## Lean Development Guidelines
 
 ### Import and Module Structure
+
 - Imports MUST come before any syntax elements, including module and doc comments
 - Use `import LeanSearchClient` for theorem search capabilities
 - Set `linter.missingDocs = true` and `relaxedAutoImplicit = false` in lakefile.toml
 
 ### Common Errors and Solutions
+
 - **"unexpected token 'namespace'"**: Module/doc comment placed incorrectly (should be after imports)
 - **"unexpected token"**: Often caused by misplaced docstrings - use multiline comments instead
 - **Build failures**: Run `lake build` locally before committing to catch syntax errors
 
 ### Theorem Search
+
 ```lean
 -- String queries must end with period
 #search "nonsingular."
@@ -158,6 +177,7 @@ lake build --verbose
 ```
 
 ### Project-Specific Patterns
+
 - Use named holes (`?foo`) for incremental development
 - Wrap reserved names in «guillemets» when needed
 - Follow the DeepSeek approach: decompose proofs into `have` statements with `sorry` placeholders
@@ -165,11 +185,13 @@ lake build --verbose
 ## Working with Generated Code
 
 The project can generate Lean files in the `generated/` directory:
+
 - Root import file: `generated/Spec/Spec.lean`
 
 These are built separately from the main package - use `lake build Generated` or `just build-all`.
 
 ## Additional Guidelines
+
 - Always use `uv` for Python package management (not pip)
 - Run `lake build` before committing Lean changes
 - Use `rg` and `fd` instead of grep/find
@@ -179,20 +201,23 @@ These are built separately from the main package - use `lake build Generated` or
 ## Development Strategies
 
 ### Lean 4 Development Approach
-- Read the reference manual more assiduously. ultrathink. 
-- Figure out the parser by interactively building up toy components. 
-- Install `uvx lean-lsp-mcp` and spam it to get intermediate state (not just tactics). 
-- Spam it to verify the pieces work and build up FUNCTORIALLY. 
+
+- Read the reference manual assiduously. Ultrathink.
+- Figure out the parser by interactively building up toy components.
+- Install `uvx lean-lsp-mcp` and spam it to get intermediate state (not just tactics).
+- Spam it to verify the pieces work and build up FUNCTORIALLY.
 - You are a functional programmer
 
 ## Numpy Porting Progress
 
 ### Current Status
+
 - ✓ **Gaussian Elimination Foundation**: Basic linear algebra structure in `GaussianSpec.lean`
 - ✓ **Numerical Types**: Bitvector arithmetic and bignum support in `BignumLean.lean`
 - ✓ **Build System**: Lake configuration for Lean 4 mathematics
 
 ### Next Priorities for Numpy Porting
+
 1. **Matrix Types**: Define matrix structures compatible with numpy's ndarray
 2. **Linear Algebra Operations**: Implement core operations (dot product, matrix multiplication, etc.)
 3. **Broadcasting**: Implement numpy-style broadcasting semantics
@@ -200,8 +225,10 @@ These are built separately from the main package - use `lake build Generated` or
 5. **API Compatibility**: Create numpy-compatible function signatures
 
 ### Design Principles
+
 - **Correctness First**: Every operation should have formal verification
 - **Performance Later**: Focus on mathematical correctness before optimization
 - **Compositionality**: Build complex operations from verified primitives
 - **Type Safety**: Use Lean's type system to prevent numerical errors
+
 ```
