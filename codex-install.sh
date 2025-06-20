@@ -249,57 +249,9 @@ install_lean_dev_tools() {
 setup_python() {
     echo "📦 Setting up Python environment..."
     
-    # Create requirements.txt if missing
-    if [ ! -f requirements.txt ]; then
-        cat > requirements.txt << 'EOF'
-# Core scientific computing
-numpy>=1.24.0
-scipy>=1.10.0
-
-# HTTP and API clients
-requests>=2.31.0
-httpx>=0.25.0
-
-# Data validation and serialization
-pydantic>=2.0.0
-
-# Machine learning and RL
-gymnasium>=0.29.0
-torch>=2.0.0
-transformers>=4.30.0
-
-# Testing and development
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-pytest-xdist>=3.3.0
-
-# Code quality
-ruff>=0.1.0
-mypy>=1.5.0
-
-# Interactive development
-ipython>=8.0.0
-jupyter>=1.0.0
-
-# Async programming
-asyncio-mqtt>=0.11.0
-aiofiles>=23.0.0
-
-# Configuration and environment
-python-dotenv>=1.0.0
-typer>=0.9.0
-
-# Optional cloud dependencies
-boto3>=1.28.0
-azure-identity>=1.14.0
-google-cloud-storage>=2.10.0
-EOF
-    fi
-    
-    # Install dependencies with uv
-    uv venv .venv --python python3
-    source .venv/bin/activate
-    uv pip install -r requirements.txt
+    # Use uv sync with pyproject.toml (modern approach)
+    echo "🔄 Syncing dependencies from pyproject.toml..."
+    uv sync --all-groups
     
     echo "✅ Python environment ready"
 }
