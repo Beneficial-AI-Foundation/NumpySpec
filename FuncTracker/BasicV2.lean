@@ -44,6 +44,38 @@ instance : LT Status where
 instance : DecidableRel (· ≤ · : Status → Status → Prop) := 
   fun a b => inferInstanceAs (Decidable (a.toNat ≤ b.toNat))
 
+/-- Reference type for cross-references -/
+inductive ReferenceType where
+  | dependsOn    -- This function depends on the referenced function
+  | implements   -- This function implements the referenced interface/spec
+  | tests        -- This function tests the referenced function
+  | documents    -- This function documents the referenced function
+  | calls        -- This function calls the referenced function
+  | implementedBy -- This function is implemented by the referenced function
+  deriving Repr, BEq, DecidableEq
+
+/-- Convert ReferenceType to string -/
+def ReferenceType.toString : ReferenceType → String
+  | .dependsOn => "depends-on"
+  | .implements => "implements"
+  | .tests => "tests"
+  | .documents => "documents"
+  | .calls => "calls"
+  | .implementedBy => "implemented-by"
+
+instance : ToString ReferenceType where
+  toString := ReferenceType.toString
+
+/-- A typed cross-reference with additional metadata -/
+structure CrossReference where
+  /-- The referenced function name -/
+  target : Name
+  /-- Type of the reference relationship -/
+  refType : ReferenceType
+  /-- Optional note about the relationship -/
+  note : Option String := none
+  deriving Repr, BEq, DecidableEq
+
 /-- A tracked function with its implementation status -/
 structure TrackedFunction where
   /-- Name of the function as a Lean Name -/
@@ -58,8 +90,14 @@ structure TrackedFunction where
   complexity : Option String := none
   /-- Documentation string from Verso, if available -/
   docString : Option String := none
-  /-- Cross-references to related functions -/
+  /-- URL to Verso documentation, if available -/
+  versoLink : Option String := none
+  /-- Cross-references to related functions (legacy - use typedRefs for new code) -/
   refs : Array Name := #[]
+  /-- Typed cross-references with relationship information -/
+  typedRefs : Array CrossReference := #[]
+  /-- Version or commit hash when this entry was last updated -/
+  version : Option String := none
   deriving Repr, BEq, DecidableEq
 
 /-- Convert string to Name, handling module paths -/
@@ -128,6 +166,31 @@ def FunctionTable.updateStatus (table : FunctionTable) (name : Name) (status : S
 def FunctionTable.filterByStatus (table : FunctionTable) (status : Status) : Array TrackedFunction :=
   table.functions.filter fun f => f.status == status
 
+/-- Get all functions that reference a specific function -/
+def FunctionTable.getReferencingFunctions (table : FunctionTable) (target : Name) : Array TrackedFunction :=
+  table.functions.filter fun f => 
+    f.refs.contains target || f.typedRefs.any (fun r => r.target == target)
+
+/-- Get all functions referenced by a specific function -/
+def FunctionTable.getReferencedFunctions (table : FunctionTable) (source : Name) : Array Name :=
+  match table.find? source with
+  | none => #[]
+  | some f => f.refs ++ f.typedRefs.map (fun r => r.target)
+
+/-- Add a typed cross-reference to a function -/
+def FunctionTable.addTypedReference (table : FunctionTable) (source : Name) (ref : CrossReference) : FunctionTable :=
+  { table with
+    functions := table.functions.map fun f =>
+      if f.name == source then 
+        { f with typedRefs := f.typedRefs.push ref }
+      else f }
+
+/-- Update a function's Verso link -/
+def FunctionTable.updateVersoLink (table : FunctionTable) (name : Name) (link : String) : FunctionTable :=
+  { table with
+    functions := table.functions.map fun f =>
+      if f.name == name then { f with versoLink := some link } else f }
+
 /-- Generate a markdown documentation section for the function table -/
 def FunctionTable.toMarkdown (table : FunctionTable) : String := 
   let header := "| Name | Status | File | Lines | Complexity |\n|------|--------|------|-------|------------|\n"
@@ -146,6 +209,12 @@ def TrackedFunction.hoverInfo (f : TrackedFunction) : String :=
   (match f.docString with
    | some doc => s!"\n{doc}"
    | none => "") ++
-  (if f.refs.isEmpty then "" else s!"\nSee also: {f.refs}")
+  (match f.versoLink with
+   | some link => s!"\nDocs: {link}"
+   | none => "") ++
+  (if f.refs.isEmpty then "" else s!"\nSee also: {f.refs}") ++
+  (if f.typedRefs.isEmpty then "" else 
+    let refStr := f.typedRefs.toList.map (fun r => s!"{r.refType}({r.target})") |> String.intercalate ", "
+    s!"\nReferences: {refStr}")
 
 end FuncTracker

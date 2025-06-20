@@ -16,11 +16,11 @@ package NumpySpec where
 /-- Used for documentation generation -/
 require verso from git "https://github.com/leanprover/verso" @ "main"
 
-/-- Used for theorem proving. *Must* come before `mathlib` to avoid recompiling `mathlib`. --/
+-- Used for theorem proving. *Must* come before `mathlib` to avoid recompiling `mathlib`.
 -- COMMENTED OUT FOR SPEED: LeanHammer forces mathlib rebuild, taking >10 minutes
 -- require Hammer from git "https://github.com/JOSHCLUNE/LeanHammer" @ "temp-v4.21.0-rc3"
 
-/--Used for math library--/
+-- Used for math library
 -- COMMENTED OUT FOR SPEED: mathlib takes too long to build initially
 -- require mathlib from git "https://github.com/leanprover-community/mathlib4"
 
@@ -37,16 +37,16 @@ lean_lib FuncTracker where
   -- Include all FuncTracker modules
   globs := #[.andSubmodules `FuncTracker]
 
--- Generated code library
-lean_lib Generated where
-  srcDir := "."
-  -- Include all Spec modules from generated/Spec directory
-  globs := #[.andSubmodules `generated]
+-- Generated code library (COMMENTED OUT: requires mathlib)
+-- lean_lib Generated where
+--   srcDir := "."
+--   -- Include all Spec modules from generated/Spec directory
+--   globs := #[.andSubmodules `generated]
 
 -- Executables
 @[default_target]
 lean_exe numpyspec where
   root := `Main
 
-lean_exe numpyspecmanual where
-  root := `NumpySpec.ManualMain
+-- lean_exe numpyspecmanual where
+--   root := `NumpySpec.ManualMain

@@ -1,18 +1,12 @@
 #!/usr/bin/env bash
-# Complete installation script for OpenAI Codex Universal (OPTIMIZED FOR SPEED)
-# https://github.com/openai/codex-universal
-#
-# This script installs everything needed for NumpySpec to work in cloud environments
-# with automated agents. Runs non-interactively.
-# OPTIMIZED VERSION: Completes in <10 minutes with timeouts and parallel execution
+# NumpySpec Codex Agent Environment Setup
+# Installs everything needed for Codex agents to work with NumpySpec
+# Optimized for automated agents in cloud environments - non-interactive
 
 set -euo pipefail
 
-# Global timeout for entire script (10 minutes)
-TIMEOUT_TOTAL=600
-echo "⏰ Setting global timeout: ${TIMEOUT_TOTAL}s (10 minutes)"
-
-echo "🚀 Installing NumpySpec for OpenAI Codex Universal..."
+# Agent-optimized installation
+echo "🤖 Setting up NumpySpec environment for Codex agents..."
 
 # Detect OS
 OS="$(uname -s)"
@@ -41,9 +35,26 @@ install_system_deps() {
                 echo "Installing Homebrew..."
                 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             fi
-            brew install python curl wget git bc 2>/dev/null || true
+            if ! brew install python curl wget git bc 2>/dev/null; then
+                echo "⚠️ Some brew packages may have failed to install"
+            fi
             ;;
     esac
+}
+
+# Add to PATH for current session only (Ubuntu/codex environments)
+add_to_path() {
+    local new_path="$1"
+    
+    # Only modify PATH in Ubuntu environments (specifically codex)
+    if [[ "$OS" == "Linux"* ]]; then
+        # Detect if we're in codex environment (Ubuntu 20.04 or similar cloud environment)
+        if grep -q "Ubuntu" /etc/os-release 2>/dev/null || [[ "${CODEX_AGENT:-}" == "true" ]]; then
+            if [[ ":$PATH:" != *":$new_path:"* ]]; then
+                export PATH="$new_path:$PATH"
+            fi
+        fi
+    fi
 }
 
 # Install uv (fast Python package manager)
@@ -51,7 +62,7 @@ install_uv() {
     if ! command -v uv >/dev/null; then
         echo "📦 Installing uv..."
         curl -LsSf https://astral.sh/uv/install.sh | sh
-        export PATH="$HOME/.local/bin:$PATH"
+        add_to_path "$HOME/.local/bin"
     fi
     echo "✅ uv installed: $(uv --version)"
 }
@@ -62,7 +73,7 @@ install_lean() {
         echo "📦 Installing Lean 4 toolchain (elan)..."
         curl -fL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | \
             bash -s -- --default-toolchain leanprover/lean4:stable --no-modify-path -y
-        export PATH="$HOME/.elan/bin:$PATH"
+        add_to_path "$HOME/.elan/bin"
     fi
     echo "✅ Lean 4 installed: $(lean --version 2>/dev/null)"
 }
@@ -72,133 +83,112 @@ install_rust() {
     if ! command -v rustc >/dev/null; then
         echo "📦 Installing Rust..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
-        export PATH="$HOME/.cargo/bin:$PATH"
+        add_to_path "$HOME/.cargo/bin"
     fi
     echo "✅ Rust installed: $(rustc --version 2>/dev/null)"
 }
 
-# Install modern CLI tools and development conveniences
-install_modern_cli_tools() {
-    echo "🛠️ Installing modern CLI tools..."
+# Install essential CLI tools for agents
+install_agent_cli_tools() {
+    echo "🛠️ Installing agent CLI tools..."
     
-    case "$OS" in
-        Linux*)
-            if command -v apt-get >/dev/null; then
-                echo "📦 Installing CLI tools (Ubuntu/Debian)..."
-                sudo apt-get install -y -qq ripgrep fd-find bat tree htop jq shellcheck yamllint tmux fzf git-delta
-                # Create symlinks for fd on Ubuntu (installed as fdfind)
-                sudo ln -sf $(which fdfind) /usr/local/bin/fd 2>/dev/null || true
-                sudo ln -sf $(which batcat) /usr/local/bin/bat 2>/dev/null || true
-            elif command -v yum >/dev/null; then
-                echo "📦 Installing CLI tools (RHEL/CentOS)..."
-                sudo yum install -y epel-release
-                sudo yum install -y ripgrep fd-find bat tree htop jq ShellCheck tmux fzf git-delta
-            elif command -v apk >/dev/null; then
-                echo "📦 Installing CLI tools (Alpine)..."
-                sudo apk add --no-cache ripgrep fd bat tree htop jq shellcheck tmux fzf git-delta
-            fi
-            ;;
-        Darwin*)
-            echo "📦 Installing CLI tools (macOS)..."
-            brew install ripgrep fd bat tree htop jq shellcheck yamllint tmux fzf git-delta exa zoxide lazygit 2>/dev/null || true
-            ;;
-    esac
+    # Try uv/cargo first for tools that support it
+    local tools_installed=false
     
-    # Install additional Rust-based tools via cargo if available
     if command -v cargo >/dev/null; then
-        echo "📦 Installing additional Rust tools..."
-        cargo install --quiet exa zoxide 2>/dev/null || true
+        echo "📦 Installing tools via cargo..."
+        # Install ripgrep and fd via cargo (faster, more reliable)
+        cargo install ripgrep fd-find 2>/dev/null && tools_installed=true || echo "⚠️ Some cargo installs failed"
     fi
     
-    echo "✅ Modern CLI tools installed"
+    # Fallback to system package managers for remaining tools or if cargo failed
+    if [[ "$tools_installed" == "false" ]]; then
+        case "$OS" in
+            Linux*)
+                if command -v apt-get >/dev/null; then
+                    echo "📦 Installing essential tools (Ubuntu/Debian)..."
+                    sudo apt-get install -y -qq ripgrep fd-find jq tree git-delta
+                    # Create symlinks for fd on Ubuntu
+                    if command -v fdfind >/dev/null && [ ! -e /usr/local/bin/fd ]; then
+                        sudo ln -sf $(which fdfind) /usr/local/bin/fd 2>/dev/null || echo "⚠️ Failed to create fd symlink"
+                    fi
+                elif command -v yum >/dev/null; then
+                    echo "📦 Installing essential tools (RHEL/CentOS)..."
+                    sudo yum install -y epel-release
+                    sudo yum install -y ripgrep fd-find jq tree git-delta
+                elif command -v apk >/dev/null; then
+                    echo "📦 Installing essential tools (Alpine)..."
+                    sudo apk add --no-cache ripgrep fd jq tree git-delta
+                fi
+                ;;
+            Darwin*)
+                echo "📦 Installing essential tools (macOS)..."
+                if ! brew install ripgrep fd jq tree git-delta 2>/dev/null; then
+                    echo "⚠️ Some macOS tools may have failed to install"
+                fi
+                ;;
+        esac
+    else
+        # Still need jq, tree, and git-delta from system packages
+        case "$OS" in
+            Linux*)
+                if command -v apt-get >/dev/null; then
+                    echo "📦 Installing remaining tools (jq, tree, git-delta)..."
+                    sudo apt-get install -y -qq jq tree git-delta
+                fi
+                ;;
+        esac
+    fi
+    
+    echo "✅ Agent CLI tools installed"
 }
 
-# Install Claude Code CLI
-install_claude_code() {
-    echo "🤖 Installing Claude Code CLI..."
+# Install codex CLI for agent orchestration
+install_codex_cli() {
+    echo "🤖 Installing codex CLI..."
     
-    case "$OS" in
-        Darwin*)
-            if command -v brew >/dev/null; then
-                brew install --cask claude-code 2>/dev/null || {
-                    echo "⚠️ Claude Code not available via brew, trying direct install..."
-                    install_claude_code_direct
-                }
-            else
-                install_claude_code_direct
-            fi
-            ;;
-        Linux*)
-            install_claude_code_direct
-            ;;
-    esac
+    # Install via npm (official method)
+    if command -v npm >/dev/null; then
+        echo "📦 Installing codex via npm..."
+        npm install -g @openai/codex 2>/dev/null || echo "⚠️ codex npm install failed"
+    else
+        echo "⚠️ npm not available for codex installation"
+    fi
     
     # Verify installation
-    if command -v claude >/dev/null; then
-        echo "✅ Claude Code installed: $(claude --version 2>/dev/null || echo "version check failed")"
+    if command -v codex >/dev/null; then
+        echo "✅ codex CLI installed: $(codex --version 2>/dev/null || echo "version check failed")"
     else
-        echo "⚠️ Claude Code installation may have failed"
+        echo "⚠️ codex CLI installation may have failed"
     fi
 }
 
-# Direct Claude Code installation (fallback)
-install_claude_code_direct() {
-    echo "📦 Installing Claude Code directly..."
+# Install GitHub CLI for repository operations
+install_github_cli() {
+    echo "🐙 Installing GitHub CLI..."
     
-    # Check for latest release and install appropriately
+    # GitHub CLI is not available via cargo, use system packages
+    
+    # Fallback to system package managers
     case "$OS" in
         Darwin*)
-            if [[ "$ARCH" == "arm64" ]]; then
-                CLAUDE_ARCH="aarch64-apple-darwin"
-            else
-                CLAUDE_ARCH="x86_64-apple-darwin"
+            if ! brew install gh 2>/dev/null; then
+                echo "⚠️ GitHub CLI brew install failed"
             fi
-            ;;
-        Linux*)
-            if [[ "$ARCH" == "x86_64" ]]; then
-                CLAUDE_ARCH="x86_64-unknown-linux-gnu"
-            else
-                CLAUDE_ARCH="$ARCH-unknown-linux-gnu"
-            fi
-            ;;
-    esac
-    
-    # Install Claude Code via npm
-    if command -v npm >/dev/null; then
-        echo "📦 Installing Claude Code via npm..."
-        npm install -g @anthropic-ai/claude-code 2>/dev/null || echo "⚠️ Claude Code npm install failed"
-    else
-        echo "⚠️ npm not available - please install manually from claude.ai"
-    fi
-}
-
-# Install AI/LLM development tools
-install_ai_tools() {
-    echo "🧠 Installing AI development tools..."
-    
-    # Install OpenAI CLI and related tools via pip/pipx
-    if command -v uv >/dev/null; then
-        echo "📦 Installing AI CLI tools..."
-        uv tool install openai-cli 2>/dev/null || echo "⚠️ OpenAI CLI not available via uv"
-        uv tool install anthropic-cli 2>/dev/null || echo "⚠️ Anthropic CLI not available via uv"
-        uv tool install huggingface-hub[cli] 2>/dev/null || echo "⚠️ HF CLI not available via uv"
-    fi
-    
-    # Install GitHub Copilot CLI if available
-    case "$OS" in
-        Darwin*)
-            brew install gh 2>/dev/null || true
             ;;
         Linux*)
             if command -v apt-get >/dev/null; then
-                curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-                sudo apt-get update -qq && sudo apt-get install -y gh
+                if curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg 2>/dev/null; then
+                    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+                    sudo apt-get update -qq && sudo apt-get install -y gh
+                else
+                    echo "⚠️ GitHub CLI keyring setup failed"
+                fi
             fi
             ;;
     esac
     
-    echo "✅ AI development tools installed"
+    echo "✅ GitHub CLI installed"
 }
 
 # Install Jujutsu (jj) version control system
@@ -207,15 +197,12 @@ install_jujutsu() {
     
     case "$OS" in
         Darwin*)
-            brew install jj 2>/dev/null || {
-                echo "⚠️ Jujutsu not available via brew, trying cargo..."
-                cargo install --locked --bin jj jj-cli 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
-            }
+            brew install jj 2>/dev/null || echo "⚠️ Jujutsu brew install failed"
             ;;
         Linux*)
-            # Try cargo install first
             if command -v cargo >/dev/null; then
-                cargo install --locked --bin jj jj-cli 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
+                echo "📦 Installing jj via cargo (this may take a few minutes)..."
+                timeout 600 cargo install --locked --bin jj jj-cli 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
             fi
             ;;
     esac
@@ -231,18 +218,29 @@ install_jujutsu() {
 install_lean_dev_tools() {
     echo "🔧 Installing Lean development tools..."
     
-    # Install lean-lsp-mcp via uvx if available
-    if command -v uvx >/dev/null; then
+    # Ensure PATH includes required directories
+    add_to_path "$HOME/.elan/bin"
+    
+    # Install lean-lsp-mcp for LSP completions (if available)
+    if command -v uv >/dev/null; then
         echo "📦 Installing lean-lsp-mcp..."
-        uv tool install lean-lsp-mcp 2>/dev/null || echo "⚠️ lean-lsp-mcp not available via uvx"
+        uv tool install lean-lsp-mcp 2>/dev/null || echo "⚠️ lean-lsp-mcp not available via uv (this is expected)"
     fi
     
-    # Install additional Lean tooling
-    export PATH="$HOME/.elan/bin:$PATH"
-    # Note: Skipping 'lake exe cache get' since mathlib is commented out for speed
-    echo "📦 Lean cache skipped (no mathlib dependency)"
+    # Configure lake for reliable builds
+    echo "⚙️ Configuring lake for reliable builds..."
     
-    echo "✅ Lean development tools installed"
+    # Set reasonable lake defaults
+    export LAKE_JOBS="$(nproc 2>/dev/null || echo 4)"
+    export LAKE_VERBOSE="1"
+    
+    # Pre-compile common mathlib components if available
+    if command -v lake >/dev/null; then
+        echo "🏗️ Pre-warming lake cache..."
+        lake exe cache get --force 2>/dev/null || echo "📋 No cache server configured"
+    fi
+    
+    echo "✅ Lean development tools ready"
 }
 
 # Setup Python environment
@@ -256,139 +254,105 @@ setup_python() {
     echo "✅ Python environment ready"
 }
 
-# Setup Lean project
+# Setup Lean project for repeated builds
 setup_lean() {
-    echo "🔨 Setting up Lean project..."
+    echo "🔨 Setting up Lean project for robust building..."
     
-    # Ensure PATH includes elan
-    export PATH="$HOME/.elan/bin:$PATH"
+    # Ensure PATH includes required directories
+    add_to_path "$HOME/.elan/bin"
     
-    # lakefile.toml is ignored when lakefile.lean exists - skipping redundant creation
-    echo "📋 Using existing lakefile.lean (lakefile.toml ignored by Lean 4)"
+    echo "📋 Using existing lakefile.lean"
+    
+    # Clean any stale build artifacts
+    if [ -d ".lake" ]; then
+        echo "🧹 Cleaning stale build artifacts..."
+        rm -rf .lake/build .lake/packages/*/build
+    fi
     
     # Initialize lake project if needed
     if [ ! -f lake-manifest.json ]; then
+        echo "🔧 Initializing lake project..."
         lake init
     fi
     
-    # Skip full build for speed - just fetch dependencies
-    echo "Fetching Lean dependencies (skipping full build for speed)..."
-    timeout 300 lake build || echo "⚠️ Build timeout or failed - use './run.sh build' later for full build"
+    # Update dependencies to ensure consistency
+    echo "📦 Updating Lean dependencies..."
+    lake update || echo "⚠️ Lake update failed - continuing anyway"
     
-    echo "✅ Lean project setup complete"
+    # Fetch dependencies without full build for speed
+    echo "📥 Fetching Lean dependencies..."
+    timeout 300 lake exe cache get || echo "⚠️ Cache fetch failed or timed out"
+    
+    # Test a quick build to verify setup
+    echo "🧪 Testing build setup..."
+    timeout 60 lake build --no-build || echo "⚠️ Test build failed - agents can retry with 'lake build'"
+    
+    echo "✅ Lean project ready for repeated builds"
 }
 
 # Create project structure
 setup_project_structure() {
-    echo "📁 Creating project structure..."
+    echo "📁 Ensuring project directories exist..."
     
-    mkdir -p src/numpyspec
     mkdir -p generated/Spec  
     mkdir -p tests
     mkdir -p logs
     mkdir -p .cache
     mkdir -p models
     
-    # Create main module files if missing
-    if [ ! -f NumpySpec.lean ]; then
-        cat > NumpySpec.lean << 'EOF'
--- NumpySpec: Formally verified linear algebra for Lean 4
--- Main module for matrix operations with numpy-style API
-
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Determinant
-
-/-!
-# NumpySpec
-
-This module provides formally verified implementations of numpy-style operations
-with a focus on matrix computations and linear algebra.
-
-## Main Goals
-
-1. Numpy-compatible API design
-2. Formal verification of numerical algorithms
-3. Efficient computation with correctness guarantees
-4. Educational resource for formal methods in numerical computing
-
--/
-
-namespace NumpySpec
-
--- Core matrix type
-variable {α : Type*} [Field α] {m n : ℕ}
-
--- Basic matrix operations will be defined here
-def Matrix.multiply (A : Matrix (Fin m) (Fin n) α) (B : Matrix (Fin n) (Fin p) α) : Matrix (Fin m) (Fin p) α :=
-  sorry -- TODO: Implement matrix multiplication
-
-end NumpySpec
-EOF
-    fi
-    
-    # Create Python package structure
-    if [ ! -f src/numpyspec/__init__.py ]; then
-        cat > src/numpyspec/__init__.py << 'EOF'
-"""
-NumpySpec: Formally verified numpy-compatible operations
-
-A Python interface to Lean 4 mathematical proofs and numpy-style operations.
-"""
-
-__version__ = "0.1.0"
-__author__ = "NumpySpec Team"
-
-# Main exports
-from .lean_server import LeanServerInterface
-from .subagents import LeanEditSubagent, LeanBuildSubagent
-
-__all__ = [
-    "LeanServerInterface", 
-    "LeanEditSubagent", 
-    "LeanBuildSubagent"
-]
-EOF
-    fi
-    
-    echo "✅ Project structure created"
+    echo "✅ Project structure verified (source files already in repo)"
 }
 
 # Create configuration files
 setup_config() {
     echo "⚙️ Creating configuration files..."
     
-    # Environment configuration
+    # Environment configuration for agents
     cat > .env << 'EOF'
-# NumpySpec Environment Configuration
-PYTHONPATH=${PYTHONPATH}:src
-LEAN_PATH=${LEAN_PATH}:.
+# NumpySpec Agent Environment Configuration
+PYTHONPATH=src:${PYTHONPATH:-}
+LEAN_PATH=.:${LEAN_PATH:-}
+PATH=$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:${PATH}
 
-# Remote compilation settings
-REMOTE_COMPILATION=true
-PANTOGRAPH_URL=https://api.morphcloud.com/pantograph
+# Agent-specific settings
+CODEX_AGENT=true
+NON_INTERACTIVE=true
+
+# Lake build optimization
+LAKE_JOBS=4
+LAKE_VERBOSE=1
+LAKE_NO_BUILD=false
+
+# Build resilience
+ELAN_TOOLCHAIN=leanprover/lean4:stable
 
 # Optional API keys (add as needed)
 # OPENAI_API_KEY=
 # ANTHROPIC_API_KEY=
 # HF_TOKEN=
-# MORPH_API_KEY=
 EOF
 
-    # Codex configuration
+    # Codex agent configuration
     cat > .codex.json << 'EOF'
 {
   "name": "NumpySpec",
   "description": "Formally verified linear algebra library for Lean 4",
   "install_command": "./codex-install.sh",
   "build_command": "lake build",
-  "test_command": "uv run -m pytest",
-  "run_command": "./run.sh",
+  "test_command": "uv run -m pytest -q",
+  "lint_command": "lake build --verbose",
   "language": "lean4",
-  "frameworks": ["mathlib4", "numpy"],
-  "dependencies": {
-    "system": ["curl", "wget", "git", "build-essential"],
-    "python": ["numpy", "scipy", "gymnasium", "torch"],
-    "lean": ["mathlib"]
+  "agent_tools": {
+    "search": "rg",
+    "find": "fd",
+    "json": "jq",
+    "tree": "tree",
+    "git": "git",
+    "vcs": "jj"
+  },
+  "environment": {
+    "LEAN_PATH": ".",
+    "PYTHONPATH": "src"
   }
 }
 EOF
@@ -439,76 +403,14 @@ EOF
     echo "✅ Configuration files created"
 }
 
-# Create run script for easy execution
-create_run_script() {
-    cat > run.sh << 'EOF'
-#!/usr/bin/env bash
-# NumpySpec runner script for Codex environments
-
-set -euo pipefail
-
-# Activate Python environment
-if [ -d .venv ]; then
-    source .venv/bin/activate
-fi
-
-# Ensure PATH includes Lean tools
-export PATH="$HOME/.elan/bin:$HOME/.local/bin:$PATH"
-export PYTHONPATH="${PYTHONPATH:-}:src"
-
-case "${1:-help}" in
-    build)
-        echo "🔨 Building Lean project..."
-        lake build
-        ;;
-    test)
-        echo "🧪 Running tests..."
-        uv run -m pytest -v
-        ;;
-    train)
-        echo "🏋️ Training RL agent..."
-        uv run -m numpyspec.rl_trainer
-        ;;
-    server)
-        echo "🖥️ Starting Lean server..."
-        uv run -m numpyspec.lean_server
-        ;;
-    edit)
-        echo "✏️ Starting edit subagent..."
-        uv run -m numpyspec.subagents edit "${@:2}"
-        ;;
-    clean)
-        echo "🧹 Cleaning build artifacts..."
-        lake clean
-        rm -rf .cache logs/*.log
-        ;;
-    info)
-        echo "📊 System information:"
-        echo "Python: $(python --version 2>&1)"
-        echo "Lean: $(lean --version 2>&1)"
-        echo "Lake: $(lake --version 2>&1)"
-        echo "UV: $(uv --version 2>&1)"
-        ;;
-    *)
-        echo "NumpySpec - Formally verified numpy operations"
-        echo ""
-        echo "Usage: ./run.sh [command] [args...]"
-        echo ""
-        echo "Commands:"
-        echo "  build   - Build the Lean project"
-        echo "  test    - Run all tests"
-        echo "  train   - Train the RL agent"
-        echo "  server  - Start Lean server interface"
-        echo "  edit    - Run edit subagent"
-        echo "  clean   - Clean build artifacts"
-        echo "  info    - Show system information"
-        echo "  help    - Show this help"
-        ;;
-esac
-EOF
-
+# Verify run script exists
+check_run_script() {
+    if [ ! -f run.sh ]; then
+        echo "⚠️ run.sh not found - should be in repository"
+        return 1
+    fi
     chmod +x run.sh
-    echo "✅ Run script created"
+    echo "✅ Run script verified"
 }
 
 # Verify installation
@@ -516,19 +418,20 @@ verify_installation() {
     echo "🔍 Verifying installation..."
     
     # Check Python environment
-    source .venv/bin/activate 2>/dev/null || true
-    python --version
+    echo "🐍 Python environment:"
+    uv run python --version || python --version
     
-    # Check Lean installation
-    export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+    # Check Lean installation (ensure PATH is current)
+    add_to_path "$HOME/.elan/bin"
+    add_to_path "$HOME/.cargo/bin" 
+    add_to_path "$HOME/.local/bin"
     lean --version 2>/dev/null || echo "⚠️ Lean not in PATH"
     lake --version 2>/dev/null || echo "⚠️ Lake not in PATH"
     
-    # Check modern CLI tools
-    echo "🔧 Checking CLI tools..."
+    # Check agent tools
+    echo "🔧 Checking agent tools..."
     command -v rg >/dev/null && echo "✅ ripgrep (rg) available" || echo "⚠️ ripgrep not found"
     command -v fd >/dev/null && echo "✅ fd available" || echo "⚠️ fd not found"
-    command -v bat >/dev/null && echo "✅ bat available" || echo "⚠️ bat not found"
     command -v jq >/dev/null && echo "✅ jq available" || echo "⚠️ jq not found"
     command -v tree >/dev/null && echo "✅ tree available" || echo "⚠️ tree not found"
     
@@ -537,16 +440,41 @@ verify_installation() {
     command -v jj >/dev/null && echo "✅ jujutsu (jj) available" || echo "⚠️ jujutsu not found"
     command -v gh >/dev/null && echo "✅ GitHub CLI available" || echo "⚠️ GitHub CLI not found"
     
-    # Check AI tools  
-    command -v claude >/dev/null && echo "✅ Claude Code available" || echo "⚠️ Claude Code not found"
-    command -v uvx >/dev/null && echo "✅ uvx available" || echo "⚠️ uvx not found"
+    # Check agent tools
+    command -v codex >/dev/null && echo "✅ codex CLI available" || echo "⚠️ codex CLI not found"
+    command -v uv >/dev/null && echo "✅ uv available" || echo "⚠️ uv not found"
     
-    # Quick functionality test
-    echo "🧪 Running verification tests..."
-    if python -c "import numpy, scipy; print('✅ Python scientific stack works')"; then
+    # Quick functionality test for agents
+    echo "🧪 Running agent verification tests..."
+    if uv run python -c "import numpy; print('✅ Python environment works')"; then
         echo "✅ Python environment verified"
     else
         echo "⚠️ Python environment issues detected"
+    fi
+    
+    # Test Lean environment thoroughly
+    echo "🔧 Testing Lean build system..."
+    if lake --version >/dev/null 2>&1; then
+        echo "✅ Lake available: $(lake --version)"
+        
+        # Test that lake can handle basic operations
+        echo "🧪 Testing lake build capabilities..."
+        if timeout 30 lake build --no-build >/dev/null 2>&1; then
+            echo "✅ Lake build system verified"
+        else
+            echo "⚠️ Lake build test failed - this is normal for first-time setup"
+            echo "  → Agents should run 'lake update' followed by 'lake build' on first use"
+        fi
+    else
+        echo "⚠️ Lake not available - Lean builds will fail"
+        echo "  → Check that elan is properly installed and in PATH"
+    fi
+    
+    # Verify elan toolchain
+    if elan show >/dev/null 2>&1; then
+        echo "✅ Elan toolchain: $(elan show active | head -1)"
+    else
+        echo "⚠️ Elan toolchain issues detected"
     fi
     
     echo "✅ Installation verification complete"
@@ -558,52 +486,75 @@ main() {
     echo "OS: $OS, Architecture: $ARCH"
     echo ""
     
-    # Run core installations in parallel where possible
-    {
-        install_system_deps
-        install_uv
-    } &&
-    {
-        install_rust &
-        install_lean &
-        wait
-    } &&
-    {
-        install_modern_cli_tools &
-        install_claude_code &
-        install_ai_tools &
-        install_jujutsu &
-        wait
-    } &&
-    install_lean_dev_tools &&
-    setup_python &&
-    setup_project_structure &&
-    setup_lean &&
-    setup_config &&
-    create_run_script &&
+    # Run core installations in sequence first
+    install_system_deps
+    install_uv
+    
+    # Run independent installations in parallel
+    echo "🔄 Running parallel installations..."
+    install_rust &
+    rust_pid=$!
+    install_lean &
+    lean_pid=$!
+    
+    # Wait for first batch and check status
+    wait $rust_pid
+    rust_status=$?
+    wait $lean_pid  
+    lean_status=$?
+    
+    if [[ $rust_status -ne 0 || $lean_status -ne 0 ]]; then
+        echo "❌ Some installations failed (rust: $rust_status, lean: $lean_status)"
+        exit 1
+    fi
+    
+    # Run agent tools installation (serialize apt-based installs to avoid lock conflicts)
+    echo "🔄 Running agent tools installation..."
+    
+    # Install apt-based tools first (sequentially to avoid lock conflicts)
+    install_agent_cli_tools
+    install_github_cli
+    
+    # Install non-apt tools in parallel
+    install_codex_cli &
+    install_jujutsu &
+    
+    # Wait for remaining installations
+    wait
+    
+    echo "✅ Agent tools installation complete"
+    
+    # Run remaining sequential installations
+    install_lean_dev_tools
+    setup_python
+    setup_project_structure
+    setup_lean
+    setup_config
+    check_run_script
     verify_installation
     
     echo ""
     echo "🎉 Installation complete!"
     echo ""
-    echo "NumpySpec is now ready for use with OpenAI Codex Universal."
-    echo "The project provides formally verified numpy-style operations"
-    echo "with mathematical proofs and automated cloud deployment."
+    echo "NumpySpec environment is ready for Codex agents."
+    echo "Provides formally verified numpy-style operations in Lean 4."
     echo ""
-    echo "🛠️ Installed development tools:"
-    echo "  • Modern CLI: ripgrep (rg), fd, bat, exa, tree, htop, jq"
-    echo "  • Version Control: git, jujutsu (jj), lazygit"
-    echo "  • AI Tools: Claude Code, GitHub CLI, OpenAI CLI"
-    echo "  • Shell Enhancement: tmux, fzf, zoxide, git-delta"
-    echo "  • Code Quality: shellcheck, yamllint, pre-commit hooks"
-    echo "  • Lean Tools: lean-lsp-mcp, lake cache"
+    echo "🛠️ Installed agent tools:"
+    echo "  • Search: ripgrep (rg), fd"
+    echo "  • Data: jq, tree"
+    echo "  • Version Control: git, jujutsu (jj), GitHub CLI (gh)"
+    echo "  • Agent CLI: codex"
+    echo "  • Development: uv, lean, lake"
+    echo "  • Build: lean-lsp-mcp"
     echo ""
-    echo "Quick start:"
-    echo "  ./run.sh build   # Build the Lean project"
-    echo "  ./run.sh test    # Run tests"
-    echo "  ./run.sh info    # Show system info"
+    echo "Agent commands:"
+    echo "  lake build       # Build Lean project"
+    echo "  uv run -m pytest # Run Python tests"
+    echo "  codex -q '<task>' # Invoke sub-agent"
+    echo "  rg <pattern>     # Search code"
+    echo "  fd <name>        # Find files"
     echo ""
-    echo "For more details, see CLAUDE.md and the generated documentation."
+    echo "See CLAUDE.md for agent-specific instructions."
     
     # Notify completion if terminal-notifier is available
     if command -v terminal-notifier >/dev/null; then

@@ -1,7 +1,9 @@
 import FuncTracker.BasicV2
 import FuncTracker.GridParserV2
+import FuncTracker.GridParserV3
 import FuncTracker.SimpleValidation
 import FuncTracker.RegionPredicates
+import FuncTracker.VersoIntegration
 
 /-!
 # FuncTracker
@@ -10,10 +12,12 @@ A Lean 4 library for tracking function implementation progress using table synta
 
 ## Core Components
 
-- `BasicV2`: Core data structures (Status, TrackedFunction, FunctionTable)
+- `BasicV2`: Core data structures (Status, TrackedFunction, FunctionTable) with enhanced cross-reference support
 - `GridParserV2`: Parser for ASCII table format with borders
+- `GridParserV3`: Enhanced parser with Racket 2D-inspired cell spanning and spatial constraints
 - `SimpleValidation`: Validated elaborator that checks function names exist
 - `RegionPredicates`: Compositional predicate checking for table regions
+- `VersoIntegration`: Cross-reference database and documentation linking system
 
 ## Usage
 
@@ -49,10 +53,7 @@ The `funcTable!` syntax validates that all function names exist in the current e
 
 namespace FuncTracker
 
--- Re-export all main types and functions
-open BasicV2 (Status TrackedFunction FunctionTable Progress)
-open GridParserV2 (Grid GridCell)
-open SimpleValidation (elabFuncTableValidated)
-open RegionPredicates (Region Position RegionPredicate PredicateResult validateTableRegion statusAtLeast testedHasComplexity)
+-- Re-export all main types and functions from the FuncTracker namespace
+-- Since all modules are already in FuncTracker namespace, main types are already available
 
 end FuncTracker
