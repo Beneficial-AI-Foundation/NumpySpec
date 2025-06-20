@@ -71,50 +71,70 @@ def mapWithIndex (f : ℕ → α → β) : List α → List β := ...
 
 ## GaussianSpec Project Overview
 
-GaussianSpec is a cloud-native Lean 4 research playground that formally specifies Gaussian elimination as producing the left inverse of a nonsingular matrix. The project uses remote Pantograph servers for compilation, enabling millisecond-latency verification for RL agents.
+**Main Goal**: Port numpy functionality to Lean 4 with formal verification, starting with Gaussian elimination as a foundation for linear algebra operations.
+
+The project focuses on creating a formally verified mathematical library that provides numpy-like functionality in Lean 4, emphasizing correctness through theorem proving while maintaining computational efficiency.
 
 ### Core Architecture
 
 ```mermaid
 flowchart TD
-    edit["LeanEditSubagent"] --> choice{{"Remote?"}}
-    choice -- no --> buildLocal["LeanBuildSubagent"]
-    choice -- yes --> buildRemote["LeanRemoteBuildSubagent\n(Pantograph server)"]
-    buildLocal & buildRemote --> parse["FeedbackParseSubagent"]
-    parse --> result[("Build Result")]
+    lean["Lean 4 Mathematical Definitions"] --> verify["Formal Verification"]
+    verify --> numpy["Numpy-compatible API"]
+    numpy --> compute["Efficient Computation"]
 ```
 
 **Key Components:**
-- **Subagent System** (`src/gaussianspec/subagents.py`): Modular agents for editing, building, and parsing
-- **Remote Compilation** (`src/gaussianspec/lean_server.py`): Pantograph HTTP API integration via MorphCloud
-- **RL Environment** (`src/gaussianspec/rl_env.py`): Gymnasium environment for training agents
+- **Mathematical Core** (`GaussianSpec.lean`, `GaussianSpec/`): Core linear algebra definitions and theorems
+- **Numerical Types** (`BignumLean.lean`): Bignum and bitvector arithmetic for numerical computing
+- **Verification**: Formal proofs ensuring correctness of numerical algorithms
+
+### Files Unrelated to Core Numpy Porting Goal
+
+The following files have drifted from the main objective and can be considered for removal or archival:
+
+**Cloud Infrastructure** (can be re-introduced later):
+- `src/gaussianspec/lean_server.py` - MorphCloud/Pantograph remote compilation
+- `src/gaussianspec/subagents.py` - Remote build agents
+- `src/gaussianspec/agent.py` - Cloud orchestration
+
+**Textbook/Educational Content** (dead/obsolete):
+- `textbook/` - Numerical Recipes PDFs
+- `generated/versobook/` - Verso documentation system
+- `_out/` - Generated HTML docs
+
+**Reinforcement Learning** (separate research direction):
+- `src/gaussianspec/rl_env.py` - RL training environment
+- `src/gaussianspec/rl_trainer.py` - PPO trainer
+- `models/ppo_leanenv.zip` - Trained RL model
+
+**Table Parsing System** (separate project):
+- `FuncTracker.lean` and `FuncTracker/` directory - ASCII table parsing, unrelated to numpy
+
+**Development/Setup Scripts** (may need cleanup):
+- Various setup and installation scripts
+- OCR-related files (`plan.md`, `notes.md`)
+- Browser logs and test reports
 
 ## Development Commands
 
 ### Building and Testing
 ```bash
-# Install dependencies (Python + Lean)
-just sync
-
-# Local Lean build (default target)
-just build-local  # or: lake build
-
-# Build ALL targets including Generated namespace
-just build-all    # runs: lake build && lake build generated
+# Local Lean build (primary workflow)
+lake build
 
 # Run tests
-just test         # runs: uv run -m pytest -q
+uv run -m pytest -q
 
-# Linting and formatting
-just lint         # runs: uv run ruff check --fix . && uv run ruff format .
+# Check Lean syntax and types
+lake build --verbose
 ```
 
-
-### Working with Individual Components
-```bash
-# Train RL agent
-just train steps='1000'
-```
+### Development Focus
+- **Priority 1**: Core mathematical definitions in `GaussianSpec.lean` and `GaussianSpec/` directory
+- **Priority 2**: Numerical types and arithmetic in `BignumLean.lean`
+- **Priority 3**: Theorem proving and verification of numerical algorithms
+- **Deferred**: Cloud infrastructure, RL training, documentation systems
 
 ## Lean Development Guidelines
 
@@ -149,18 +169,12 @@ The project can generate Lean files in the `generated/` directory:
 
 These are built separately from the main package - use `lake build Generated` or `just build-all`.
 
-## Remote Compilation
-
-The project uses Pantograph servers on MorphCloud for fast, scalable compilation:
-- First run provisions an Infinibranch snapshot (~5 min)
-- Subsequent runs reuse the warmed instance
-- Remote compilation provides fast feedback for RL agents
-
 ## Additional Guidelines
 - Always use `uv` for Python package management (not pip)
 - Run `lake build` before committing Lean changes
 - Use `rg` and `fd` instead of grep/find
 - Make atomic commits and use branches liberally
+- Focus on mathematical correctness over performance optimization initially
 
 ## Development Strategies
 
@@ -171,23 +185,23 @@ The project uses Pantograph servers on MorphCloud for fast, scalable compilation
 - Spam it to verify the pieces work and build up FUNCTORIALLY. 
 - You are a functional programmer
 
-## FuncTracker Development Progress
+## Numpy Porting Progress
 
-### Completed Features
-- ✓ **Compositional Table Parser**: ASCII table parsing with box-drawing characters using Parsec combinators
-- ✓ **Compile-time Validation**: Function name validation at elaboration time with helpful error messages
-- ✓ **Type-safe Data Structures**: Status tracking with Progress computation and table manipulation
-- ✓ **Custom Elaborator**: `funcTable!` syntax with environment-aware identifier checking
+### Current Status
+- ✓ **Gaussian Elimination Foundation**: Basic linear algebra structure in `GaussianSpec.lean`
+- ✓ **Numerical Types**: Bitvector arithmetic and bignum support in `BignumLean.lean`
+- ✓ **Build System**: Lake configuration for Lean 4 mathematics
 
-### Next Feature: Predicate Region Checking
-**Goal**: Implement semantic validation for table regions based on predicates
+### Next Priorities for Numpy Porting
+1. **Matrix Types**: Define matrix structures compatible with numpy's ndarray
+2. **Linear Algebra Operations**: Implement core operations (dot product, matrix multiplication, etc.)
+3. **Broadcasting**: Implement numpy-style broadcasting semantics
+4. **Numerical Stability**: Add error analysis and numerical stability theorems
+5. **API Compatibility**: Create numpy-compatible function signatures
 
-The next development phase will add compositional predicate checking to table regions:
-- **Region Predicates**: Define predicates that apply to rectangular regions of the table
-- **Semantic Validation**: Check relationships between cells (e.g., tested functions should have test files)
-- **Compositional Checking**: Build complex region checks from simple predicate combinators
-- **Error Localization**: Report validation errors with precise table coordinates
-
-**Design Approach**: Follow the same compositional parser pattern but for semantic validation.
-Build small predicate combinators that can be composed into larger region checkers.
+### Design Principles
+- **Correctness First**: Every operation should have formal verification
+- **Performance Later**: Focus on mathematical correctness before optimization
+- **Compositionality**: Build complex operations from verified primitives
+- **Type Safety**: Use Lean's type system to prevent numerical errors
 ```
