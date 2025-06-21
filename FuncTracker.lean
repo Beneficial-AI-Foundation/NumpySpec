@@ -4,6 +4,11 @@ import FuncTracker.GridParserV3
 import FuncTracker.SimpleValidation
 import FuncTracker.RegionPredicates
 import FuncTracker.VersoIntegration
+-- Phase 1: Native 2D Table Syntax
+import FuncTracker.TwoDSyntax
+import FuncTracker.BoxDrawing
+import FuncTracker.SpatialParser
+import FuncTracker.Native2D
 
 /-!
 # FuncTracker
@@ -18,6 +23,13 @@ A Lean 4 library for tracking function implementation progress using table synta
 - `SimpleValidation`: Validated elaborator that checks function names exist
 - `RegionPredicates`: Compositional predicate checking for table regions
 - `VersoIntegration`: Cross-reference database and documentation linking system
+
+### Phase 1: Native 2D Table Syntax (NEW)
+
+- `TwoDSyntax`: Core 2D parsing infrastructure with spatial positioning
+- `BoxDrawing`: Unicode box-drawing character support and validation
+- `SpatialParser`: 2D layout parsing engine for table structure recognition
+- `Native2D`: `funcTable2d` macro implementation for native 2D syntax
 
 ## Usage
 
@@ -54,6 +66,18 @@ def implementedHasFile : RegionPredicate :=
 def comprehensiveValidation : RegionPredicate :=
   (statusAtLeast .notStarted).and
   (testedHasComplexity.and implementedHasFile)
+
+-- NEW: Native 2D table syntax (Phase 1)
+-- Simple table for testing the new syntax
+def simpleProgress := simpleTable2d "╔══════════════╦═══════════╦═════════════╗
+║ Function     ║ Status    ║ File        ║
+╠══════════════╬═══════════╬═════════════╣
+║ List.map     ║ ✓✓✓       ║ List.lean   ║
+║ Array.map    ║ ✓✓        ║ Array.lean  ║
+║ Option.map   ║ ✓         ║ -           ║
+╚══════════════╩═══════════╩═════════════╝"
+
+#eval simpleProgress.computeProgress.percentComplete
 ```
 
 ## Status Symbols

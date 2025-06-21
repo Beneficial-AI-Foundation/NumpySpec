@@ -334,3 +334,84 @@ auto-update-stale = true    # Auto-update stale working copies when switching co
 - Support for both "add commits" and "rewrite commits" review workflows
 
 ```
+
+## FuncTracker Advanced Features (Stretch Goals)
+
+### Native 2D Table Syntax
+
+**Transformation from String-Based to Native 2D**:
+- Replace `funcTable! "string"` with native `funcTable2d` syntax
+- Box-drawing characters (╔╗╚╝╦╩╬╠╣║═) as first-class syntax tokens  
+- Spatial parsing understanding row/column relationships directly
+- Multi-line cell support with natural spanning
+
+**Example Transformation**:
+```lean
+-- Before: String-based parsing
+funcTable! "╔════╦═══╦════╗\n║Name║...║File║\n╚════╩═══╩════╝"
+
+-- After: Native 2D syntax  
+funcTable2d
+╔══════════════╦═══════════╦═════════════╗
+║ Function     ║ Status    ║ File        ║
+╠══════════════╬═══════════╬═════════════╣
+║ List.map     ║ ✓✓✓       ║ List.lean   ║
+║ Array.map    ║ ✓✓        ║ Array.lean  ║
+║ Option.map   ║ ✓         ║ -           ║
+╚══════════════╩═══════════╩═════════════╝
+```
+
+### Code Actions & LSP Integration
+
+**Formatting Actions**:
+- "Format Table" action: Auto-align and beautify table layout
+- "Convert to 2D" action: Migrate funcTable! strings to funcTable2d native syntax  
+- Live preview: Real-time formatting feedback in editor
+- Export actions: Generate Markdown/HTML/LaTeX from 2D syntax
+
+**Advanced IDE Features**:
+- Hover info: Rich table metadata display
+- Auto-completion: Smart box-drawing character insertion
+- Spatial validation: Real-time checking of table structure
+- Pretty-printing: Beautiful #eval output for tables
+
+### Advanced Formatting Engine
+
+**Dynamic Layout**:
+- Dynamic column sizing based on content analysis
+- Style customization (border types, alignment, padding)
+- Professional typography with proper Unicode box-drawing
+- Multi-line cell support with automatic text wrapping
+
+**Export Capabilities**:
+- Markdown table generation with proper alignment
+- HTML table output with CSS styling
+- LaTeX table formatting for academic documents
+- ASCII art fallback for compatibility
+
+### Technical Implementation
+
+**Core Components**:
+- `TwoDSyntax.lean`: Core 2D parsing infrastructure
+- `BoxDrawing.lean`: Unicode character token support  
+- `SpatialParser.lean`: 2D layout parsing engine
+- `Native2D.lean`: `funcTable2d` macro implementation
+- `PrettyFormat.lean`: Beautiful output generation (future)
+- `CodeActions.lean`: LSP formatting actions (future)
+
+**Parsing Strategy**:
+- Line-by-line tokenization with character classification
+- Grid structure detection from box-drawing characters
+- Cell content extraction preserving spatial relationships
+- Type-safe validation of function names at compile time
+
+### Development Phases
+
+**Phase 1** (Current): Core 2D infrastructure with simple parsing
+**Phase 2** (Future): Advanced formatting and beautification  
+**Phase 3** (Future): LSP integration and code actions
+**Phase 4** (Future): Export capabilities and advanced styling
+
+This approach follows Racket's philosophy: treat 2D layout as **syntax**, not strings to be parsed.
+
+```
