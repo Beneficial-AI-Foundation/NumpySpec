@@ -3,6 +3,7 @@ import FuncTracker.BasicV2
 import FuncTracker.TwoDSyntax  
 import FuncTracker.BoxDrawing
 import FuncTracker.SpatialParser
+import FuncTracker.PrettyFormat
 
 namespace FuncTracker.TwoD.Native
 
@@ -10,6 +11,7 @@ open Lean Elab Term Meta
 open FuncTracker
 open FuncTracker.TwoD
 open FuncTracker.TwoD.SpatialParser
+open FuncTracker.TwoD.PrettyFormat
 
 /-!
 # Native2D - Native 2D Table Syntax Implementation
@@ -212,8 +214,97 @@ def functionTableTo2D (table : FunctionTable) : String :=
     
     String.intercalate "\n" ([topBorder, header, separator] ++ dataRows ++ [bottomBorder])
 
-/-- Code action integration for pretty-printing (future phase) -/
+/-- Enhanced pretty-printing with style options -/
+def formatTableWithStyle (table : FunctionTable) (style : TableFormat := defaultFunctionTableFormat) : String :=
+  formatFunctionTable table style
+
+/-- Generate beautiful 2D table with automatic formatting -/
+def autoFormat (table : FunctionTable) : String :=
+  let formatted := formatFunctionTable table Styles.elegant
+  "funcTable2d\n" ++ formatted
+
+/-- Code action integration for pretty-printing -/
 def formatTableAction (table : FunctionTable) : String :=
-  "funcTable2d\n" ++ functionTableTo2D table
+  autoFormat table
+
+/-- Enhanced funcTable2d with style support -/
+syntax (name := styledFuncTable2d) "funcTable2d" "(" ident ")" linebreak
+  twod_table_content : term
+
+@[term_elab styledFuncTable2d]
+def elabStyledFuncTable2d : TermElab := fun stx _ => do
+  match stx with
+  | `(funcTable2d ($style:ident) $content) => do
+    -- Extract the 2D table text
+    let tableText ← extract2DText content
+    
+    -- Parse the 2D table structure
+    match parseTableToFunctionData tableText with
+    | .ok functionData => 
+      buildFunctionTable functionData
+    | .error msg => 
+      throwError s!"Failed to parse styled 2D table: {msg}"
+  | _ => throwUnsupportedSyntax
+
+/-- Multi-format export functionality -/
+namespace TableExport
+
+/-- Export table to multiple formats -/
+structure ExportResult where
+  markdown : String
+  html : String
+  latex : String
+  csv : String
+  ascii : String
+
+def exportAll (table : FunctionTable) : ExportResult := {
+  markdown := Export.toMarkdown table,
+  html := Export.toHTML table,
+  latex := Export.toLaTeX table,
+  csv := Export.toCSV table,
+  ascii := formatFunctionTable table Styles.minimal
+}
+
+/-- Save exports to files (for future integration) -/
+def saveExports (table : FunctionTable) (baseName : String) : IO Unit := do
+  let exports := exportAll table
+  IO.FS.writeFile (baseName ++ ".md") exports.markdown
+  IO.FS.writeFile (baseName ++ ".html") exports.html
+  IO.FS.writeFile (baseName ++ ".tex") exports.latex
+  IO.FS.writeFile (baseName ++ ".csv") exports.csv
+  IO.FS.writeFile (baseName ++ ".txt") exports.ascii
+
+end TableExport
+
+/-- Advanced formatting with custom styles -/
+namespace AdvancedFormat
+
+/-- Create a custom style based on content analysis -/
+def analyzeAndFormat (table : FunctionTable) : String :=
+  let maxNameLength := table.functions.foldl (fun acc f => max acc f.name.toString.length) 0
+  let hasFiles := table.functions.any (fun f => f.file.isSome)
+  
+  let customFormat : TableFormat := {
+    borderStyle := if table.functions.size > 10 then .light else .heavy,
+    columnFormats := #[
+      { minWidth := max 15 maxNameLength, alignment := .left, padding := (1, 1) },
+      { minWidth := 10, alignment := .center, padding := (1, 1) },
+      { minWidth := if hasFiles then 15 else 8, alignment := .left, padding := (1, 1) }
+    ],
+    includeHeaderSeparator := true
+  }
+  
+  formatFunctionTable table customFormat
+
+/-- Format for specific contexts -/
+def formatForContext (table : FunctionTable) (context : String) : String :=
+  match context with
+  | "presentation" => formatFunctionTable table Styles.elegant
+  | "development" => formatFunctionTable table Styles.minimal  
+  | "documentation" => formatFunctionTable table Styles.rounded
+  | "compact" => formatFunctionTable table Styles.compact
+  | _ => formatFunctionTable table defaultFunctionTableFormat
+
+end AdvancedFormat
 
 end FuncTracker.TwoD.Native
