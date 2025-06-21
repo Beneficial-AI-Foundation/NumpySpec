@@ -11,6 +11,8 @@ import FuncTracker.SpatialParser
 import FuncTracker.Native2D
 -- Phase 2: Advanced Formatting and Beautification
 import FuncTracker.PrettyFormat
+-- Phase 3: LSP Integration and Code Actions
+import FuncTracker.CodeActions
 
 /-!
 # FuncTracker
@@ -33,12 +35,19 @@ A Lean 4 library for tracking function implementation progress using table synta
 - `SpatialParser`: 2D layout parsing engine for table structure recognition
 - `Native2D`: `funcTable2d` macro implementation for native 2D syntax
 
-### Phase 2: Advanced Formatting and Beautification (NEW)
+### Phase 2: Advanced Formatting and Beautification
 
 - `PrettyFormat`: Dynamic column sizing, styling options, and export formats
 - Multiple table styles (elegant, minimal, compact, rounded)
 - Automatic content analysis and intelligent formatting
 - Export to Markdown, HTML, LaTeX, CSV, and ASCII formats
+
+### Phase 3: LSP Integration and Code Actions (NEW)
+
+- `CodeActions`: Rich IDE support with context-sensitive formatting actions
+- Code actions: Format Table, Convert to 2D, Change Style, Export, Auto-Fix
+- LSP integration: Hover information, diagnostics, and completion support
+- Command-line interface for batch table formatting and validation
 
 ## Usage
 
@@ -99,6 +108,16 @@ open FuncTracker.TwoD.PrettyFormat
 
 -- Automatic content-based formatting
 #eval AdvancedFormat.analyzeAndFormat simpleProgress
+
+-- Phase 3: LSP integration examples
+open FuncTracker.TwoD.CodeActions
+
+-- Analyze table context for code actions
+def sampleText := "╔════════╦═══════╗\n║Function║Status ║\n╚════════╩═══════╝"
+#eval getAvailableActions (analyzeTableContext sampleText 0)
+
+-- Generate hover information
+#eval generateHoverInfo (analyzeTableContext sampleText 0)
 ```
 
 ## Status Symbols
