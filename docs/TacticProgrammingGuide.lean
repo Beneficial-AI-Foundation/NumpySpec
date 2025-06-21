@@ -12,6 +12,8 @@ NOTE: This file requires the following dependencies which are already added to y
 require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 ```
+
+IMPORTANT: This guide assumes basic familiarity with Lean and focuses specifically on metaprogramming for tactic development.
 -/
 
 namespace MetaProgrammingTutorial
