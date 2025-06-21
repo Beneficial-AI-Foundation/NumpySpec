@@ -23,13 +23,14 @@ A Lean 4 library for tracking function implementation progress using table synta
 
 ```lean
 -- Create a function tracking table with validation
-def myProgress := funcTable! "╔═══════════════════════════╗
-│ Function    │ Status │ File │
-╠═══════════════════════════╣
-│ List.map    │ ✓✓✓    │ -    │
-│ Array.map   │ ✓✓     │ -    │
-│ Option.map  │ ✓      │ -    │
-╚═══════════════════════════╝"
+def myProgress := funcTable! "╔═══════════════════════════════════════════════════════════════╗
+│ Name                 │ Status │ File       │ Lines     │ Complexity │
+╠═══════════════════════════════════════════════════════════════╣
+│ List.map             │ ✓✓✓    │ List.lean  │ 100-120   │ O(n)       │
+│ Array.map            │ ✓✓     │ Array.lean │ 50-80     │ -          │
+│ Option.map           │ ✓      │ -          │ -         │ -          │
+│ Nat.add              │ ✗      │ -          │ -         │ -          │
+╚═══════════════════════════════════════════════════════════════╝"
 
 -- Check progress
 #eval myProgress.computeProgress.percentComplete
@@ -38,6 +39,21 @@ def myProgress := funcTable! "╔═══════════════�
 let region := myProgress.wholeRegion.get!
 let predicate := (statusAtLeast .implemented).and testedHasComplexity
 validateTableRegion myProgress predicate region
+
+-- Custom validation predicates
+def implementedHasFile : RegionPredicate :=
+  cellPredicate fun func pos =>
+    if func.status ≥ .implemented then
+      match func.file with
+      | some _ => .success
+      | none => .failure s!"Function {func.name} is implemented but missing file info" (some pos)
+    else
+      .success
+
+-- Comprehensive validation combining multiple predicates
+def comprehensiveValidation : RegionPredicate :=
+  (statusAtLeast .notStarted).and
+  (testedHasComplexity.and implementedHasFile)
 ```
 
 ## Status Symbols
