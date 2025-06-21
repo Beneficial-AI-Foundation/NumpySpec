@@ -18,13 +18,13 @@ leanOptions := #[
 ```
 
 ### 2. Unified Multi-Library Setup
-- **Main library**: `GaussianSpec` with standard source structure
+- **Main library**: `NumpySpec` with standard source structure
 - **Generated library**: `Generated` with custom `srcDir`
 - Both managed from a single lakefile
 
 ### 3. Glob-Based Module Inclusion
 ```lean
-globs := #[.andSubmodules `GaussianSpec]  -- Include module and all submodules
+globs := #[.andSubmodules `NumpySpec]  -- Include module and all submodules
 globs := #[.submodules `Spec]              -- Include only submodules
 ```
 
@@ -52,7 +52,7 @@ lake build allLibs
 lake build generated
 
 # Build specific library
-lake build GaussianSpec
+lake build NumpySpec
 ```
 
 ## Benefits Over TOML

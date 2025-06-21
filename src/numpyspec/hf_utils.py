@@ -18,8 +18,8 @@ from pathlib import Path
 from functools import lru_cache
 from typing import Tuple, List
 
-import torch  # type: ignore
-from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig  # type: ignore
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 
 # ---------------------------------------------------------------------------
 # Public API

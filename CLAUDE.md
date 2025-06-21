@@ -77,7 +77,7 @@ def mapWithIndex (f : ℕ → α → β) : List α → List β := ...
 - Avoid abbreviations unless standard in mathematics
 - Use Unicode operators appropriately (≤, ∈, ∀, etc.)
 
-## GaussianSpec Project Overview
+## NumpySpec Project Overview
 
 **Main Goal**: Port numpy functionality to Lean 4 with formal verification, starting with Gaussian elimination as a foundation for linear algebra operations.
 
@@ -94,7 +94,7 @@ flowchart TD
 
 **Key Components:**
 
-- **Mathematical Core** (`GaussianSpec.lean`, `GaussianSpec/`): Core linear algebra definitions and theorems
+- **Mathematical Core** (`NumpySpec.lean`, `NumpySpec/`): Core linear algebra definitions and theorems
 - **Numerical Types** (`BignumLean.lean`): Bignum and bitvector arithmetic for numerical computing
 - **Verification**: Formal proofs ensuring correctness of numerical algorithms
 
@@ -104,9 +104,9 @@ The following files have drifted from the main objective and can be considered f
 
 **Cloud Infrastructure** (can be re-introduced later):
 
-- `src/gaussianspec/lean_server.py` - MorphCloud/Pantograph remote compilation
-- `src/gaussianspec/subagents.py` - Remote build agents
-- `src/gaussianspec/agent.py` - Cloud orchestration
+- `src/numpyspec/lean_server.py` - MorphCloud/Pantograph remote compilation
+- `src/numpyspec/subagents.py` - Remote build agents
+- `src/numpyspec/agent.py` - Cloud orchestration
 
 **Textbook/Educational Content** (dead/obsolete):
 
@@ -116,8 +116,8 @@ The following files have drifted from the main objective and can be considered f
 
 **Reinforcement Learning** (upcoming integration):
 
-- `src/gaussianspec/rl_env.py` - RL training environment for theorem proving
-- `src/gaussianspec/rl_trainer.py` - PPO trainer for proof search
+- `src/numpyspec/rl_env.py` - RL training environment for theorem proving
+- `src/numpyspec/rl_trainer.py` - PPO trainer for proof search
 - `models/ppo_leanenv.zip` - Trained RL model
 
 **Progress Presentation System** (management reporting):
@@ -179,10 +179,10 @@ To provide a clear, actionable plan for porting numpy-style linear algebra to Le
 
 ### 4. Next Steps
 
-1. **Core types**: implement `Matrix` & `SparseMatrix` in `GaussianSpec.Matrix`.
+1. **Core types**: implement `Matrix` & `SparseMatrix` in `NumpySpec.Matrix`.
 2. **Spec module**: define `mmul_spec`, `lu_spec`, `solve_spec`, etc. with `theorem …_correct`.
 3. **Exec module**: write executable versions, prove `refines` the spec.
-4. **API layer**: add `GaussianSpec.NumpyCompat` exporting constructors, notation, and overloaded ops.
+4. **API layer**: add `NumpySpec.NumpyCompat` exporting constructors, notation, and overloaded ops.
 5. **Benchmark & test**: small-scale benchmarks (`#eval`, `timeIt`) and `pytest` examples in Python.
 6. **Docs & examples**: notebook-style tutorials showing numpy-to-Lean translation.
 7. **Iterate**: profile, optimize, and extend to broadcasting & batched operations.
@@ -270,7 +270,7 @@ Favor statically typed functional programming but use mutability where it makes 
 
 ### Current Status
 
-- ✓ **Gaussian Elimination Foundation**: Basic linear algebra structure in `GaussianSpec.lean`
+- ✓ **Gaussian Elimination Foundation**: Basic linear algebra structure in `NumpySpec.lean`
 - ✓ **Numerical Types**: Bitvector arithmetic and bignum support in `BignumLean.lean`
 - ✓ **Build System**: Lake configuration for Lean 4 mathematics
 

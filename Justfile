@@ -1,4 +1,4 @@
-# Justfile for GaussianSpec project
+# Justfile for NumpySpec project
 # Usage: just run
 
 
@@ -14,9 +14,6 @@ build-all:
 test:
     uv run -m pytest -q
 
-# Train PPO on LeanEnv for 1k steps (quick smoke)
-train steps='1000':
-    uv run src/gaussianspec/rl_trainer.py --steps {{steps}}
 
 
 
