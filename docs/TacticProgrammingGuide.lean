@@ -1,26 +1,18 @@
 -- All imports must be consecutive at the beginning of the file
 import Lean -- Lean's metaprogramming
+import batteries
+import Qq -- convenient term building / matching  
 
 /-!
 # Lean Tactic Programming Guide
 
-NOTE: This file is for documentation purposes only. It may contain code that requires
-additional dependencies (Batteries, Qq) which are not available in CI environments.
-
-Some examples in this guide may not work without these dependencies.
-If you're using this guide locally, add these packages to your lakefile.lean:
+NOTE: This file requires the following dependencies which are already added to your lakefile.lean:
 
 ```lean
 require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 ```
-
-Then uncomment the imports below:
 -/
-
--- Uncomment these imports if you have the dependencies installed:
--- import Batteries
--- import Qq -- convenient term building / matching
 
 namespace MetaProgrammingTutorial
 
