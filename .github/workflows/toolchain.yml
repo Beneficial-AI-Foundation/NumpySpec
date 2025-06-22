@@ -33,6 +33,12 @@ jobs:
       run: |
         just bootstrap ${{ steps.set-rc.outputs.rc_file }}
     
+    - name: Setup environment paths
+      run: |
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
     - name: Verify installation
       run: |
         cargo --version
