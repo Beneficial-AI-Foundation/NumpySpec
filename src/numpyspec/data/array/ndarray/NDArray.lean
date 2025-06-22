@@ -17,7 +17,7 @@ def computeStrides {n : Nat} (shape : Vector Nat n) : Array Nat := Id.run do
     strides := strides.push stride
     if idx < shapeArr.size then
       stride := stride * shapeArr[idx]!
-  return strides
+  return strides.reverse
 
 /-- Index type that matches the shape dimensions using Vector -/
 structure Index {n : Nat} (shape : Vector Nat n) where
@@ -59,12 +59,12 @@ namespace NDArray
 /-- Create an array filled with zeros -/
 def zeros [Inhabited α] [OfNat α 0] {n : Nat} (shape : Vector Nat n) : NDArray α n shape :=
   { data := Array.replicate (shapeSize shape) (0 : α)
-    size_proof := Array.size_replicate _ _ }
+    size_proof := Array.size_replicate }
 
 /-- Create an array filled with ones -/
 def ones [Inhabited α] [OfNat α 1] {n : Nat} (shape : Vector Nat n) : NDArray α n shape :=
   { data := Array.replicate (shapeSize shape) (1 : α)
-    size_proof := Array.size_replicate _ _ }
+    size_proof := Array.size_replicate }
 
 /-- Create an array with sequential values -/
 def arange {n : Nat} (shape : Vector Nat n) : NDArray Nat n shape :=
@@ -95,7 +95,7 @@ def map {n : Nat} {shape : Vector Nat n} (f : α → β) (arr : NDArray α n sha
 /-- Map a binary function over two arrays with the same shape -/
 def map2 [Inhabited α] [Inhabited β] {n : Nat} {shape : Vector Nat n} 
     (f : α → β → γ) (arr1 : NDArray α n shape) (arr2 : NDArray β n shape) : NDArray γ n shape :=
-  { data := arr1.data.zipWith arr2.data f
+  { data := Array.zipWith f arr1.data arr2.data
     size_proof := by simp [Array.size_zipWith, arr1.size_proof, arr2.size_proof] }
 
 /-- Fold over all elements -/
