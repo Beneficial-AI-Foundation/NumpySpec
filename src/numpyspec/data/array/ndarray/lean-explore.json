@@ -1,0 +1,13 @@
+{
+  "leanexploreAPI": {
+    "command": "/home/hantao/miniconda3/envs/spec/bin/leanexplore",
+    "args": [
+      "mcp",
+      "serve",
+      "--backend",
+      "api",
+      "--api-key",
+      "OSodes2YWHnK75qqbrOYBcY6USp__2lemjr94QjdBx8"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+name = "StdArrayOperation"
+version = "0.1.0"
+defaultTargets = ["stdarrayoperation"]
+
+[[lean_lib]]
+name = "StdArrayOperation"
+
+[[lean_exe]]
+name = "stdarrayoperation"
+root = "Main"
