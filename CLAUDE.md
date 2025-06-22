@@ -288,6 +288,7 @@ Favor statically typed functional programming but use mutability where it makes 
 - **Performance Later**: Focus on mathematical correctness before optimization
 - **Compositionality**: Build complex operations from verified primitives
 - **Type Safety**: Use Lean's type system to prevent numerical errors
+- every time you fix an issue, focus on the underlying meta issue and fix it so recurring issues are nipped.
 
 ## Development Tools and Workflow
 
