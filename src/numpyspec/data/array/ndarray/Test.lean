@@ -40,3 +40,6 @@ def simpleTest : IO Unit := do
 
 -- Run the test
 #eval! simpleTest  -- Using #eval! to bypass sorry warning
+
+-- Main entry point for executable
+def main : IO Unit := simpleTest

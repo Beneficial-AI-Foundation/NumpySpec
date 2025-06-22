@@ -289,6 +289,16 @@ Favor statically typed functional programming but use mutability where it makes 
 - **Compositionality**: Build complex operations from verified primitives
 - **Type Safety**: Use Lean's type system to prevent numerical errors
 
+## Important Lean Documentation Resources
+
+When working with Lean 4, consult these authoritative sources:
+
+- **Lean 4 Official Documentation**: https://lean-lang.org/lean4/doc - The formal Lean documentation covering language features, tactics, and standard library
+- **Mathlib Manual**: https://leanprover-community.github.io/mathlib-manual/html-multi/Guides/ - Comprehensive guide to mathlib conventions, tactics, and best practices
+- **Lean Language Reference**: https://lean-lang.org/doc/reference/latest/ - The definitive Lean language reference for syntax and semantics
+
+**IMPORTANT**: You need to use Lean Array as much as possible instead of List. Lists are causing problems.
+
 ## Development Tools and Workflow
 
 ### Task Delegation

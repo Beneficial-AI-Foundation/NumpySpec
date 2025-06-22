@@ -8,6 +8,17 @@ linter.missingDocs = true
 [[lean_lib]]
 name = "LeanArrayLib"
 
+[[lean_lib]]
+name = "NDArray"
+
 [[lean_exe]]
 name = "leanarraylib"
 root = "Main"
+
+[[lean_exe]]
+name = "test"
+root = "Test"
+
+[[lean_exe]]
+name = "ndtest"
+root = "NDArrayTest"
