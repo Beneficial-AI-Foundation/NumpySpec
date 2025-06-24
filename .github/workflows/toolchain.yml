@@ -56,61 +56,44 @@ jobs:
         else
           bash -c "just bootstrap ${{ steps.set-rc.outputs.rc_file }}"
         fi
-    
-    - name: Setup environment paths
-      run: |
+        
+        # Source the environment files to make tools available immediately
+        [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+        [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
+        
         # Add paths to GITHUB_PATH for subsequent steps
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
         echo "$HOME/.local/bin" >> $GITHUB_PATH
-        
-        # For macOS, also add Homebrew paths
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          echo "/opt/homebrew/bin" >> $GITHUB_PATH
-          echo "/usr/local/bin" >> $GITHUB_PATH
-        fi
-        
-        # Export for current step
-        echo "PATH=$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH" >> $GITHUB_ENV
     
-    - name: Source environment files and verify installation
+    - name: Setup macOS Homebrew paths
+      if: matrix.os == 'macos-latest'
+      run: |
+        # For macOS, add Homebrew paths
+        echo "/opt/homebrew/bin" >> $GITHUB_PATH
+        echo "/usr/local/bin" >> $GITHUB_PATH
+    
+    - name: Verify installation
       run: |
         # Source environment files if they exist
         [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
         [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
+        
+        # Set PATH for this step
+        export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
         
         # For macOS, ensure Homebrew is in PATH
         if [ "${{ matrix.os }}" == "macos-latest" ]; then
           export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
         fi
         
-        # Export PATH for this step
-        export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-        
-        # Debug: Show PATH
-        echo "Current PATH: $PATH"
-        
-        # Debug: Check if binaries exist
-        echo "Checking for binaries:"
-        ls -la "$HOME/.cargo/bin/" 2>/dev/null || echo "Cargo bin directory not found"
-        ls -la "$HOME/.elan/bin/" 2>/dev/null || echo "Elan bin directory not found"
-        ls -la "$HOME/.local/bin/" 2>/dev/null || echo "Local bin directory not found"
-        
         # Verify installations
-        echo "Verifying cargo..."
-        command -v cargo && cargo --version || echo "cargo not found"
-        
-        echo "Verifying elan..."
-        command -v elan && elan --version || echo "elan not found"
-        
-        echo "Verifying uv..."
-        command -v uv && uv --version || echo "uv not found"
-        
-        echo "Verifying lean..."
-        command -v lean && lean --version || echo "lean not found"
-        
-        echo "Verifying lake..."
-        command -v lake && lake --version || echo "lake not found"
+        echo "=== Tool Versions ==="
+        cargo --version || echo "cargo not found"
+        elan --version || echo "elan not found"
+        uv --version || echo "uv not found"
+        lean --version || echo "lean not found"
+        lake --version || echo "lake not found"
     
     - name: Test Lean build
       run: |
