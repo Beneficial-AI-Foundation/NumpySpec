@@ -2,7 +2,7 @@ name: Toolchain Bootstrap
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev-* ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -18,94 +18,34 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    # Install system dependencies based on OS
-    - name: Install system dependencies (Ubuntu)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -y -qq curl wget git build-essential python3 python3-pip python3-venv bc
-    
-    - name: Install system dependencies (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        # Homebrew should already be installed in GitHub Actions
-        brew install python curl wget git bc || echo "Some brew packages may already be installed"
-    
-    - name: Install just
-      uses: extractions/setup-just@v1
+    - uses: extractions/setup-just@v1
       
     - name: Set shell RC file based on OS
       id: set-rc
       run: |
         if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           echo "rc_file=$HOME/.bashrc" >> $GITHUB_OUTPUT
-          echo "shell=bash" >> $GITHUB_OUTPUT
         else
           echo "rc_file=$HOME/.zshrc" >> $GITHUB_OUTPUT
-          echo "shell=zsh" >> $GITHUB_OUTPUT
         fi
     
     - name: Bootstrap toolchain
+      run: just bootstrap ${{ steps.set-rc.outputs.rc_file }}
+      
+    - name: Setup environment paths
       run: |
-        # Create RC file if it doesn't exist
-        touch ${{ steps.set-rc.outputs.rc_file }}
-        
-        # Run bootstrap with proper shell
-        if [ "${{ steps.set-rc.outputs.shell }}" == "zsh" ]; then
-          zsh -c "just bootstrap ${{ steps.set-rc.outputs.rc_file }}"
-        else
-          bash -c "just bootstrap ${{ steps.set-rc.outputs.rc_file }}"
-        fi
-        
-        # Source the environment files to make tools available immediately
+        # Source the environment files
         [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
         [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
         
-        # Add paths to GITHUB_PATH for subsequent steps
+        # Add paths to GITHUB_PATH
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
         echo "$HOME/.local/bin" >> $GITHUB_PATH
     
-    - name: Setup macOS Homebrew paths
-      if: matrix.os == 'macos-latest'
-      run: |
-        # For macOS, add Homebrew paths
-        echo "/opt/homebrew/bin" >> $GITHUB_PATH
-        echo "/usr/local/bin" >> $GITHUB_PATH
-    
     - name: Verify installation
       run: |
-        # Source environment files if they exist
-        [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-        [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
-        
-        # Set PATH for this step
-        export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-        
-        # For macOS, ensure Homebrew is in PATH
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
-        fi
-        
-        # Verify installations
         echo "=== Tool Versions ==="
         cargo --version || echo "cargo not found"
-        elan --version || echo "elan not found"
+        elan --version || echo "elan not found" 
         uv --version || echo "uv not found"
-        lean --version || echo "lean not found"
-        lake --version || echo "lake not found"
-    
-    - name: Test Lean build
-      run: |
-        # Ensure PATH includes all necessary directories
-        export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-        
-        # For macOS, ensure Homebrew is in PATH
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
-        fi
-        
-        # Test lake functionality
-        lake --version
-        lake update || echo "Lake update failed - continuing"
-        lake build --no-build || echo "Test build check failed"

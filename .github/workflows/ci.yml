@@ -22,7 +22,7 @@ jobs:
       GOOGLE_GEMINI_API_KEY: ${{ secrets.GOOGLE_GEMINI_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       # Environment settings
-      CODEX_AGENT: true
+      GITHUB_ACTIONS: true
       NON_INTERACTIVE: true
       LAKE_JOBS: 4
       LAKE_VERBOSE: 1
@@ -30,69 +30,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      # Setup OS-specific dependencies
-      - name: Install Homebrew (macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          # Homebrew should already be installed, but ensure it's in PATH
-          if ! command -v brew >/dev/null; then
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          fi
-          
-          # Add Homebrew to PATH for Apple Silicon Macs
-          if [ -d "/opt/homebrew/bin" ]; then
-            echo "/opt/homebrew/bin" >> $GITHUB_PATH
-            export PATH="/opt/homebrew/bin:$PATH"
-          fi
-          
-          # Update Homebrew
-          brew update || echo "Homebrew update failed"
-      
-      # Use codex-install.sh for consistent setup
-      - name: Run codex-install.sh
-        run: |
-          # Make script executable
-          chmod +x codex-install.sh
-          
-          # Run installation script
-          ./codex-install.sh
-      
-      # Setup additional paths after installation
-      - name: Setup environment paths
-        run: |
-          # Add all necessary paths to GITHUB_PATH
-          echo "$HOME/.elan/bin" >> $GITHUB_PATH
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          
-          # For macOS, ensure Homebrew paths are included
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            echo "/opt/homebrew/bin" >> $GITHUB_PATH
-            echo "/usr/local/bin" >> $GITHUB_PATH
-          fi
+      # Run the unified installation script
+      - name: Setup NumpySpec environment
+        run: .github/scripts/setup.sh
       
       # Verify installations
       - name: Verify installations
         run: |
-          # Source environment files
-          [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-          [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
-          
-          # Set PATH for this step
-          export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-          
-          # For macOS, ensure Homebrew is in PATH
-          if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
-          fi
-          
-          echo "=== Tool Versions ==="
+          echo "=== Core Tools ==="
           uv --version || echo "uv not found"
           lean --version || echo "lean not found"
           lake --version || echo "lake not found"
+          python --version || echo "python not found"
+          
+          echo ""
+          echo "=== CLI Tools ==="
           rg --version | head -1 || echo "ripgrep not found"
           fd --version || echo "fd not found"
-          python --version || echo "python not found"
+          jq --version || echo "jq not found"
+          gh --version || echo "GitHub CLI not found"
       
       # Cache Lean dependencies
       - name: Cache Lean dependencies
@@ -108,32 +64,15 @@ jobs:
       
       # Build Lean project
       - name: Build Lean project
-        run: |
-          export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-          
-          # Update dependencies
-          lake update || echo "Lake update failed - continuing"
-          
-          # Try to get cache (may fail if no cache server)
-          lake exe cache get || echo "Cache get failed - will build from source"
-          
-          # Build the project
-          lake build
+        run: lake build
       
       # Run Python tests
       - name: Run Python tests
-        run: |
-          export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-          
-          # Run tests
-          uv run -m pytest -v
+        run: uv run -m pytest -v
       
       # Run Lean tests (if any)
       - name: Run Lean tests
         run: |
-          export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-          
-          # Run any Lean test files
           if [ -d "test" ]; then
             lake test || echo "Lean tests failed"
           else
@@ -142,11 +81,7 @@ jobs:
       
       # Lint check
       - name: Lint check
-        run: |
-          export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-          
-          # Run linter
-          lake build --verbose || echo "Lint check failed"
+        run: lake build --verbose || echo "Lint check failed"
       
       # Upload artifacts on failure
       - name: Upload logs on failure

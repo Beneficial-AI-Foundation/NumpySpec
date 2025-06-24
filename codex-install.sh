@@ -6,7 +6,11 @@
 set -euo pipefail
 
 # Agent-optimized installation
-echo "🤖 Setting up NumpySpec environment for Codex agents..."
+if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+    echo "🚀 Setting up NumpySpec environment for GitHub Actions..."
+else
+    echo "🤖 Setting up NumpySpec environment for Codex agents..."
+fi
 
 # Detect OS
 OS="$(uname -s)"
@@ -42,18 +46,18 @@ install_system_deps() {
     esac
 }
 
-# Add to PATH for current session only (Ubuntu/codex environments)
+# Add to PATH for current session and GitHub Actions
 add_to_path() {
     local new_path="$1"
     
-    # Only modify PATH in Ubuntu environments (specifically codex)
-    if [[ "$OS" == "Linux"* ]]; then
-        # Detect if we're in codex environment (Ubuntu 20.04 or similar cloud environment)
-        if grep -q "Ubuntu" /etc/os-release 2>/dev/null || [[ "${CODEX_AGENT:-}" == "true" ]]; then
-            if [[ ":$PATH:" != *":$new_path:"* ]]; then
-                export PATH="$new_path:$PATH"
-            fi
-        fi
+    # Add to current PATH if not already present
+    if [[ ":$PATH:" != *":$new_path:"* ]]; then
+        export PATH="$new_path:$PATH"
+    fi
+    
+    # If in GitHub Actions, also add to GITHUB_PATH
+    if [[ -n "${GITHUB_PATH:-}" ]]; then
+        echo "$new_path" >> "$GITHUB_PATH"
     fi
 }
 
@@ -125,6 +129,12 @@ install_agent_cli_tools() {
 
 # Install codex CLI for agent orchestration
 install_codex_cli() {
+    # Skip in GitHub Actions - not needed
+    if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+        echo "⏭️ Skipping codex CLI in GitHub Actions"
+        return
+    fi
+    
     echo "🤖 Installing codex CLI..."
     
     # Install via npm (official method)
