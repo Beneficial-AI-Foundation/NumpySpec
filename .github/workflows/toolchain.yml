@@ -15,37 +15,33 @@ jobs:
         os: [ubuntu-latest, macos-latest]
       fail-fast: false
     
+    env:
+      GITHUB_ACTIONS: true
+      NON_INTERACTIVE: true
+    
     steps:
     - uses: actions/checkout@v4
     
-    - uses: extractions/setup-just@v1
-      
-    - name: Set shell RC file based on OS
-      id: set-rc
-      run: |
-        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-          echo "rc_file=$HOME/.bashrc" >> $GITHUB_OUTPUT
-        else
-          echo "rc_file=$HOME/.zshrc" >> $GITHUB_OUTPUT
-        fi
+    # Use unified installation script
+    - name: Setup NumpySpec environment
+      run: .github/scripts/setup.sh
     
-    - name: Bootstrap toolchain
-      run: just bootstrap ${{ steps.set-rc.outputs.rc_file }}
-      
-    - name: Setup environment paths
-      run: |
-        # Source the environment files
-        [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-        [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
-        
-        # Add paths to GITHUB_PATH
-        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-        echo "$HOME/.elan/bin" >> $GITHUB_PATH
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+    # Cache Lean dependencies (same as ci.yml)
+    - name: Cache Lean dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.elan
+          ~/.cache/lean
+          .lake
+        key: ${{ runner.os }}-lean-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+        restore-keys: |
+          ${{ runner.os }}-lean-
     
-    - name: Verify installation
+    # Simple verification - no need for extensive checks
+    - name: Verify core tools
       run: |
-        echo "=== Tool Versions ==="
-        cargo --version || echo "cargo not found"
-        elan --version || echo "elan not found" 
+        echo "=== Core Tools ==="
         uv --version || echo "uv not found"
+        lean --version || echo "lean not found"
+        lake --version || echo "lake not found"

@@ -34,25 +34,16 @@ jobs:
       - name: Setup NumpySpec environment
         run: .github/scripts/setup.sh
       
-      # Verify installations
-      - name: Verify installations
+      # Quick verification of essential tools only
+      - name: Verify essential tools
         run: |
-          echo "=== Core Tools ==="
-          uv --version || echo "uv not found"
-          lean --version || echo "lean not found"
-          lake --version || echo "lake not found"
-          python --version || echo "python not found"
-          
-          echo ""
-          echo "=== CLI Tools ==="
-          rg --version | head -1 || echo "ripgrep not found"
-          fd --version || echo "fd not found"
-          jq --version || echo "jq not found"
-          gh --version || echo "GitHub CLI not found"
+          uv --version
+          lean --version
+          lake --version
       
       # Cache Lean dependencies
       - name: Cache Lean dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.elan
