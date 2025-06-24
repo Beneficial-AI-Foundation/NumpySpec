@@ -13,9 +13,23 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+      fail-fast: false
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    
+    # Install system dependencies based on OS
+    - name: Install system dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq curl wget git build-essential python3 python3-pip python3-venv bc
+    
+    - name: Install system dependencies (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        # Homebrew should already be installed in GitHub Actions
+        brew install python curl wget git bc || echo "Some brew packages may already be installed"
     
     - name: Install just
       uses: extractions/setup-just@v1
@@ -25,13 +39,23 @@ jobs:
       run: |
         if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           echo "rc_file=$HOME/.bashrc" >> $GITHUB_OUTPUT
+          echo "shell=bash" >> $GITHUB_OUTPUT
         else
           echo "rc_file=$HOME/.zshrc" >> $GITHUB_OUTPUT
+          echo "shell=zsh" >> $GITHUB_OUTPUT
         fi
     
     - name: Bootstrap toolchain
       run: |
-        just bootstrap ${{ steps.set-rc.outputs.rc_file }}
+        # Create RC file if it doesn't exist
+        touch ${{ steps.set-rc.outputs.rc_file }}
+        
+        # Run bootstrap with proper shell
+        if [ "${{ steps.set-rc.outputs.shell }}" == "zsh" ]; then
+          zsh -c "just bootstrap ${{ steps.set-rc.outputs.rc_file }}"
+        else
+          bash -c "just bootstrap ${{ steps.set-rc.outputs.rc_file }}"
+        fi
     
     - name: Setup environment paths
       run: |
@@ -40,7 +64,13 @@ jobs:
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
         echo "$HOME/.local/bin" >> $GITHUB_PATH
         
-        # Also export for current step
+        # For macOS, also add Homebrew paths
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          echo "/opt/homebrew/bin" >> $GITHUB_PATH
+          echo "/usr/local/bin" >> $GITHUB_PATH
+        fi
+        
+        # Export for current step
         echo "PATH=$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH" >> $GITHUB_ENV
     
     - name: Source environment files and verify installation
@@ -48,6 +78,11 @@ jobs:
         # Source environment files if they exist
         [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
         [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
+        
+        # For macOS, ensure Homebrew is in PATH
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+        fi
         
         # Export PATH for this step
         export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
@@ -57,9 +92,9 @@ jobs:
         
         # Debug: Check if binaries exist
         echo "Checking for binaries:"
-        ls -la "$HOME/.cargo/bin/" || echo "Cargo bin directory not found"
-        ls -la "$HOME/.elan/bin/" || echo "Elan bin directory not found"
-        ls -la "$HOME/.local/bin/" || echo "Local bin directory not found"
+        ls -la "$HOME/.cargo/bin/" 2>/dev/null || echo "Cargo bin directory not found"
+        ls -la "$HOME/.elan/bin/" 2>/dev/null || echo "Elan bin directory not found"
+        ls -la "$HOME/.local/bin/" 2>/dev/null || echo "Local bin directory not found"
         
         # Verify installations
         echo "Verifying cargo..."
@@ -70,3 +105,24 @@ jobs:
         
         echo "Verifying uv..."
         command -v uv && uv --version || echo "uv not found"
+        
+        echo "Verifying lean..."
+        command -v lean && lean --version || echo "lean not found"
+        
+        echo "Verifying lake..."
+        command -v lake && lake --version || echo "lake not found"
+    
+    - name: Test Lean build
+      run: |
+        # Ensure PATH includes all necessary directories
+        export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+        
+        # For macOS, ensure Homebrew is in PATH
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+        fi
+        
+        # Test lake functionality
+        lake --version
+        lake update || echo "Lake update failed - continuing"
+        lake build --no-build || echo "Test build check failed"

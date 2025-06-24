@@ -24,8 +24,10 @@ structure Layout where
     - Shape [2, 3, 4] produces strides [12, 4, 1]
 -/
 @[inline] def computeStrides (shape : Array Nat) : Array Nat :=
-  let (out, _) := shape.foldr (fun d (acc,p) => (p :: acc, p * d)) ([], 1)
-  out.toArray
+  let (out, _) := shape.foldr (fun d (acc,p) => (acc.push p, p * d)) (#[], 1)
+  out.reverse -- reverse to get the rightmost dimension first
+
+#eval computeStrides #[2, 3] = #[3, 1]
 
 /-- Create a row-major layout from a list of dimensions.
 
