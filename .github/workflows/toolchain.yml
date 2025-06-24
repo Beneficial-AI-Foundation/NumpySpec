@@ -35,12 +35,38 @@ jobs:
     
     - name: Setup environment paths
       run: |
+        # Add paths to GITHUB_PATH for subsequent steps
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
         echo "$HOME/.local/bin" >> $GITHUB_PATH
+        
+        # Also export for current step
+        echo "PATH=$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH" >> $GITHUB_ENV
     
-    - name: Verify installation
+    - name: Source environment files and verify installation
       run: |
-        cargo --version
-        elan --version
-        uv --version
+        # Source environment files if they exist
+        [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+        [ -f "$HOME/.elan/env" ] && source "$HOME/.elan/env"
+        
+        # Export PATH for this step
+        export PATH="$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+        
+        # Debug: Show PATH
+        echo "Current PATH: $PATH"
+        
+        # Debug: Check if binaries exist
+        echo "Checking for binaries:"
+        ls -la "$HOME/.cargo/bin/" || echo "Cargo bin directory not found"
+        ls -la "$HOME/.elan/bin/" || echo "Elan bin directory not found"
+        ls -la "$HOME/.local/bin/" || echo "Local bin directory not found"
+        
+        # Verify installations
+        echo "Verifying cargo..."
+        command -v cargo && cargo --version || echo "cargo not found"
+        
+        echo "Verifying elan..."
+        command -v elan && elan --version || echo "elan not found"
+        
+        echo "Verifying uv..."
+        command -v uv && uv --version || echo "uv not found"
