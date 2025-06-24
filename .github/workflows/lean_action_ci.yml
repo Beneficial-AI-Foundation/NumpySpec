@@ -1,5 +1,10 @@
 name: Lean Action CI
 
+# DEPRECATED: This workflow is superseded by ci.yml
+# Please use .github/workflows/ci.yml instead, which uses codex-install.sh
+# for consistent environment setup across all platforms.
+# This workflow will be removed in a future update.
+
 on:
   push:
   pull_request:
