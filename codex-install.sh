@@ -39,7 +39,7 @@ install_system_deps() {
                 echo "Installing Homebrew..."
                 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             fi
-            if ! brew install python curl wget git bc 2>/dev/null; then
+            if ! brew install python curl wget git bc coreutils 2>/dev/null; then
                 echo "⚠️ Some brew packages may have failed to install"
             fi
             ;;
@@ -58,6 +58,24 @@ add_to_path() {
     # If in GitHub Actions, also add to GITHUB_PATH
     if [[ -n "${GITHUB_PATH:-}" ]]; then
         echo "$new_path" >> "$GITHUB_PATH"
+    fi
+}
+
+# Portable timeout function for macOS and Linux
+run_with_timeout() {
+    local timeout_seconds="$1"
+    shift
+    local command=("$@")
+    
+    # On macOS, coreutils installs timeout as gtimeout
+    if command -v gtimeout >/dev/null 2>&1; then
+        gtimeout "$timeout_seconds" "${command[@]}"
+    elif command -v timeout >/dev/null 2>&1; then
+        timeout "$timeout_seconds" "${command[@]}"
+    else
+        # Fallback: run without timeout
+        echo "⚠️ Running without timeout (timeout command not available)"
+        "${command[@]}"
     fi
 }
 
@@ -194,7 +212,7 @@ install_jujutsu() {
         Linux*)
             if command -v cargo >/dev/null; then
                 echo "📦 Installing jj via cargo (this may take a few minutes)..."
-                timeout 600 cargo install --locked --bin jj jj-cli 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
+                run_with_timeout 600 cargo install --locked --bin jj jj-cli 2>/dev/null || echo "⚠️ Jujutsu cargo install failed"
             fi
             ;;
     esac
@@ -273,11 +291,11 @@ setup_lean() {
     
     # Fetch dependencies without full build for speed
     echo "📥 Fetching Lean dependencies..."
-    timeout 300 lake exe cache get || echo "⚠️ Cache fetch failed or timed out"
+    run_with_timeout 300 lake exe cache get || echo "⚠️ Cache fetch failed or timed out"
     
     # Test a quick build to verify setup
     echo "🧪 Testing build setup..."
-    timeout 60 lake build --no-build || echo "⚠️ Test build failed - agents can retry with 'lake build'"
+    run_with_timeout 60 lake build --no-build || echo "⚠️ Test build failed - agents can retry with 'lake build'"
     
     echo "✅ Lean project ready for repeated builds"
 }
@@ -601,9 +619,9 @@ main() {
     echo ""
     echo "See CLAUDE.md for agent-specific instructions."
     
-    # Notify completion if terminal-notifier is available
-    if command -v terminal-notifier >/dev/null; then
-        terminal-notifier -title "NumpySpec Setup" -message "Installation completed successfully!"
+    # Notify completion if terminal-notifier is available (skip in GitHub Actions)
+    if [[ -z "${GITHUB_ACTIONS:-}" ]] && command -v terminal-notifier >/dev/null; then
+        terminal-notifier -title "NumpySpec Setup" -message "Installation completed successfully!" 2>/dev/null || true
     fi
 }
 
