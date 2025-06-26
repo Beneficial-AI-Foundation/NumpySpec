@@ -1,10 +1,5 @@
 name: Lean Action CI
 
-# DEPRECATED: This workflow is superseded by ci.yml
-# Please use .github/workflows/ci.yml instead, which uses codex-install.sh
-# for consistent environment setup across all platforms.
-# This workflow will be removed in a future update.
-
 on:
   push:
   pull_request:
@@ -12,12 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-      fail-fast: false
-    
+    runs-on: ubuntu-latest
     env:
       MORPH_API_KEY: ${{ secrets.MORPH_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -26,86 +16,4 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      # Install system dependencies based on OS
-      - name: Install system dependencies (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq curl wget git build-essential python3 python3-pip python3-venv bc
-          # Install essential tools
-          sudo apt-get install -y -qq ripgrep fd-find jq tree git-delta
-          # Create symlink for fd command (Ubuntu names it fdfind)
-          if command -v fdfind >/dev/null && [ ! -e /usr/local/bin/fd ]; then
-            sudo ln -sf $(which fdfind) /usr/local/bin/fd 2>/dev/null || echo "Failed to create fd symlink"
-          fi
-      
-      - name: Install system dependencies (macOS)
-        if: matrix.os == 'macos-latest'
-        run: |
-          # Install Homebrew if not available (shouldn't be needed in GitHub Actions)
-          if ! command -v brew >/dev/null; then
-            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          fi
-          # Install dependencies
-          brew install python curl wget git bc || echo "Some brew packages may already be installed"
-          # Install essential tools
-          brew install ripgrep fd jq tree git-delta || echo "Some tools may already be installed"
-      
-      # Setup paths for different OSes
-      - name: Setup environment paths
-        run: |
-          # Add paths to GITHUB_PATH for subsequent steps
-          echo "$HOME/.elan/bin" >> $GITHUB_PATH
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          
-          # Also export for current step
-          echo "PATH=$HOME/.elan/bin:$HOME/.cargo/bin:$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-      
-      # Install uv
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          # Add to PATH for this job
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-      
-      # Install elan (Lean toolchain manager)
-      - name: Install elan and Lean
-        run: |
-          curl -fL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | \
-            bash -s -- --default-toolchain leanprover/lean4:stable --no-modify-path -y
-          # Add to PATH for this job
-          echo "$HOME/.elan/bin" >> $GITHUB_PATH
-      
-      # Verify installations
-      - name: Verify tool installations
-        run: |
-          echo "Verifying installations..."
-          uv --version || echo "uv not found"
-          lean --version || echo "lean not found"
-          lake --version || echo "lake not found"
-          rg --version || echo "ripgrep not found"
-          fd --version || echo "fd not found"
-      
-      # Setup Python environment
-      - name: Setup Python environment
-        run: |
-          uv sync --all-groups
-      
-      # Build Lean project
-      - name: Build Lean project
-        run: |
-          # Update dependencies
-          lake update || echo "Lake update failed - continuing anyway"
-          
-          # Try to get cache
-          lake exe cache get || echo "Cache fetch failed - will build from source"
-          
-          # Build the project
-          lake build
-      
-      # Run tests
-      - name: Run tests
-        run: |
-          uv run -m pytest -q
+      - uses: leanprover/lean-action@v1

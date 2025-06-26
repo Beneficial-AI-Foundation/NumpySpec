@@ -1,19 +1,36 @@
 {
   "mcpServers": {
     "lean-lsp": {
+      "type": "stdio",
       "command": "uvx",
       "args": [
         "lean-lsp-mcp"
       ],
-      "env": {
-        "LEAN_PROJECT_PATH": "${workspaceFolder}"
-      }
+      "env": {}
     },
-    "leanexplore": {
-      "command": "uvx", 
+    "leanexploreAPI": {
+      "type": "stdio",
+      "command": "leanexplore",
       "args": [
-        "mcp-leanexplore"
-      ]
+        "mcp",
+        "serve",
+        "--backend",
+        "api",
+        "--api-key",
+        "__your_api_key__"
+      ],
+      "env": {}
+    },
+    "leanexploreLocal": {
+      "type": "stdio",
+      "command": "leanexplore",
+      "args": [
+        "mcp",
+        "serve",
+        "--backend",
+        "local"
+      ],
+      "env": {}
     }
   }
 }

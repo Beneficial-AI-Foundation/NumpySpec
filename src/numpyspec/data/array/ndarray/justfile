@@ -1,0 +1,56 @@
+# Default recipe when just is run without arguments
+default: build
+
+# Build all executables
+build:
+    lake build
+
+# Run all tests
+test: build
+    @echo "=== Running All Tests ==="
+    @echo ""
+    @echo "--- LeanArrayLib Tests ---"
+    @./.lake/build/bin/testexe
+    @echo ""
+    @echo "--- NDArray Tests ---"
+    @./.lake/build/bin/ndtest
+
+# Run only LeanArrayLib tests
+test-lean: build
+    @echo "=== Running LeanArrayLib Tests ==="
+    @./.lake/build/bin/testexe
+
+# Run only NDArray tests
+test-nd: build
+    @echo "=== Running NDArray Tests ==="
+    @./.lake/build/bin/ndtest
+
+# Clean build artifacts
+clean:
+    lake clean
+
+# Run tests directly without building executables
+test-direct:
+    @echo "=== Running tests directly with Lean ==="
+    @echo ""
+    @echo "--- LeanArrayLib Tests ---"
+    @lake env lean Test.lean
+    @echo ""
+    @echo "--- NDArray Tests ---"
+    @lake env lean NDArrayTest.lean
+
+# Show available recipes
+help:
+    @echo "Available recipes:"
+    @echo "  just build       - Build all executables"
+    @echo "  just test        - Run all tests"
+    @echo "  just test-lean   - Run only LeanArrayLib tests"
+    @echo "  just test-nd     - Run only NDArray tests"
+    @echo "  just test-direct - Run tests directly without building executables"
+    @echo "  just clean       - Clean build artifacts"
+    @echo "  just help        - Show this help message"
+
+# Alias for common operations
+alias b := build
+alias t := test
+alias c := clean

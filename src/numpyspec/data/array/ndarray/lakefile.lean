@@ -30,9 +30,9 @@ script test do
   if buildResult.exitCode ≠ 0 then
     IO.eprintln s!"Build failed:\n{buildResult.stderr}"
     return buildResult.exitCode
-
+  
   IO.println "Running all tests..."
-
+  
   -- Run LeanArrayLib tests
   IO.println "\n=== LeanArrayLib Tests ==="
   let testResult ← IO.Process.output {
@@ -41,7 +41,7 @@ script test do
   IO.print testResult.stdout
   if testResult.exitCode ≠ 0 then
     IO.eprintln testResult.stderr
-
+  
   -- Run NDArray tests
   IO.println "\n=== NDArray Tests ==="
   let ndtestResult ← IO.Process.output {
@@ -50,7 +50,7 @@ script test do
   IO.print ndtestResult.stdout
   if ndtestResult.exitCode ≠ 0 then
     IO.eprintln ndtestResult.stderr
-
+  
   return 0
 
 script test_lean do
@@ -62,7 +62,7 @@ script test_lean do
   if buildResult.exitCode ≠ 0 then
     IO.eprintln s!"Build failed:\n{buildResult.stderr}"
     return buildResult.exitCode
-
+    
   let result ← IO.Process.output {
     cmd := "./.lake/build/bin/testexe"
   }
@@ -80,7 +80,7 @@ script test_nd do
   if buildResult.exitCode ≠ 0 then
     IO.eprintln s!"Build failed:\n{buildResult.stderr}"
     return buildResult.exitCode
-
+    
   let result ← IO.Process.output {
     cmd := "./.lake/build/bin/ndtest"
   }

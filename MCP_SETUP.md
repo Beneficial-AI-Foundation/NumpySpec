@@ -25,7 +25,7 @@ Provides advanced Lean theorem search capabilities:
 
 ## Installation
 
-### Prerequisites
+### Installation for Lean-lsp-mcp
 1. Install `uv` (Python package manager):
    ```bash
    curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -33,9 +33,30 @@ Provides advanced Lean theorem search capabilities:
 
 2. Install the MCP servers:
    ```bash
-   uvx lean-lsp-mcp --help  # Test installation
-   uvx mcp-leanexplore --help  # Test installation
+   pip install lean-lsp-mcp
+   lean-lsp-mcp --help  # Test installation
    ```
+
+### Installation for leanexplore
+1. Use pypi to install leanexplore:
+   ```bash
+   pip install leanexplore
+   leanexplore --help  # Test installation
+   ```
+
+2. Set up Local or API backend:
+   - Local backend (Corresponding to `leanexploreLocal` in `mcp-config.json`):
+     ```bash
+     leanexplore mcp serve --backend local
+     ```
+   - API backend (Corresponding to `leanexploreAPI` in `mcp-config.json`): Get API key from [leanexplore](https://leanexplore.net/api)
+     ```bash
+     leanexplore mcp serve --backend api --api-key __your_api_key__
+     ```
+
+3. Change the mcp-config.json corresponingly:
+    - Change the `command` field to the path of the leanexplore executable (You can use `which leanexplore` to get the path).
+    - If you use the API backend, you need to change the `api-key` field to your API key.
 
 ## Configuration
 
@@ -51,22 +72,18 @@ Provides advanced Lean theorem search capabilities:
 
 ### For Claude Desktop App
 
-1. On macOS/Linux, add to `~/.config/claude/claude_desktop_config.json`:
-   ```json
-   {
-     "mcpServers": {
-       "lean-lsp": {
-         "command": "uvx",
-         "args": ["lean-lsp-mcp"],
-         "env": {
-           "LEAN_PROJECT_PATH": "/path/to/NumpySpec"
-         }
-       }
-     }
-   }
-   ```
-
-2. On Windows, add to `%APPDATA%\Claude\claude_desktop_config.json`
+On macOS/Linux, add to `~/.config/claude/claude_desktop_config.json`:
+  ```json
+  {
+    "mcpServers": {
+      "lean-lsp": {
+        "command": "uvx",
+        "args": ["lean-lsp-mcp"],
+        "env": {}
+      }
+    }
+  }
+  ```
 
 ## Usage in Claude
 
@@ -84,12 +101,6 @@ Once configured, Claude will have access to these Lean tools:
 1. **MCP server not starting**: Check that `uvx` is in your PATH
 2. **Lean project not found**: Ensure `LEAN_PROJECT_PATH` is absolute
 3. **Permission errors**: The `.claude/settings.local.json` files can restrict which MCP tools are allowed
-
-## Environment Variables
-
-You can also set these environment variables:
-- `LEAN_PROJECT_PATH`: Path to the Lean project
-- `LAKE_BUILD_DIR`: Custom build directory for Lake
 
 ## Project-Specific Settings
 

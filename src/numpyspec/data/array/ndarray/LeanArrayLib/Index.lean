@@ -27,16 +27,15 @@ instance {n} : IndexType (Fin n) n where
     The proof ensures that the resulting index is within bounds (< m*n).
 -/
 instance {m n} : IndexType (Fin m × Fin n) (m*n) where
-  toLinear
-    | (r, c) =>
-      have h : r.val * n + c.val < m * n := by
-        have hi : r.val < m := r.isLt
-        have hj : c.val < n := c.isLt
-        have h1 : r.val * n + c.val < r.val * n + n := Nat.add_lt_add_left hj _
-        have h2 : r.val * n + n ≤ m * n := by
-          rw [← Nat.succ_mul]
-          exact Nat.mul_le_mul_right _ (Nat.succ_le_of_lt hi)
-        exact Nat.lt_of_lt_of_le h1 h2
-      ⟨r.val * n + c.val, h⟩
+  toLinear := fun (i,j) =>
+    have h : i.val * n + j.val < m * n := by
+      have hi : i.val < m := i.isLt
+      have hj : j.val < n := j.isLt
+      have h1 : i.val * n + j.val < i.val * n + n := Nat.add_lt_add_left hj _
+      have h2 : i.val * n + n ≤ m * n := by
+        rw [← Nat.succ_mul]
+        exact Nat.mul_le_mul_right _ (Nat.succ_le_of_lt hi)
+      exact Nat.lt_of_lt_of_le h1 h2
+    ⟨i.val * n + j.val, h⟩
 
 end LeanArrayLib
