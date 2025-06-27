@@ -219,8 +219,8 @@ lake build --verbose
 
 ### Current Status
 
+- ✓ **NDArray Implementation**: NumPy-compatible n-dimensional arrays in `NDArray/`
 - ✓ **Gaussian Elimination Foundation**: Basic linear algebra structure in `NumpySpec.lean`
-- ✓ **Numerical Types**: Bitvector arithmetic and bignum support in `BignumLean.lean`
 - ✓ **Build System**: Lake configuration for Lean 4 mathematics
 
 ### Next Priorities for Numpy Porting
