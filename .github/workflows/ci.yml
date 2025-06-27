@@ -30,6 +30,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      # Install just (task runner)
+      - uses: extractions/setup-just@v1
+      
       # Run the unified installation script
       - name: Setup NumpySpec environment
         run: .github/scripts/setup.sh
@@ -45,6 +48,7 @@ jobs:
           
           echo ""
           echo "=== CLI Tools ==="
+          just --version || echo "just not found"
           rg --version | head -1 || echo "ripgrep not found"
           fd --version || echo "fd not found"
           jq --version || echo "jq not found"

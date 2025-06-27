@@ -213,7 +213,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New numpy-focused matrix operations: `Matrix.add`, `Matrix.multiply`, `Matrix.transpose`
 - Comprehensive README rewrite emphasizing formal verification and numpy compatibility
-- Updated install script `codex-install.sh` for OpenAI Codex Universal integration
+- Updated install script (now `.github/scripts/setup.sh`) for CI and OpenAI Codex Universal integration
 - Numpy port roadmap with verification strategy
 
 ### Removed

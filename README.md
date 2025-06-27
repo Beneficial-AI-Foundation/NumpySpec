@@ -40,12 +40,12 @@ Everything else (Elan, Lean toolchain) is provisioned automatically in the
 remote Pantograph snapshot when you invoke any `just pipeline` or
 `just build-*` target.
 
-### Alternative: One-Click Setup with Codex
+### Alternative: One-Click Setup for CI/Agents
 
-For automated cloud environments:
+For automated cloud environments and GitHub Actions:
 
 ```bash
-./codex-install.sh  # Non-interactive setup for OpenAI Codex Universal
+.github/scripts/setup.sh  # Non-interactive setup for CI and Codex agents
 ```
 
 ## Local build (optional)
