@@ -41,6 +41,11 @@ lean_lib FuncTracker where
   -- Include all FuncTracker modules
   globs := #[.andSubmodules `FuncTracker]
 
+-- NDArray: NumPy-compatible n-dimensional arrays
+lean_lib NDArray where
+  -- Include all NDArray modules
+  globs := #[.andSubmodules `NDArray]
+
 -- Generated code library (COMMENTED OUT: requires mathlib)
 -- lean_lib Generated where
 --   srcDir := "."
