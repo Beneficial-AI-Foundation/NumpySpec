@@ -1,5 +1,7 @@
 import Lean
 
+/-! A maze game in Lean 4, by David Renshaw. Used as demo for Adem to see how to do parsing and delaboration. -/
+
 -- Coordinates in a two dimensional grid. ⟨0,0⟩ is the upper left.
 structure Coords where
   x : Nat -- column number
@@ -386,39 +388,3 @@ example : Escapable maze3 :=
     west
     south
     sorry -- can you finish the proof?
-
-/-- List comprehension syntax. -/
-syntax "#[" term "|" term " in " term (", " term)? "]" : term
-
-/--
-
-```mermaid
-   ┌───── yield ───────────┐ ┌ x ┐       ┌ xs ┐         optional filter
-      [  e     |   x   in   xs   ,  p  ]
-```
--/
-macro_rules
-  | `(#[ $expr | $x in $xs, $predicate ]) =>
-      `(Array.map (fun $x => $expr) (Array.filter (fun $x => $predicate) $xs))
-  | `(#[ $expr | $x in $xs ]) =>
-      `(Array.map (fun $x => $expr) $xs)
-
-def squares  : Array Nat := #[ x ^ 2 | x in Array.range 6 ]
-def evensSq  : Array Nat := #[ x ^ 2 | x in Array.range 6, x % 2 == 0 ]
-
-#eval squares = #[0,1,4,9,16,25]
-#eval evensSq = #[0,4,16]
-
-/-- A matrix is a vector of vectors. -/
-abbrev Matrix (α : Type) (R C:Nat) := Array (Array α)
-
--- instance [HMul α β γ] : HMul (Matrix α R C) (Vector β R) (Vector γ C) where
---   hMul A v := #[ #[ A[r]![c]! * v[c]! | r in [0:R]] | c in [0:C] ]
-
-/-- The power iteration method for finding the dominant eigenvalue of a matrix. -/
-def powerIteration (A : Matrix Float R C) (x0 : Vector Float R) (maxIter : Nat) : Vector Float R :=
-  Id.run do
-    let mut x := x0
-    for _ in [0:maxIter] do
-      x := A * x
-    return x
