@@ -56,11 +56,11 @@ If you want to compile locally, the project uses a unified `lakefile.lean` that 
 # Build the root package (default)
 just build-local              # → `lake build`
 
-# Build all libraries (main + generated)
-just build-all                # → `lake build allLibs`
+# Build all libraries
+just build-all                # → `lake build`
 
-# Build only generated code
-lake build generated
+# Build specific library
+lake build NumpySpec          # or FuncTracker, NDArray
 ```
 
 ## Cloud Compilation
