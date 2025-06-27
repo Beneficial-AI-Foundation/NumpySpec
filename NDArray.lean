@@ -1,4 +1,5 @@
 import Lean
+import NumpySpec.Constants
 
 namespace NDArray
 
@@ -64,6 +65,21 @@ def zeros [Inhabited α] [OfNat α 0] {n : Nat} (shape : Vector Nat n) : NDArray
 /-- Create an array filled with ones -/
 def ones [Inhabited α] [OfNat α 1] {n : Nat} (shape : Vector Nat n) : NDArray α n shape :=
   { data := Array.replicate (shapeSize shape) (1 : α)
+    size_proof := Array.size_replicate }
+
+/-- Create an array filled with Euler's constant e -/
+def full_e {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
+  { data := Array.replicate (shapeSize shape) NumpySpec.Constants.numpy_e
+    size_proof := Array.size_replicate }
+
+/-- Create an array filled with NaN values -/
+def nans {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
+  { data := Array.replicate (shapeSize shape) (NumpySpec.Constants.numpy_nan ())
+    size_proof := Array.size_replicate }
+
+/-- Create an array filled with infinity values -/
+def infs {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
+  { data := Array.replicate (shapeSize shape) (NumpySpec.Constants.numpy_inf ())
     size_proof := Array.size_replicate }
 
 /-- Create an array with sequential values -/
@@ -147,11 +163,11 @@ def fromArray? {n : Nat} {shape : Vector Nat n} (data : Array α) : Option (NDAr
     none
 
 /-- Element-wise addition -/
-instance [Add α] [Inhabited α] : Add (NDArray α n shape) where
+instance [Add α] [Inhabited α] {n : Nat} {shape : Vector Nat n} : Add (NDArray α n shape) where
   add a b := map2 (· + ·) a b
 
 /-- Element-wise multiplication -/
-instance [Mul α] [Inhabited α] : Mul (NDArray α n shape) where
+instance [Mul α] [Inhabited α] {n : Nat} {shape : Vector Nat n} : Mul (NDArray α n shape) where
   mul a b := map2 (· * ·) a b
 
 /-- Helper to create a shape vector from a list -/
