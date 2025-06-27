@@ -28,25 +28,26 @@ require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 -- COMMENTED OUT FOR SPEED: mathlib takes too long to build initially
 -- require mathlib from git "https://github.com/leanprover-community/mathlib4"
 
--- Main library
+/-- Main library -/
 lean_lib NumpySpec where
   -- Include the root module and all submodules
   globs := #[.andSubmodules `NumpySpec]
 
--- FuncTracker sublibrary for 2D function tracking tables
+/-- FuncTracker sublibrary for 2D function tracking tables -/
 lean_lib FuncTracker where
   -- Include all FuncTracker modules
   globs := #[.andSubmodules `FuncTracker]
 
--- NDArray: NumPy-compatible n-dimensional arrays
+/-- NDArray: NumPy-compatible n-dimensional arrays -/
 lean_lib NDArray where
   -- Include all NDArray modules
   globs := #[.andSubmodules `NDArray]
 
--- Executables
+/-- Executables -/
 @[default_target]
 lean_exe numpyspec where
   root := `Main
 
 -- lean_exe numpyspecmanual where
 --   root := `NumpySpec.ManualMain
+

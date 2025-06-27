@@ -28,10 +28,11 @@ globs := #[.andSubmodules `NumpySpec]  -- Include module and all submodules
 globs := #[.submodules `Spec]              -- Include only submodules
 ```
 
-### 4. Custom Build Targets
-- `allLibs`: Builds all libraries in parallel
-- `generated`: Builds only the generated code
-- Can be extended with more targets as needed
+### 4. Build Targets
+Lake automatically creates targets for each library defined:
+- `NumpySpec`: Main library
+- `FuncTracker`: Function tracking tables library  
+- `NDArray`: NumPy-compatible arrays library
 
 ### 5. Dependency Management
 Dependencies are declared in order (important for avoiding recompilation):
@@ -45,11 +46,11 @@ Dependencies are declared in order (important for avoiding recompilation):
 # Build default target (main executable)
 lake build
 
-# Build all libraries
-lake build allLibs
+# Build all libraries (builds all lean_lib targets)
+lake build
 
-# Build only generated code
-lake build generated
+# Build specific library
+lake build FuncTracker
 
 # Build specific library
 lake build NumpySpec

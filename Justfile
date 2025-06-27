@@ -5,28 +5,16 @@
 default:
     @just --list
 
-
-# Local lake build (rare)
-build-local:
+# Build Lean project
+build:
     lake build
 
-# Build all Lean targets
-build-all:
-    lake build allLibs
-
-# Test suite
+# Run Python test suite
 test:
     uv run -m pytest -q
 
-
-
-
-# Pull latest MorphCloud examples worktree
-pull-morph:
-	git -C external/morphcloud-examples-public pull --ff-only
-
 # ---------------------------------------------
-#  Complete Setup (for CI and local)
+#  Setup (for CI and local)
 # ---------------------------------------------
 
 # Main setup entrypoint - detects environment and runs appropriate setup
@@ -232,10 +220,10 @@ add-dev package:
     uv add --dev {{package}}
 
 # ---------------------------------------------
-#  Linting & Git hooks (Ruff)
+#  Linting & Formatting
 # ---------------------------------------------
 
-# Run Ruff with auto-fix, then format.  Useful in CI or locally.
+# Run linting and formatting
 lint:
     uv run ruff check --fix .
     uv run ruff format .
