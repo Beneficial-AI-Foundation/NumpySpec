@@ -53,7 +53,7 @@ jobs:
       
       # Build Lean project
       - name: Build Lean project
-        run: just build-all
+        run: just build
       
       # Run Python tests
       - name: Run Python tests
