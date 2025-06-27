@@ -33,9 +33,6 @@ lean_lib NumpySpec where
   -- Include the root module and all submodules
   globs := #[.andSubmodules `NumpySpec]
 
--- BignumLean standalone module
-lean_lib BignumLean
-
 -- FuncTracker sublibrary for 2D function tracking tables
 lean_lib FuncTracker where
   -- Include all FuncTracker modules
@@ -45,12 +42,6 @@ lean_lib FuncTracker where
 lean_lib NDArray where
   -- Include all NDArray modules
   globs := #[.andSubmodules `NDArray]
-
--- Generated code library (COMMENTED OUT: requires mathlib)
--- lean_lib Generated where
---   srcDir := "."
---   -- Include all Spec modules from generated/Spec directory
---   globs := #[.andSubmodules `generated]
 
 -- Executables
 @[default_target]

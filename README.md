@@ -150,5 +150,5 @@ This project is licensed under the Apache-2.0 license - see the LICENSE file for
 ## Related Projects
 
 - **FuncTracker**: ASCII table parsing for development progress tracking (separate module)
-- **BignumLean**: Verified bignum arithmetic for numerical stability
+- **NDArray**: NumPy-compatible n-dimensional arrays with formal verification
 - **LeanTool**: Integration utilities for Lean development workflows

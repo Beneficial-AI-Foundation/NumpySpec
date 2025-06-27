@@ -16,12 +16,6 @@ Provides LSP (Language Server Protocol) integration for Lean 4:
 - Run code snippets
 - Search theorems via leansearch.net
 
-### 2. leanexplore MCP
-Provides advanced Lean theorem search capabilities:
-- Search Lean statement groups
-- Get statements by ID
-- Get dependencies between statements
-- Both API and local search variants
 
 ## Installation
 
