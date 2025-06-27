@@ -30,29 +30,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      # Install just (task runner)
+      # Install just (task runner) - this is our only bootstrap requirement
       - uses: extractions/setup-just@v1
       
-      # Run the unified installation script
+      # Run the unified setup through just
       - name: Setup NumpySpec environment
-        run: .github/scripts/setup.sh
-      
-      # Verify installations
-      - name: Verify installations
-        run: |
-          echo "=== Core Tools ==="
-          uv --version || echo "uv not found"
-          lean --version || echo "lean not found"
-          lake --version || echo "lake not found"
-          python --version || echo "python not found"
-          
-          echo ""
-          echo "=== CLI Tools ==="
-          just --version || echo "just not found"
-          rg --version | head -1 || echo "ripgrep not found"
-          fd --version || echo "fd not found"
-          jq --version || echo "jq not found"
-          gh --version || echo "GitHub CLI not found"
+        run: just setup
+        env:
+          GITHUB_ACTIONS: true
       
       # Cache Lean dependencies
       - name: Cache Lean dependencies
@@ -68,11 +53,11 @@ jobs:
       
       # Build Lean project
       - name: Build Lean project
-        run: lake build
+        run: just build-all
       
       # Run Python tests
       - name: Run Python tests
-        run: uv run -m pytest -v
+        run: just test
       
       # Run Lean tests (if any)
       - name: Run Lean tests
@@ -85,7 +70,7 @@ jobs:
       
       # Lint check
       - name: Lint check
-        run: lake build --verbose || echo "Lint check failed"
+        run: just lint || echo "Lint check failed"
       
       # Upload artifacts on failure
       - name: Upload logs on failure
