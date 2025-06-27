@@ -33,23 +33,57 @@ jobs:
       # Install just (task runner) - this is our only bootstrap requirement
       - uses: extractions/setup-just@v1
       
-      # Run the unified setup through just
-      - name: Setup NumpySpec environment
-        run: just setup
-        env:
-          GITHUB_ACTIONS: true
+      # Cache Cargo/Rust dependencies (CLI tools)
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock', 'justfile') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+      
+      # Cache Python/UV dependencies
+      - name: Cache Python/UV dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-python-${{ hashFiles('pyproject.toml', 'uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-python-
       
       # Cache Lean dependencies
       - name: Cache Lean dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.elan
             .lake
             lake-packages
-          key: ${{ runner.os }}-lean-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+          key: ${{ runner.os }}-lean-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean') }}
           restore-keys: |
+            ${{ runner.os }}-lean-${{ hashFiles('lean-toolchain') }}
             ${{ runner.os }}-lean-
+      
+      # Cache mathlib build artifacts separately for better granularity
+      - name: Cache mathlib oleans
+        uses: actions/cache@v4
+        with:
+          path: |
+            .lake/packages/mathlib/.lake/build
+          key: ${{ runner.os }}-mathlib-${{ hashFiles('lake-manifest.json') }}
+          restore-keys: |
+            ${{ runner.os }}-mathlib-
+      
+      # Run the unified setup through just
+      - name: Setup NumpySpec environment
+        run: just setup
+        env:
+          GITHUB_ACTIONS: true
       
       # Build Lean project
       - name: Build Lean project
