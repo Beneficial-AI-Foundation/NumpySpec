@@ -67,5 +67,9 @@ dev = [
 [tool.ruff.format]
 docstring-code-format = true
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+
 [tool.hatch.metadata]
 allow-direct-references = true

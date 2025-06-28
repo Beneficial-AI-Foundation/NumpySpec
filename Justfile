@@ -125,7 +125,7 @@ install-cli-tools:
     export PATH="$HOME/.cargo/bin:$PATH"
     
     # Install tools via cargo
-    tools=("ripgrep" "fd-find" "bat" "eza" "starship" "du-dust" "bottom" "gitui")
+    tools=("ripgrep" "fd-find" "bat" "eza" "starship" "du-dust" "bottom" "gitui" "ast-grep")
     for tool in "${tools[@]}"; do
             cargo install --locked "$tool" || echo "⚠️  Failed to install $tool"
     done
