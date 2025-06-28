@@ -34,7 +34,7 @@ default:
 
 # Build Lean project
 build: setup-lean
-    lake build
+    lake build --try-cache
 
 # Run Python test suite  
 test: setup-python
@@ -235,13 +235,13 @@ setup-lean: _ensure-elan cache-setup
     @echo "📐 Setting up Lean environment..."
     elan self update || true
     elan default leanprover/lean4:stable || { echo "❌ Failed to set Lean toolchain"; exit 1; }
-    lake build || { echo "❌ Initial build failed"; exit 1; }
+    lake build --try-cache || { echo "❌ Initial build failed"; exit 1; }
 
 # Setup build caches for faster compilation
 cache-setup:
     @echo "🔄 Setting up build caches..."
     @echo "📦 Attempting to download pre-built dependencies..."
-    -@lake build || true
+    -@lake build --try-cache || true
     @just _fetch-mathlib-cache
     @echo "✅ Cache setup complete"
 
