@@ -18,7 +18,7 @@ The core specification is found in `NumpySpec.lean`:
 - **Formal Verification**: Every operation is mathematically proven correct
 - **Numpy Compatibility**: Familiar API design for numpy users
 - **Type Safety**: Lean's type system prevents dimension mismatches
-- **Cloud-Native**: Compilation and verification offloaded to Pantograph servers on MorphCloud
+- **Cloud-Native**: Compilation and verification offloaded to Pantograph servers
 - **RL Training**: Reinforcement learning agents for automated theorem proving
 
 ## Dependencies
@@ -26,7 +26,6 @@ The core specification is found in `NumpySpec.lean`:
 Local machine only needs:
 
 * Python ≥ 3.12 with [`uv`](https://github.com/astral-sh/uv) (see `Justfile`)
-* [`morphcloud` SDK](https://pypi.org/project/morphcloud/) ≥ 0.1.67 (auto-installed via `uv sync`)
 
 ## Installation
 
@@ -37,35 +36,17 @@ just sync   # installs all Python deps (Pantograph, LeanTool, …)
 ```
 
 Everything else (Elan, Lean toolchain) is provisioned automatically in the
-remote Pantograph snapshot when you invoke any `just pipeline` or
-`just build-*` target.
+remote Pantograph snapshot when you invoke any `just pipeline` target.
 
-### Alternative: One-Click Setup for CI/Agents
 
-For automated cloud environments and GitHub Actions:
 
-```bash
-.github/scripts/setup.sh  # Non-interactive setup for CI and Codex agents
-```
+## Build
 
-## Local build (optional)
-
-If you want to compile locally, the project uses a unified `lakefile.lean` that manages both the main codebase and generated code:
-
-```bash
-# Build the root package (default)
-just build-local              # → `lake build`
-
-# Build all libraries
-just build-all                # → `lake build`
-
-# Build specific library
-lake build NumpySpec          # or FuncTracker, NDArray
-```
+This project uses `just`.
 
 ## Cloud Compilation
 
-The project supports remote compilation via Pantograph servers on MorphCloud. First run provisions an *Infinibranch* snapshot (≈ 5 min). Subsequent runs reuse the warmed snapshot/instance.
+The project supports remote compilation via Pantograph servers. First run provisions a snapshot (≈ 5 min). Subsequent runs reuse the warmed snapshot/instance.
 
 ## Numpy Port Roadmap
 

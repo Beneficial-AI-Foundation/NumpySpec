@@ -127,19 +127,12 @@ install-cli-tools:
     # Install tools via cargo
     tools=("ripgrep" "fd-find" "bat" "eza" "starship" "du-dust" "bottom" "gitui")
     for tool in "${tools[@]}"; do
-        if ! command -v "${tool%%-*}" >/dev/null 2>&1; then
             cargo install --locked "$tool" || echo "⚠️  Failed to install $tool"
-        fi
     done
     
-    # Platform-specific tools
+
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        # Install terminal-notifier if on macOS
-        if ! command -v terminal-notifier >/dev/null 2>&1; then
-            if command -v brew >/dev/null 2>&1; then
-                brew install terminal-notifier || echo "⚠️  Failed to install terminal-notifier"
-            fi
-        fi
+        brew install terminal-notifier || echo "⚠️  Failed to install terminal-notifier"
     fi
 
 # Setup Python environment
@@ -204,20 +197,6 @@ verify-setup:
     echo "✅ Setup verification complete!"
 
 
-# ---------------------------------------------
-#  Dependency management
-# ---------------------------------------------
-
-sync:
-    uv sync
-
-# Install a Python package
-add package:
-    uv add {{package}}
-
-# Install a dev dependency
-add-dev package:
-    uv add --dev {{package}}
 
 # ---------------------------------------------
 #  Linting & Formatting

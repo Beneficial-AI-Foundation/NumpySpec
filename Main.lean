@@ -1,10 +1,8 @@
-import NumpySpec
--- import LeanSearchClient -- Adds #search command
-
+import NDArray
 /-!
 # NumpySpec
 
-Main entry point for the NumpySpec library providing formally verified 
+Main entry point for the NumpySpec library providing formally verified
 numpy-compatible operations in Lean 4.
 -/
 
