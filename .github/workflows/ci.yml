@@ -56,34 +56,37 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-python-
       
-      # Cache Lean dependencies
-      - name: Cache Lean dependencies
+      # Cache Lean toolchain
+      - name: Cache Lean toolchain
         uses: actions/cache@v4
         with:
           path: |
             ~/.elan
-            .lake
-            lake-packages
-          key: ${{ runner.os }}-lean-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean') }}
+          key: ${{ runner.os }}-elan-${{ hashFiles('lean-toolchain') }}
           restore-keys: |
-            ${{ runner.os }}-lean-${{ hashFiles('lean-toolchain') }}
-            ${{ runner.os }}-lean-
+            ${{ runner.os }}-elan-
       
-      # Cache mathlib build artifacts separately for better granularity
-      - name: Cache mathlib oleans
+      # Cache Lake build artifacts with two-tier strategy
+      - name: Cache Lake build artifacts
         uses: actions/cache@v4
         with:
           path: |
-            .lake/packages/mathlib/.lake/build
-          key: ${{ runner.os }}-mathlib-${{ hashFiles('lake-manifest.json') }}
+            .lake
+          key: ${{ runner.os }}-lake-${{ hashFiles('lean-toolchain', 'lake-manifest.json', 'lakefile.lean') }}
           restore-keys: |
-            ${{ runner.os }}-mathlib-
+            ${{ runner.os }}-lake-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+            ${{ runner.os }}-lake-${{ hashFiles('lean-toolchain') }}
+            ${{ runner.os }}-lake-
       
       # Run the unified setup through just
       - name: Setup NumpySpec environment
         run: just setup
         env:
           GITHUB_ACTIONS: true
+      
+      # Setup build caches for faster compilation
+      - name: Setup build caches
+        run: just cache-setup
       
       # Build Lean project
       - name: Build Lean project
