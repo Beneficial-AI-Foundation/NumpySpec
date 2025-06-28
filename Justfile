@@ -209,7 +209,7 @@ install-cli-tools: _ensure-rust
     @just _install-cargo-tool "gitui" "gitui"
     @just _install-cargo-tool "ast-grep" "ast-grep"
     @just _install-cargo-tool "watchexec-cli" "watchexec"
-    {{ if is_macos == "true" { "@just _install-brew-tool terminal-notifier" } else { "" } }}
+    @{{ if is_macos == "true" { "just _install-brew-tool terminal-notifier" } else { "true" } }}
 
 # ---------------------------------------------
 #  Language-Specific Setup
