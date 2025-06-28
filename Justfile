@@ -34,7 +34,7 @@ default:
 
 # Build Lean project
 build: setup-lean
-    lake build --try-cache
+    lake build
 
 # Run Python test suite  
 test: setup-python
@@ -199,16 +199,24 @@ _install-brew-tool package:
 # Install CLI tools
 install-cli-tools: _ensure-rust
     @echo "📦 Installing CLI tools..."
-    @just _install-cargo-tool "ripgrep" "rg"
-    @just _install-cargo-tool "fd-find" "fd"
-    @just _install-cargo-tool "bat" "bat"
-    @just _install-cargo-tool "eza" "eza"
-    @just _install-cargo-tool "starship" "starship"
-    @just _install-cargo-tool "du-dust" "dust"
-    @just _install-cargo-tool "bottom" "btm"
-    @just _install-cargo-tool "gitui" "gitui"
-    @just _install-cargo-tool "ast-grep" "ast-grep"
-    @just _install-cargo-tool "watchexec-cli" "watchexec"
+    @# Build list of tools to install
+    @tools=""; \
+    command -v rg >/dev/null 2>&1 || tools="$tools ripgrep"; \
+    command -v fd >/dev/null 2>&1 || tools="$tools fd-find"; \
+    command -v bat >/dev/null 2>&1 || tools="$tools bat"; \
+    command -v eza >/dev/null 2>&1 || tools="$tools eza"; \
+    command -v starship >/dev/null 2>&1 || tools="$tools starship"; \
+    command -v dust >/dev/null 2>&1 || tools="$tools du-dust"; \
+    command -v btm >/dev/null 2>&1 || tools="$tools bottom"; \
+    command -v gitui >/dev/null 2>&1 || tools="$tools gitui"; \
+    command -v ast-grep >/dev/null 2>&1 || tools="$tools ast-grep"; \
+    command -v watchexec >/dev/null 2>&1 || tools="$tools watchexec-cli"; \
+    if [ -n "$tools" ]; then \
+        echo "Installing:$tools"; \
+        cargo install --locked $tools || echo "⚠️  Some installations may have failed"; \
+    else \
+        echo "✅ All CLI tools already installed"; \
+    fi
     {{ if is_macos == "true" { "just _install-brew-tool terminal-notifier" } else { "true" } }}
 
 # ---------------------------------------------
@@ -227,13 +235,13 @@ setup-lean: _ensure-elan cache-setup
     @echo "📐 Setting up Lean environment..."
     elan self update || true
     elan default leanprover/lean4:stable || { echo "❌ Failed to set Lean toolchain"; exit 1; }
-    lake build --try-cache || { echo "❌ Initial build failed"; exit 1; }
+    lake build || { echo "❌ Initial build failed"; exit 1; }
 
 # Setup build caches for faster compilation
 cache-setup:
     @echo "🔄 Setting up build caches..."
     @echo "📦 Attempting to download pre-built dependencies..."
-    -@lake build --try-cache --no-build
+    -@lake build || true
     @just _fetch-mathlib-cache
     @echo "✅ Cache setup complete"
 
@@ -243,11 +251,7 @@ _fetch-mathlib-cache:
     #!/usr/bin/env bash
     if grep -q "mathlib" lake-manifest.json 2>/dev/null; then
         echo "📚 Fetching mathlib cache..."
-        if lake exe cache --help >/dev/null 2>&1; then
-            lake exe cache get || echo "⚠️  Failed to fetch mathlib cache"
-        else
-            echo "ℹ️  Mathlib cache tool not available"
-        fi
+        echo "ℹ️  Check if mathlib4-cache is available in your environment"
     fi
 
 # ---------------------------------------------
@@ -356,4 +360,4 @@ outdated:
     @-uv pip list --outdated
     @echo ""
     @echo "=== Lean Dependencies ==="
-    @-lake update --dry-run
+    @echo "Run 'lake update' to check for and install updates"
