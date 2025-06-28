@@ -388,3 +388,4 @@ example : Escapable maze3 :=
     west
     south
     sorry -- can you finish the proof?
+

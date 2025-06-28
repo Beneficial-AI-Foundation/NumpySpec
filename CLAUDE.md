@@ -25,11 +25,9 @@ Favor statically typed functional programming but use mutability where it makes 
 **`just` is our main program runner.** It provides a unified interface for all common development tasks. Run `just` without arguments to see all available commands.
 
 Key commands:
-- `just build-all` - Build all Lean targets
+- `just build` - Build Lean project
 - `just test` - Run the Python test suite  
-- `just build-local` - Build Lean project locally
 - `just bootstrap` - Bootstrap developer environment (Rust, Elan, UV)
-- `just pull-morph` - Pull latest MorphCloud examples
 
 You can also run underlying tools directly:
 - `lake build` - Build Lean project (use frequently for constant feedback)
@@ -121,7 +119,7 @@ h_neq : ¬P.card = 2 ^ (Fintype.card S - 1)
 
 ```bash
 # Build using just (recommended)
-just build-all    # Build all Lean targets
+just build        # Build Lean project
 just test         # Run Python tests
 
 # Or use direct commands:
@@ -246,7 +244,7 @@ When working with Lean 4, consult these authoritative sources:
 - **Mathlib Manual**: <https://leanprover-community.github.io/mathlib-manual/html-multi/Guides/> - Comprehensive guide to mathlib conventions, tactics, and best practices
 - **Lean Language Reference**: <https://lean-lang.org/doc/reference/latest/> - The definitive Lean language reference for syntax and semantics
 
-**IMPORTANT**: `Vector` > `Array` >> `List`. `List` is a linked list, which has terrible performance, so avoid it.
+
 
 ## Development Tools and Workflow
 

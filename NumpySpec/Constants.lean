@@ -16,12 +16,10 @@ namespace NumpySpec.Constants
 -/
 
 -- Implementation
-def e : Float := 2.71828182845904523536028747135266249775724709369995
-
-def numpy_e : Float := e
+def numpy_e : Float := 2.71828182845904523536028747135266249775724709369995
 
 -- Specification
-def numpy_e_spec : {x : Float // x = e} := ⟨e, rfl⟩
+def numpy_e_spec : {x : Float // x = numpy_e} := ⟨numpy_e, rfl⟩
 
 
 /- ============================================================================
@@ -31,12 +29,10 @@ def numpy_e_spec : {x : Float // x = e} := ⟨e, rfl⟩
 -/
 
 -- Implementation
-def g : Float := 0.577215664901532860606512090082402431042
-
-def numpy_euler_gamma : Float := g
+def numpy_euler_gamma : Float := 0.577215664901532860606512090082402431042
 
 -- Specification
-def numpy_euler_gamma_spec : {x : Float // x = g} := ⟨g, rfl⟩
+def numpy_euler_gamma_spec : {x : Float // x = numpy_euler_gamma} := ⟨numpy_euler_gamma, rfl⟩
 
 
 /- ============================================================================

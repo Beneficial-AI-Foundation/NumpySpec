@@ -38,7 +38,7 @@ lean_lib FuncTracker where
   -- Include all FuncTracker modules
   globs := #[.andSubmodules `FuncTracker]
 
-/-- NDArray: NumPy-compatible n-dimensional arrays -/
+/-- Main library. NumPy-compatible n-dimensional arrays -/
 lean_lib NDArray where
   -- Include all NDArray modules
   globs := #[.andSubmodules `NDArray]
@@ -50,4 +50,3 @@ lean_exe numpyspec where
 
 -- lean_exe numpyspecmanual where
 --   root := `NumpySpec.ManualMain
-
