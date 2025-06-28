@@ -60,9 +60,9 @@ setup:
 [private]
 _setup-ci: _install-system-deps _ensure-rust _ensure-elan _ensure-uv install-cli-tools setup-python setup-lean verify-setup
     @echo "🏭 CI setup complete!"
-    {{ if os() != "windows" { "@echo \"$HOME/.cargo/bin\" >> $GITHUB_PATH" } else { "" } }}
-    {{ if os() != "windows" { "@echo \"$HOME/.elan/bin\" >> $GITHUB_PATH" } else { "" } }}
-    {{ if os() != "windows" { "@echo \"$HOME/.local/bin\" >> $GITHUB_PATH" } else { "" } }}
+    {{ if os() != "windows" { "echo \"$HOME/.cargo/bin\" >> $GITHUB_PATH" } else { "true" } }}
+    {{ if os() != "windows" { "echo \"$HOME/.elan/bin\" >> $GITHUB_PATH" } else { "true" } }}
+    {{ if os() != "windows" { "echo \"$HOME/.local/bin\" >> $GITHUB_PATH" } else { "true" } }}
 
 # Local developer setup
 [private]
