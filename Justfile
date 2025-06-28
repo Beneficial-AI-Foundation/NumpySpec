@@ -54,7 +54,7 @@ setup:
     @echo "🚀 Starting NumpySpec environment setup..."
     @echo "   Platform: {{os()}} ({{arch()}})"
     @echo "   CI: {{is_ci}}"
-    @if [ "{{is_ci}}" = "true" ]; then just _setup-ci; else just _setup-local; fi
+    if [ "{{is_ci}}" = "true" ]; then just _setup-ci; else just _setup-local; fi
 
 # CI-specific setup
 [private]
@@ -209,7 +209,7 @@ install-cli-tools: _ensure-rust
     @just _install-cargo-tool "gitui" "gitui"
     @just _install-cargo-tool "ast-grep" "ast-grep"
     @just _install-cargo-tool "watchexec-cli" "watchexec"
-    @{{ if is_macos == "true" { "just _install-brew-tool terminal-notifier" } else { "true" } }}
+    {{ if is_macos == "true" { "just _install-brew-tool terminal-notifier" } else { "true" } }}
 
 # ---------------------------------------------
 #  Language-Specific Setup
@@ -337,7 +337,7 @@ watch: _ensure-watchexec
 # Ensure watchexec is installed
 [private]
 _ensure-watchexec:
-    @if ! command -v watchexec >/dev/null 2>&1; then \
+    if ! command -v watchexec >/dev/null 2>&1; then \
         echo "❌ watchexec not found. Installing..."; \
         just _install-cargo-tool "watchexec-cli" "watchexec"; \
     fi
