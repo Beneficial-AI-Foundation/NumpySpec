@@ -7,11 +7,34 @@ default:
 
 # Build Lean project
 build:
-    lake build
+    lake build --try-cache
 
 # Run Python test suite
 test:
     uv run -m pytest -q
+
+# Setup build caches for faster compilation
+cache-setup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "🔄 Setting up build caches..."
+    
+    # Try to download release builds for dependencies
+    echo "📦 Attempting to download pre-built dependencies..."
+    lake build --try-cache --no-build || true
+    
+    # If mathlib is in the manifest, try to get its cache
+    if grep -q "mathlib" lake-manifest.json 2>/dev/null; then
+        echo "📚 Fetching mathlib cache..."
+        if lake exe cache --help >/dev/null 2>&1; then
+            lake exe cache get || echo "⚠️  Failed to fetch mathlib cache"
+        else
+            echo "ℹ️  Mathlib cache tool not available"
+        fi
+    fi
+    
+    echo "✅ Cache setup complete"
 
 # ---------------------------------------------
 #  Setup (for CI and local)
@@ -124,15 +147,32 @@ install-cli-tools:
     # Ensure cargo is in PATH
     export PATH="$HOME/.cargo/bin:$PATH"
     
-    # Install tools via cargo
-    tools=("ripgrep" "fd-find" "bat" "eza" "starship" "du-dust" "bottom" "gitui" "ast-grep")
-    for tool in "${tools[@]}"; do
+    # Install tools via cargo (skip if already installed)
+    declare -A tool_commands=(
+        ["ripgrep"]="rg"
+        ["fd-find"]="fd"
+        ["bat"]="bat"
+        ["eza"]="eza"
+        ["starship"]="starship"
+        ["du-dust"]="dust"
+        ["bottom"]="btm"
+        ["gitui"]="gitui"
+        ["ast-grep"]="ast-grep"
+    )
+    
+    for tool in "${!tool_commands[@]}"; do
+        cmd="${tool_commands[$tool]}"
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "Installing $tool..."
             cargo install --locked "$tool" || echo "⚠️  Failed to install $tool"
+        fi
     done
     
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        brew install terminal-notifier || echo "⚠️  Failed to install terminal-notifier"
+        if ! command -v terminal-notifier >/dev/null 2>&1; then
+            brew install terminal-notifier || echo "⚠️  Failed to install terminal-notifier"
+        fi
     fi
 
 # Setup Python environment
@@ -162,13 +202,11 @@ setup-lean:
     elan self update || true
     elan default leanprover/lean4:stable
     
-    # Fetch mathlib cache if lake-manifest.json exists
-    if [ -f "lake-manifest.json" ]; then
-        lake exe cache get || echo "⚠️  Failed to fetch mathlib cache"
-    fi
+    # Setup caches
+    just cache-setup
     
     # Build the project
-    lake build
+    lake build --try-cache
 
 # Verify all tools are installed correctly
 verify-setup:
@@ -180,18 +218,18 @@ verify-setup:
     
     # Core tools
     echo "=== Core Tools ==="
-    command -v cargo && cargo --version || echo "❌ cargo not found"
-    command -v elan && elan --version || echo "❌ elan not found"
-    command -v lean && lean --version || echo "❌ lean not found"
-    command -v lake && lake --version || echo "❌ lake not found"
-    command -v uv && uv --version || echo "❌ uv not found"
-    command -v python && python --version || echo "❌ python not found"
+    command -v cargo >/dev/null && cargo --version || echo "❌ cargo not found"
+    command -v elan >/dev/null && elan --version || echo "❌ elan not found"
+    command -v lean >/dev/null && lean --version || echo "❌ lean not found"
+    command -v lake >/dev/null && lake --version || echo "❌ lake not found"
+    command -v uv >/dev/null && uv --version || echo "❌ uv not found"
+    command -v python >/dev/null && python --version || echo "❌ python not found"
     
     echo ""
     echo "=== CLI Tools ==="
-    command -v rg && rg --version | head -1 || echo "❌ ripgrep not found"
-    command -v fd && fd --version || echo "❌ fd not found"
-    command -v bat && bat --version | head -1 || echo "❌ bat not found"
+    command -v rg >/dev/null && rg --version | head -1 || echo "❌ ripgrep not found"
+    command -v fd >/dev/null && fd --version || echo "❌ fd not found"
+    command -v bat >/dev/null && bat --version | head -1 || echo "❌ bat not found"
     
     echo ""
     echo "✅ Setup verification complete!"
