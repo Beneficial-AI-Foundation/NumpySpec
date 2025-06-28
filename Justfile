@@ -24,12 +24,6 @@ shell_name := if os() == "windows" { "powershell" } else { env("SHELL", "/bin/ba
 default:
     @just --list
 
-# Aliases for common commands
-alias b := build
-alias t := test
-alias l := lint
-alias c := check
-alias f := fmt
 
 # ---------------------------------------------
 #  Core Commands
