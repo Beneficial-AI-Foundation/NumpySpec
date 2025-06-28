@@ -10,6 +10,14 @@ package NumpySpec where
     ⟨`relaxedAutoImplicit, false⟩,
     ⟨`linter.missingDocs, true⟩
   ]
+  -- Cloud release configuration for pre-built artifacts
+  releaseRepo := "https://github.com/Beneficial-AI-Foundation/NumpySpec"
+  buildArchive := "NumpySpec-{OS}-{ARCH}.tar.gz"
+  preferReleaseBuild := true
+  -- Weak configuration arguments that don't trigger rebuilds
+  weakLeanArgs := #[
+    "-Dpp.unicode.fun=true"  -- Pretty printing options
+  ]
 
 /-! Dependencies (order matters for compilation) -/
 
