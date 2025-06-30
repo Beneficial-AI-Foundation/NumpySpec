@@ -192,14 +192,12 @@ def infs {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
   { data := Array.replicate (shapeSize shape) (NumpySpec.Constants.numpy_inf ())
     size_proof := Array.size_replicate }
 
-/-- Create an array with sequential values -/
-def arange (n : Nat) : NDArray Nat 1 (Vector.ofFn fun _ => n) := Id.run do
-  let mut out := Array.mkEmpty n
-  for i in [:n] do
-    out := out.push i
-  { data := out
-  -- TODO: use mvcgen
-    size_proof := by sorry }
+/-- Create an array with sequential values from 0 to `shapeSize shape - 1`. -/
+def arange {n : Nat} (shape : Vector Nat n) : NDArray Nat n shape :=
+  let total := shapeSize shape
+  { data := (List.range total).toArray,
+    size_proof := by
+      simp [List.length_range, total] }
 
 /-- Get element at index -/
 def get [Inhabited α] {n : Nat} {shape : Vector Nat n} (arr : NDArray α n shape) (idx : Index shape) : α :=
