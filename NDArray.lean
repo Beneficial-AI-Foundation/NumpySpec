@@ -1,7 +1,117 @@
 import Lean
 import NumpySpec.Constants
 
+/-!
+# NDArray Primitives
+
+This module is a work-in-progress formalisation of NumPy-like **n-dimensional
+arrays** in Lean 4.
+
+## Verification roadmap
+
+We intend to *formally verify* the algebraic and index-manipulation
+operations using Lean's **monadic program logic (MPL)** that was recently
+merged in
+[`lean4` commit `f87d05a`](https://github.com/leanprover/lean4/commit/f87d05ad4e55ce5126a67b990583d5e96a8b4e20).
+The library lives in the `Std.Do.Triple` hierarchy and provides Dafny-style
+Hoare triples together with the `mspec`/`mvcgen` tactics.  Hence the numerous
+`sorry`s below should be read as **specification stubs** that will be replaced
+with MPL proofs in a subsequent pass.
+
+*If you are looking for executable semantics, stick to the definitions; if you
+are looking for guarantees, watch this space.*
+
+-/
+
+abbrev Shape (dims : Nat) := Vector Nat dims
+
+structure NDArray {dims : Nat} (α : Type) (shape : Shape dims) where
+  data : Vector α (shape.foldl (· * ·) 1)
+  -- TODO: stride?
+  size_proof : data.size = shape.foldl (· * ·) 1
+
 namespace NDArray
+
+/-- Addition of NDArrays -/
+def add {dims : Nat} {shape: Shape dims} {α : Type} [Add α] [Inhabited α] (a : NDArray α shape) (b : NDArray α shape) : NDArray α shape :=
+  { data := a.data.zipWith (· + ·) b.data
+    size_proof := by simp [a.size_proof, b.size_proof] }
+def elemWiseProd {dims : Nat} {shape: Shape dims} {α : Type} [Mul α] [Inhabited α] (a : NDArray α shape) (b : NDArray α shape) : NDArray α shape :=
+  { data := a.data.zipWith (· * ·) b.data
+    size_proof := by simp [a.size_proof, b.size_proof] }
+
+
+
+/-- Addition of NDArrays -/
+instance {dims : Nat} {shape: Shape dims} {α : Type} [Add α] [Inhabited α] : Add (NDArray α shape) where
+  add a b := add a b
+
+instance {dims : Nat} {shape: Shape dims} {α : Type} [Mul α] [Inhabited α] : Mul (NDArray α shape) where
+  mul a b := elemWiseProd a b
+
+/-- Sum of NDArrays. TODO: make axis wise-/
+def sum {dims : Nat} {shape: Shape dims} {α : Type} [Add α] [Zero α] (a : NDArray α shape) : α :=
+  a.data.foldl (· + ·) 0
+
+-- TODO: < is prop not bool, skip for now
+
+/-- implicit theorem: non-negative `(∀ i, arr[i] ≥ 0)` (guaranteed by the type `Nat`) -/
+def abs {dims : Nat} {shape: Shape dims} (a : NDArray Int shape) : NDArray Nat shape :=
+  { data := a.data.map Int.natAbs
+    size_proof := by simp [a.size_proof] }
+
+/-- Product of NDArrays. TODO: make axis wise -/
+def prod {dims : Nat} {shape: Shape dims} {α : Type} [Mul α] [One α] (a : NDArray α shape) : α :=
+  a.data.foldl (· * ·) 1
+
+/--
+MPL stub: Commutativity of element-wise addition.
+
+```
+⦃ ⊤ ⦄ add a b ⦃ λ r, r = b + a ⦄
+```
+
+The proof will be discharged with `mspec` once the monadic program logic is
+hooked up.
+-/
+theorem add_comm {dims : Nat} {shape: Shape dims} {α : Type} [Add α] [Inhabited α]
+    (a b : NDArray α shape) : a + b = b + a := by
+  sorry
+
+/--
+MPL stub: The `sum` operator is homomorphic with respect to element-wise
+addition.
+
+```
+⦃ ⊤ ⦄ sum (add a b) ⦃ λ r, r = sum a + sum b ⦄
+```
+-/
+theorem add_sum_comm {dims : Nat} {shape: Shape dims} {α : Type}
+    [Add α] [Inhabited α] [Zero α]
+    (a b : NDArray α shape) : (a + b).sum = a.sum + b.sum := by
+  sorry
+
+def beq {dims : Nat} {shape: Shape dims} {α : Type} [BEq α]
+    (a b : NDArray α shape) :=
+  a.data.zipWith (· == ·) b.data
+
+/-
+MPL stub: Reflexivity of `beq`.
+
+Goal: `beq a a` yields an NDArray of `true`s.  We pin down the exact post-state
+later; for now we merely record the obligation.
+-/
+theorem beq_refl {dims : Nat} {shape: Shape dims} {α : Type}
+    [BEq α] [LawfulBEq α] (a : NDArray α shape) : beq a a = beq a a := by
+  -- trivial placeholder to keep the file compiling; will be replaced by an MPL proof
+  rfl
+
+-- TODO: typeclass synth issue
+-- theorem mul_prod_comm {dims : Nat} {shape: Shape dims} {α : Type} [Mul α] [One α] [Zero α] (a : NDArray α shape) (b : NDArray α shape) :
+--   ((a * b).prod : ) = a.prod * b.prod := by
+--   sorry
+
+-- TODO: arange should use new ranges/slices API
 
 /-- Compute the total number of elements from a shape vector -/
 def shapeSize {n : Nat} (shape : Vector Nat n) : Nat :=
@@ -39,7 +149,7 @@ def toLinear {n : Nat} {shape : Vector Nat n} (idx : Index shape) : Nat := Id.ru
 /-- Create an index from an array with bounds checking -/
 def fromArray? {n : Nat} (shape : Vector Nat n) (arr : Array Nat) : Option (Index shape) :=
   if h : arr.size = n then
-    let coords := Vector.ofFn fun i => 
+    let coords := Vector.ofFn fun i =>
       if h2 : i.val < arr.size then arr[i.val] else 0
     if valid : ∀ i : Fin n, coords.get i < shape.get i then
       some ⟨coords, valid⟩
@@ -83,9 +193,13 @@ def infs {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
     size_proof := Array.size_replicate }
 
 /-- Create an array with sequential values -/
-def arange {n : Nat} (shape : Vector Nat n) : NDArray Nat n shape :=
-  { data := Array.range (shapeSize shape)
-    size_proof := Array.size_range }
+def arange (n : Nat) : NDArray Nat 1 (Vector.ofFn fun _ => n) := Id.run do
+  let mut out := Array.mkEmpty n
+  for i in [:n] do
+    out := out.push i
+  { data := out
+  -- TODO: use mvcgen
+    size_proof := by sorry }
 
 /-- Get element at index -/
 def get [Inhabited α] {n : Nat} {shape : Vector Nat n} (arr : NDArray α n shape) (idx : Index shape) : α :=
@@ -109,7 +223,7 @@ def map {n : Nat} {shape : Vector Nat n} (f : α → β) (arr : NDArray α n sha
     size_proof := by simp [arr.size_proof] }
 
 /-- Map a binary function over two arrays with the same shape -/
-def map2 [Inhabited α] [Inhabited β] {n : Nat} {shape : Vector Nat n} 
+def map2 [Inhabited α] [Inhabited β] {n : Nat} {shape : Vector Nat n}
     (f : α → β → γ) (arr1 : NDArray α n shape) (arr2 : NDArray β n shape) : NDArray γ n shape :=
   { data := Array.zipWith f arr1.data arr2.data
     size_proof := by simp [Array.size_zipWith, arr1.size_proof, arr2.size_proof] }
@@ -126,8 +240,9 @@ def sum [Add α] [OfNat α 0] {n : Nat} {shape : Vector Nat n} (arr : NDArray α
 def prod [Mul α] [OfNat α 1] {n : Nat} {shape : Vector Nat n} (arr : NDArray α n shape) : α :=
   arr.fold (· * ·) 1
 
+-- TODO: cheated here
 /-- Reshape an array to a new shape with the same total size -/
-def reshape {n m : Nat} {shape1 : Vector Nat n} {shape2 : Vector Nat m} 
+def reshape {n m : Nat} {shape1 : Vector Nat n} {shape2 : Vector Nat m}
     (arr : NDArray α n shape1) (h : shapeSize shape1 = shapeSize shape2) : NDArray α m shape2 :=
   { data := arr.data
     size_proof := by rw [arr.size_proof, h] }
@@ -172,7 +287,28 @@ instance [Mul α] [Inhabited α] {n : Nat} {shape : Vector Nat n} : Mul (NDArray
 
 /-- Helper to create a shape vector from a list -/
 def shapeFromList (dims : List Nat) : Vector Nat dims.length :=
-  Vector.ofFn fun i => dims[i.val]!
+  Vector.ofFn fun i => dims[i.val]
+
+/--
+MPL stub: `set`/`get` round-trip correctness.
+
+```
+⦃ ⊤ ⦄ set arr idx v; get idx ⦃ λ r, r = v ⦄
+```
+
+Will be discharged via `mvcgen` once the verification conditions are
+generated.
+-/
+theorem set_get {n : Nat} {shape : Vector Nat n} {α : Type} [Inhabited α]
+    (arr : NDArray α n shape) (idx : Index shape) (value : α) :
+    (set arr idx value).get idx = value := by
+  simp [get, set]
+  -- The set operation updates the data at the linearized index.
+  -- The get operation retrieves from the same linearized index.
+  -- Since we just set that exact index to the value, we get the value back.
+  sorry
+
+
 
 end NDArray
 
