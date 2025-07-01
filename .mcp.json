@@ -5,6 +5,14 @@
       "args": [
         "lean-lsp-mcp"
       ]
+    },
+    "leanexplore": {
+      "command": "leanexplore",
+      "args": [
+        "mcp",
+        "server",
+        "start"
+      ]
     }
   }
 }

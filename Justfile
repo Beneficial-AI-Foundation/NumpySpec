@@ -58,7 +58,7 @@ setup:
 
 # CI-specific setup
 [private]
-_setup-ci: _install-system-deps _ensure-rust _ensure-elan _ensure-uv install-cli-tools setup-python setup-lean verify-setup
+_setup-ci: _install-system-deps _ensure-rust _ensure-elan _ensure-uv install-cli-tools setup-python setup-lean setup-mcp verify-setup
     @echo "🏭 CI setup complete!"
     {{ if os() != "windows" { "echo \"$HOME/.cargo/bin\" >> $GITHUB_PATH" } else { "true" } }}
     {{ if os() != "windows" { "echo \"$HOME/.elan/bin\" >> $GITHUB_PATH" } else { "true" } }}
@@ -66,7 +66,7 @@ _setup-ci: _install-system-deps _ensure-rust _ensure-elan _ensure-uv install-cli
 
 # Local developer setup
 [private]
-_setup-local: _ensure-rust _ensure-elan _ensure-uv install-cli-tools setup-python setup-lean verify-setup
+_setup-local: _ensure-rust _ensure-elan _ensure-uv install-cli-tools setup-python setup-lean setup-mcp verify-setup
     @echo "💻 Local setup complete!"
     @just _update-shell-rc
 
@@ -97,6 +97,65 @@ _update-shell-rc:
             echo "✅ Added PATH to $RC_FILE - restart your shell or run: source $RC_FILE"
         fi
     fi
+
+# ---------------------------------------------
+#  MCP (Model Context Protocol) Setup
+# ---------------------------------------------
+
+# Install MCP tools for Lean development
+install-mcp-tools: _ensure-uv
+    @echo "🤖 Installing MCP tools for Lean development..."
+    @# Install lean-lsp-mcp via UV
+    -@uv pip install lean-lsp-mcp || echo "⚠️  lean-lsp-mcp installation failed or not available"
+    @# Try to install leanexplore from GitHub (Python project)
+    -@uv pip install git+https://github.com/justincasher/lean-explore.git || echo "⚠️  leanexplore installation failed or not available"
+    @# Alternative: clone and install locally
+    @if [ ! -d "/tmp/lean-explore" ] && ! command -v leanexplore >/dev/null 2>&1; then \
+        echo "Attempting to clone and install leanexplore locally..."; \
+        git clone https://github.com/justincasher/lean-explore.git /tmp/lean-explore 2>/dev/null && \
+        cd /tmp/lean-explore && uv pip install . || echo "⚠️  Local installation failed"; \
+    fi
+    @# Documentation links
+    @echo "ℹ️  For more information:"
+    @echo "   - lean-lsp-mcp: https://github.com/leanprover-community/lean-lsp-mcp"
+    @echo "   - leanexplore: https://www.leanexplore.com/docs"
+
+# Setup MCP configuration
+setup-mcp: install-mcp-tools
+    @echo "🔧 Setting up MCP configuration..."
+    @if [ -f .mcp.json ]; then \
+        echo "✅ MCP configuration found at .mcp.json"; \
+    else \
+        echo "Creating default MCP configuration..."; \
+        if command -v jq >/dev/null 2>&1; then \
+            echo '{"mcpServers":{"lean-lsp-mcp":{"command":"uvx","args":["lean-lsp-mcp"]},"leanexplore":{"command":"leanexplore","args":["mcp","server","start"]}}}' | jq . > .mcp.json; \
+        else \
+            echo '{"mcpServers":{"lean-lsp-mcp":{"command":"uvx","args":["lean-lsp-mcp"]},"leanexplore":{"command":"leanexplore","args":["mcp","server","start"]}}}' > .mcp.json; \
+        fi; \
+    fi
+    @echo "✅ MCP setup complete"
+
+# Verify MCP tools are available
+verify-mcp:
+    @echo "🔍 Verifying MCP tools..."
+    @echo "=== MCP Configuration ==="
+    @if [ -f .mcp.json ]; then \
+        if command -v jq >/dev/null 2>&1; then \
+            cat .mcp.json | jq .; \
+        else \
+            cat .mcp.json; \
+        fi; \
+    else \
+        echo "❌ .mcp.json not found"; \
+    fi
+    @echo ""
+    @echo "=== MCP Tools Status ==="
+    @command -v lean-lsp-mcp >/dev/null 2>&1 && echo "✅ lean-lsp-mcp: available" || echo "❌ lean-lsp-mcp: not found (but may work via uvx)"
+    @command -v leanexplore >/dev/null 2>&1 && echo "✅ leanexplore: available" || echo "❌ leanexplore: not found"
+    @# Check if lean-lsp-mcp works via uvx
+    @uvx lean-lsp-mcp --version >/dev/null 2>&1 && echo "✅ lean-lsp-mcp via uvx: working" || echo "❌ lean-lsp-mcp via uvx: not working"
+    @echo ""
+    @echo "ℹ️  Note: lean-lsp-mcp is configured to run via 'uvx' in .mcp.json"
 
 # ---------------------------------------------
 #  Tool Installation
@@ -279,6 +338,9 @@ verify-setup:
     @command -v rg >/dev/null && rg --version | head -1 || echo "❌ ripgrep not found"
     @command -v fd >/dev/null && fd --version || echo "❌ fd not found"
     @command -v bat >/dev/null && bat --version | head -1 || echo "❌ bat not found"
+    @echo ""
+    @echo "=== MCP Tools ==="
+    @just verify-mcp
     @echo ""
     @echo "✅ Setup verification complete!"
 
