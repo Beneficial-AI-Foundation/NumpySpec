@@ -167,6 +167,23 @@ lake build --verbose
 - Practice "sorry-friendly programming": Instead of a comment you put down a spec, but it is only "proved" with `sorry`. This is strictly better than a comment, because the typechecker will use it for program generation.
 - Decompose proofs until tools like `canonical`, `grind`, and `simp` dissolve the pieces. Use them to do the "how", the AI should do the "what".
 - Don't use `i` and `j` as variable names when you could use `r`(ow) and `c`(olumn) instead. Ditto for `m` and `n` as matrix dimensions. Use `R` and `C`.
+
+### Principle of Least Power for Notation
+
+Apply the principle of least power when designing notation and syntax extensions:
+
+- **Use built-in operators first**: Before creating custom notation, check if Lean's standard operators suffice (e.g., `*`, `+`, function application)
+- **Prefer ASCII over Unicode**: Unless there's established mathematical convention, use ASCII operators for better accessibility
+- **Leverage existing typeclasses**: Use standard typeclasses like `Mul`, `Add`, `Pow` rather than inventing new operators
+- **Simple syntax over clever macros**: Choose straightforward function calls over complex syntax extensions when the gain is marginal
+- **Follow mathematical conventions**: When notation exists in mathematics (e.g., matrix transpose as `.T`), use it rather than inventing new notation
+- **Composable over monolithic**: Design small, composable notations that work well together rather than large, specialized ones
+- **Document non-obvious notation**: If custom notation is necessary, provide clear documentation and examples
+
+Example choices:
+- Use `a * b` (via `Mul` instance) instead of custom `a ⊗ b` for matrix multiplication
+- Use method syntax `matrix.transpose` or `.T` instead of new Unicode operators
+- Use standard function composition `∘` rather than inventing new composition operators
 ### Import and Module Structure
 
 - Imports MUST come before any syntax elements, including module and doc comments
