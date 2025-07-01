@@ -1,3 +1,4 @@
+
 /-!
 # Dafny Numpy Specs (Stubs)
 
@@ -98,6 +99,7 @@ def dot (a b : List Int) : Int :=
   (List.zip a b).foldl (fun acc (p : Int × Int) => acc + p.fst * p.snd) 0
 
 theorem dot_spec (a b : List Int) :
+
   dot a b = (List.zip a b).foldl (fun acc p => acc + p.fst * p.snd) 0 := by
   sorry
 
