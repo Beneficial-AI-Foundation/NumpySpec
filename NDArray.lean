@@ -1,3 +1,5 @@
+import Std.Tactic.Do
+import Std.Do
 import Lean
 import NumpySpec.Constants
 
@@ -35,10 +37,11 @@ namespace NDArray
 /-- Addition of NDArrays -/
 def add {dims : Nat} {shape: Shape dims} {α : Type} [Add α] [Inhabited α] (a : NDArray α shape) (b : NDArray α shape) : NDArray α shape :=
   { data := a.data.zipWith (· + ·) b.data
-    size_proof := by simp [a.size_proof, b.size_proof] }
+    size_proof := by simp [a.size_proof] }
+
 def elemWiseProd {dims : Nat} {shape: Shape dims} {α : Type} [Mul α] [Inhabited α] (a : NDArray α shape) (b : NDArray α shape) : NDArray α shape :=
   { data := a.data.zipWith (· * ·) b.data
-    size_proof := by simp [a.size_proof, b.size_proof] }
+    size_proof := by simp [a.size_proof] }
 
 
 
@@ -114,7 +117,7 @@ theorem beq_refl {dims : Nat} {shape: Shape dims} {α : Type}
 -- TODO: arange should use new ranges/slices API
 
 /-- Compute the total number of elements from a shape vector -/
-def shapeSize {n : Nat} (shape : Vector Nat n) : Nat :=
+def Shape.size {n : Nat} (shape : Vector Nat n) : Nat :=
   shape.toArray.foldl (· * ·) 1
 
 /-- Compute row-major strides for a shape -/
@@ -163,41 +166,41 @@ end Index
 /-- Main NDArray structure with compile-time shape using Vector -/
 structure NDArray (α : Type) (n : Nat) (shape : Vector Nat n) where
   data : Array α
-  size_proof : data.size = shapeSize shape
+  size_proof : data.size = shape.size
 
 namespace NDArray
 
 /-- Create an array filled with zeros -/
 def zeros [Inhabited α] [OfNat α 0] {n : Nat} (shape : Vector Nat n) : NDArray α n shape :=
-  { data := Array.replicate (shapeSize shape) (0 : α)
+  { data := Array.replicate (shape.size) (0 : α)
     size_proof := Array.size_replicate }
 
 /-- Create an array filled with ones -/
 def ones [Inhabited α] [OfNat α 1] {n : Nat} (shape : Vector Nat n) : NDArray α n shape :=
-  { data := Array.replicate (shapeSize shape) (1 : α)
+  { data := Array.replicate (shape.size) (1 : α)
     size_proof := Array.size_replicate }
 
 /-- Create an array filled with Euler's constant e -/
 def full_e {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
-  { data := Array.replicate (shapeSize shape) NumpySpec.Constants.numpy_e
+  { data := Array.replicate (shape.size) NumpySpec.Constants.numpy_e
     size_proof := Array.size_replicate }
 
 /-- Create an array filled with NaN values -/
 def nans {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
-  { data := Array.replicate (shapeSize shape) (NumpySpec.Constants.numpy_nan ())
+  { data := Array.replicate (shape.size) (NumpySpec.Constants.numpy_nan ())
     size_proof := Array.size_replicate }
 
 /-- Create an array filled with infinity values -/
 def infs {n : Nat} (shape : Vector Nat n) : NDArray Float n shape :=
-  { data := Array.replicate (shapeSize shape) (NumpySpec.Constants.numpy_inf ())
+  { data := Array.replicate (shape.size) (NumpySpec.Constants.numpy_inf ())
     size_proof := Array.size_replicate }
 
 /-- Create an array with sequential values from 0 to `shapeSize shape - 1`. -/
 def arange {n : Nat} (shape : Vector Nat n) : NDArray Nat n shape :=
-  let total := shapeSize shape
+  let total := shape.size
   { data := (List.range total).toArray,
     size_proof := by
-      simp [List.length_range, total] }
+      simp [total] }
 
 /-- Get element at index -/
 def get [Inhabited α] {n : Nat} {shape : Vector Nat n} (arr : NDArray α n shape) (idx : Index shape) : α :=
@@ -241,7 +244,7 @@ def prod [Mul α] [OfNat α 1] {n : Nat} {shape : Vector Nat n} (arr : NDArray �
 -- TODO: cheated here
 /-- Reshape an array to a new shape with the same total size -/
 def reshape {n m : Nat} {shape1 : Vector Nat n} {shape2 : Vector Nat m}
-    (arr : NDArray α n shape1) (h : shapeSize shape1 = shapeSize shape2) : NDArray α m shape2 :=
+    (arr : NDArray α n shape1) (h : shape1.size = shape2.size) : NDArray α m shape2 :=
   { data := arr.data
     size_proof := by rw [arr.size_proof, h] }
 
@@ -254,23 +257,23 @@ def toArray {n : Nat} {shape : Vector Nat n} (arr : NDArray α n shape) : Array 
   arr.data
 
 /-- Create from an array with a given shape -/
-def fromArray {n : Nat} {shape : Vector Nat n} (data : Array α) (h : data.size = shapeSize shape) : NDArray α n shape :=
+def fromArray {n : Nat} {shape : Vector Nat n} (data : Array α) (h : data.size = shape.size) : NDArray α n shape :=
   { data := data, size_proof := h }
 
 /-- Create from a list with a given shape -/
-def fromList {n : Nat} {shape : Vector Nat n} (xs : List α) (h : xs.length = shapeSize shape) : NDArray α n shape :=
+def fromList {n : Nat} {shape : Vector Nat n} (xs : List α) (h : xs.length = shape.size) : NDArray α n shape :=
   fromArray xs.toArray (by simp [h])
 
 /-- Try to create from a list with a given shape -/
 def fromList? {n : Nat} {shape : Vector Nat n} (xs : List α) : Option (NDArray α n shape) :=
-  if h : xs.length = shapeSize shape then
+  if h : xs.length = shape.size then
     some (fromList xs h)
   else
     none
 
 /-- Try to create from an array with a given shape -/
 def fromArray? {n : Nat} {shape : Vector Nat n} (data : Array α) : Option (NDArray α n shape) :=
-  if h : data.size = shapeSize shape then
+  if h : data.size = shape.size then
     some (fromArray data h)
   else
     none
@@ -306,8 +309,5 @@ theorem set_get {n : Nat} {shape : Vector Nat n} {α : Type} [Inhabited α]
   -- Since we just set that exact index to the value, we get the value back.
   sorry
 
-
-
 end NDArray
-
 end NDArray
