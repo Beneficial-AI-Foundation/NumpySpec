@@ -25,6 +25,10 @@
         "leanmcp.py"
       ],
       "cwd": ".mcp-tools/LeanTool"
+    },
+    "browsermcp": {
+      "command": "npx",
+      "args": ["@browsermcp/mcp@latest"]
     }
   }
 }

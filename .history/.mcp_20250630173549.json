@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "lean-lsp-mcp": {
+      "command": "uvx",
+      "args": [
+        "lean-lsp-mcp"
+      ]
+    },
+    "browsermcp": {
+      "command": "npx",
+      "args": ["@browsermcp/mcp@latest"]
+    }
+  }
+}
