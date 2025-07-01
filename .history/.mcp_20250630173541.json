@@ -6,9 +6,11 @@
         "lean-lsp-mcp"
       ]
     },
-    "browsermcp": {
-      "command": "npx",
-      "args": ["@browsermcp/mcp@latest"]
+    "mcpServers": {
+      "browsermcp": {
+        "command": "npx",
+        "args": ["@browsermcp/mcp@latest"]
+      }
     }
   }
 }
