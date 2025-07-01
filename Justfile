@@ -128,10 +128,15 @@ setup-mcp: install-mcp-tools
     else \
         echo "Creating default MCP configuration..."; \
         if command -v jq >/dev/null 2>&1; then \
-            echo '{"mcpServers":{"lean-lsp-mcp":{"command":"uvx","args":["lean-lsp-mcp"]},"leanexplore":{"command":"leanexplore","args":["mcp","server","start"]}}}' | jq . > .mcp.json; \
+            echo '{"mcpServers":{"lean-lsp-mcp":{"command":"uvx","args":["lean-lsp-mcp"]},"leanexplore":{"command":"uv","args":["run","leanexplore","mcp","serve","--backend","local"]}}}' | jq . > .mcp.json; \
         else \
-            echo '{"mcpServers":{"lean-lsp-mcp":{"command":"uvx","args":["lean-lsp-mcp"]},"leanexplore":{"command":"leanexplore","args":["mcp","server","start"]}}}' > .mcp.json; \
+            echo '{"mcpServers":{"lean-lsp-mcp":{"command":"uvx","args":["lean-lsp-mcp"]},"leanexplore":{"command":"uv","args":["run","leanexplore","mcp","serve","--backend","local"]}}}' > .mcp.json; \
         fi; \
+    fi
+    @# Fetch local data for LeanExplore if installed
+    @if command -v leanexplore >/dev/null 2>&1 || uv pip show lean-explore >/dev/null 2>&1; then \
+        echo "📥 Fetching LeanExplore local data..."; \
+        uv run leanexplore data fetch || echo "⚠️  Failed to fetch data"; \
     fi
     @echo "✅ MCP setup complete"
 

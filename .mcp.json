@@ -7,11 +7,14 @@
       ]
     },
     "leanexplore": {
-      "command": "leanexplore",
+      "command": "uv",
       "args": [
+        "run",
+        "leanexplore",
         "mcp",
-        "server",
-        "start"
+        "serve",
+        "--backend",
+        "local"
       ]
     }
   }
