@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "lean-lsp-mcp": {
+      "command": "uvx",
+      "args": [
+        "lean-lsp-mcp"
+      ]
+    },
+    "leanexploreLocal": {
+      "command": "uv",
+      "args": [
+        "run",
+        "leanexplore",
+        "mcp",
+        "serve",
+        "--backend",
+        "local"
+      ]
+    },
+    "leanexploreRemote": {
+      "command": "uv",
+      "args": [
+        "run",
+        "leanexplore",
+        "mcp",
+        "serve",
+        "--backend",
+        "remote"
+      ]
+    },
+    "browsermcp": {
+      "command": "npx",
+      "args": ["@browsermcp/mcp@latest"]
+    }
+  }
+}

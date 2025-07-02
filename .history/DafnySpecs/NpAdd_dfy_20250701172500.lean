@@ -1,0 +1,22 @@
+import Std.Do
+-- import Std.Do.Triple
+-- import Std.Tactic.Do
+
+open Std.Do
+
+/--
+  *Specification only* (no implementation) for element‑wise addition on *fixed‑length* vectors.
+  Because `Vector` carries its length `n` in the type, the pre‑condition that the two inputs share
+  the same length is enforced by the type checker and no longer appears as a logical requirement.
+-/
+
+-- Monadic version for Hoare logic
+constant vectorAdd {n : Nat} (a b : Vector Int n) :
+  StateM Unit (Vector Int n)
+
+/-- Hoare-style contract for `vectorAdd`. -/
+@[spec] axiom vectorAdd_spec {n : Nat} (a b : Vector Int n) :
+  ⦃ spred (λ _ : Unit => True) ⦄
+    vectorAdd a b
+  ⦃ λ res => spred (λ _ : Unit =>
+        ∀ i : Fin n, res.get i = a.get i + b.get i) ⦄
