@@ -1,3 +1,4 @@
+import Std.Do.Triple
 
 /-!
 # Dafny Numpy Specs (Stubs)
@@ -26,13 +27,12 @@ method sum(a: array<int>) returns (s: int)
 ```
 -/
 
-def sum (a : List Int) : Int :=
-  -- TODO: implement with fold once verified
-  (a.foldl (· + ·) 0)
+def sum (a : List Int) : Int := a.sum
+
 
 /-! Specification from `sum.dfy`: the result is the arithmetic sum of all
     elements.  Will be proved with MPL later. -/
-theorem sum_spec (xs : List Int) : sum xs = xs.foldl (· + ·) 0 := by
+theorem sum_spec (xs : List Int) : sum xs = xs.sum := by
   sorry
 
 /-!
@@ -154,3 +154,12 @@ def argmax (xs : List Int) : Nat :=
 theorem argmax_spec (xs : List Int) : True := by trivial
 
 end NumpySpec.DafnyBenchmarks
+
+
+example := Id.run do
+
+-- pre: {}, post: {}
+  let mut a := 2
+  -- post {a = 2}
+  -- pre {a = 2}
+  a := 3

@@ -1,0 +1,24 @@
+/-
+# NumPy Min Specification
+
+Port of np_min.dfy to Lean 4
+-/
+
+namespace DafnySpecs.Min
+
+
+/-- Find the minimum element in a non-empty vector -/
+def min' {n : Nat} (h : 0 < n) (a : Vector Int n) : Int := a.foldl Min.min a[0]
+
+/-- Specification: The minimum exists in the vector -/
+theorem min_exists {n : Nat} (h : n > 0) (a : Vector Int n) :
+  ∃ i : Fin n, min' h a = a[i] := sorry
+
+/-- Specification: The minimum is less than or equal to all elements -/
+theorem min_spec {n : Nat} (h : n > 0) (a : Vector Int n) :
+  ∀ i : Fin n, min' h a ≤ a[i] := by
+    intro i
+    simp [min']
+    sorry
+
+end DafnySpecs.Min

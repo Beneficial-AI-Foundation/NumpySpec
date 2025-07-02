@@ -328,4 +328,3 @@ auto-update-stale = true    # Auto-update stale working copies when switching co
 - [Ignoring warnings](https://github.com/nielsvoss/lean-pitfalls#ignoring-warnings)
 - [Ambiguous unicode characters](https://github.com/nielsvoss/lean-pitfalls#ambiguous-unicode-characters)
 
-

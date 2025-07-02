@@ -47,6 +47,7 @@ lean_lib FuncTracker where
   globs := #[.andSubmodules `FuncTracker]
 
 /-- DafnySpecs library for ported Dafny specifications -/
+@[default_target]
 lean_lib DafnySpecs where
   -- Include all DafnySpecs modules
   globs := #[.andSubmodules `DafnySpecs]
