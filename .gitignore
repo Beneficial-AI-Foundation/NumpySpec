@@ -33,3 +33,4 @@ _out/
 
 # Claude local settings
 .claude/settings.local.json
+.mcp-tools/

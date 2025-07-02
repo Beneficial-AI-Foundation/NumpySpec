@@ -16,6 +16,15 @@
         "--backend",
         "local"
       ]
+    },
+    "LeanTool": {
+      "command": "poetry",
+      "args": [
+        "run",
+        "python",
+        "leanmcp.py"
+      ],
+      "cwd": ".mcp-tools/LeanTool"
     }
   }
 }
