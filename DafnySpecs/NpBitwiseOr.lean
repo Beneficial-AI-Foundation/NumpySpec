@@ -15,6 +15,6 @@ theorem bitwiseOr_length {n : Nat} (a b : Vector Nat n) :
 
 /-- Specification: Each element is the bitwise OR of corresponding input elements -/
 theorem bitwiseOr_spec {n : Nat} (a b : Vector Nat n) :
-  ∀ i : Fin n, (bitwiseOr a b).get i = a.get i ||| b.get i := sorry
+  ∀ i : Fin n, (bitwiseOr a b)[i] = a[i] ||| b[i] := sorry
 
 end DafnySpecs.NpBitwiseOr

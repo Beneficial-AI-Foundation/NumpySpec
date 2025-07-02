@@ -15,6 +15,6 @@ theorem lessEqual_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is true iff corresponding element in a is <= element in b -/
 theorem lessEqual_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (lessEqual a b).get i = (a.get i ≤ b.get i) := sorry
+  ∀ i : Fin n, (lessEqual a b)[i] = (a[i] ≤ b[i]) := sorry
 
 end DafnySpecs.NpLessEqual

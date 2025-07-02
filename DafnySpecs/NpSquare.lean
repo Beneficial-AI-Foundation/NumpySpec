@@ -18,6 +18,6 @@ theorem square_length {n : Nat} (arr : Vector Int n) :
 
 /-- Specification: Each element is the square of the corresponding input element -/
 theorem square_spec {n : Nat} (arr : Vector Int n) :
-  ∀ i : Fin n, (square arr).get i = (arr.get i) * (arr.get i) := sorry
+  ∀ i : Fin n, (square arr)[i] = (arr[i]) * (arr[i]) := sorry
 
 end DafnySpecs.NpSquare

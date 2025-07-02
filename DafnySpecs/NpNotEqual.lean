@@ -15,6 +15,6 @@ theorem notEqual_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is true iff corresponding input elements are not equal -/
 theorem notEqual_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (notEqual a b).get i = (a.get i ≠ b.get i) := sorry
+  ∀ i : Fin n, (notEqual a b)[i] = (a[i] ≠ b[i]) := sorry
 
 end DafnySpecs.NpNotEqual

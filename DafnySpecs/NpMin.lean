@@ -11,10 +11,10 @@ def min {n : Nat} (h : n > 0) (a : Vector Int n) : Int := sorry
 
 /-- Specification: The minimum exists in the vector -/
 theorem min_exists {n : Nat} (h : n > 0) (a : Vector Int n) :
-  ∃ i : Fin n, min h a = a.get i := sorry
+  ∃ i : Fin n, min h a = a[i] := sorry
 
 /-- Specification: The minimum is less than or equal to all elements -/
 theorem min_spec {n : Nat} (h : n > 0) (a : Vector Int n) :
-  ∀ i : Fin n, min h a ≤ a.get i := sorry
+  ∀ i : Fin n, min h a ≤ a[i] := sorry
 
 end DafnySpecs.NpMin

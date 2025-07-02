@@ -14,12 +14,12 @@ def argmax {n : Nat} (h : 0 < n) (arr : Vector Float n) : Fin n :=
 
 /-- Specification: All elements before the maximum index are strictly less than the maximum -/
 theorem argmax_is_max {n : Nat} (h : 0 < n) (arr : Vector Float n) :
-  ∀ i : Fin n, i < argmax h arr → arr.get (argmax h arr) > arr.get i :=
+  ∀ i : Fin n, i < argmax h arr → arr[argmax h arr] > arr[i] :=
   sorry
 
 /-- Specification: All elements after the maximum index are less than or equal to the maximum -/
 theorem argmax_is_first_max {n : Nat} (h : 0 < n) (arr : Vector Float n) :
-  ∀ i : Fin n, argmax h arr < i → arr.get (argmax h arr) ≥ arr.get i :=
+  ∀ i : Fin n, argmax h arr < i → arr[argmax h arr] ≥ arr[i] :=
   sorry
 
 end DafnySpecs.NpArgmax

@@ -15,7 +15,7 @@ theorem where_length {n : Nat} (condition : Vector Bool n) (x : Vector Int n) (y
 
 /-- Specification: Each element is chosen from x or y based on condition -/
 theorem where_spec {n : Nat} (condition : Vector Bool n) (x : Vector Int n) (y : Vector Int n) :
-  ∀ i : Fin n, («where» condition x y).get i = if condition.get i then x.get i else y.get i := sorry
+  ∀ i : Fin n, («where» condition x y)[i] = if condition[i] then x[i] else y[i] := sorry
 
 /-- Alternative version with predicate and transformation function (from Dafny) -/
 def whereWithTransform {n : Nat} (arr : Vector Int n) (condition : Int → Bool) (change : Int → Int) : Vector Int n := sorry
@@ -26,7 +26,7 @@ theorem whereWithTransform_length {n : Nat} (arr : Vector Int n) (condition : In
 
 /-- Specification: Elements are transformed based on condition -/
 theorem whereWithTransform_spec {n : Nat} (arr : Vector Int n) (condition : Int → Bool) (change : Int → Int) :
-  ∀ i : Fin n, (whereWithTransform arr condition change).get i = 
-    if condition (arr.get i) then change (arr.get i) else arr.get i := sorry
+  ∀ i : Fin n, (whereWithTransform arr condition change)[i] = 
+    if condition (arr[i]) then change (arr[i]) else arr[i] := sorry
 
 end DafnySpecs.NpWhere

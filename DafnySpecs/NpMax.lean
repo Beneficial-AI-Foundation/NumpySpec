@@ -11,10 +11,10 @@ def max {n : Nat} (h : n > 0) (a : Vector Int n) : Int := sorry
 
 /-- Specification: The maximum exists in the vector -/
 theorem max_exists {n : Nat} (h : n > 0) (a : Vector Int n) :
-  ∃ i : Fin n, max h a = a.get i := sorry
+  ∃ i : Fin n, max h a = a[i] := sorry
 
 /-- Specification: The maximum is greater than or equal to all elements -/
 theorem max_spec {n : Nat} (h : n > 0) (a : Vector Int n) :
-  ∀ i : Fin n, a.get i ≤ max h a := sorry
+  ∀ i : Fin n, a[i] ≤ max h a := sorry
 
 end DafnySpecs.NpMax

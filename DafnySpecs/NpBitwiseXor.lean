@@ -15,6 +15,6 @@ theorem bitwiseXor_length {n : Nat} (a b : Vector Nat n) :
 
 /-- Specification: Each element is the bitwise XOR of corresponding input elements -/
 theorem bitwiseXor_spec {n : Nat} (a b : Vector Nat n) :
-  ∀ i : Fin n, (bitwiseXor a b).get i = a.get i ^^^ b.get i := sorry
+  ∀ i : Fin n, (bitwiseXor a b)[i] = a[i] ^^^ b[i] := sorry
 
 end DafnySpecs.NpBitwiseXor

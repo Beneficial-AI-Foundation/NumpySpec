@@ -15,16 +15,16 @@ def shiftLeftInt (x : Int) (n : Nat) : Int :=
 
 /-- Element-wise left shift of integers by natural numbers -/
 def leftShift {n : Nat} (a : Vector Int n) (b : Vector Nat n) 
-  (h : ∀ i : Fin n, b.get i < 64) : Vector Int n := sorry
+  (h : ∀ i : Fin n, b[i] < 64) : Vector Int n := sorry
 
 /-- Specification: The result has the same length as inputs -/
 theorem leftShift_length {n : Nat} (a : Vector Int n) (b : Vector Nat n) 
-  (h : ∀ i : Fin n, b.get i < 64) :
+  (h : ∀ i : Fin n, b[i] < 64) :
   (leftShift a b h).toList.length = n := sorry
 
 /-- Specification: Each element is the left shift of corresponding input elements -/
 theorem leftShift_spec {n : Nat} (a : Vector Int n) (b : Vector Nat n) 
-  (h : ∀ i : Fin n, b.get i < 64) :
-  ∀ i : Fin n, (leftShift a b h).get i = shiftLeftInt (a.get i) (b.get i) := sorry
+  (h : ∀ i : Fin n, b[i] < 64) :
+  ∀ i : Fin n, (leftShift a b h)[i] = shiftLeftInt (a[i]) (b[i]) := sorry
 
 end DafnySpecs.NpLeftShift

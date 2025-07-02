@@ -15,6 +15,6 @@ theorem bitwiseAnd_length {n : Nat} (a b : Vector Nat n) :
 
 /-- Specification: Each element is the bitwise AND of corresponding input elements -/
 theorem bitwiseAnd_spec {n : Nat} (a b : Vector Nat n) :
-  ∀ i : Fin n, (bitwiseAnd a b).get i = a.get i &&& b.get i := sorry
+  ∀ i : Fin n, (bitwiseAnd a b)[i] = a[i] &&& b[i] := sorry
 
 end DafnySpecs.NpBitwiseAnd

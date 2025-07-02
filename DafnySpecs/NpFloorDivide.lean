@@ -7,7 +7,7 @@ Port of np_floor_divide.dfy to Lean 4
 namespace DafnySpecs.NpFloorDivide
 
 /-- Type constraint ensuring all elements are non-zero -/
-def NonZeroVector (n : Nat) := { v : Vector Int n // ∀ i : Fin n, v.get i ≠ 0 }
+def NonZeroVector (n : Nat) := { v : Vector Int n // ∀ i : Fin n, v[i] ≠ 0 }
 
 /-- Element-wise floor division of two vectors -/
 def floorDivide {n : Nat} (a : Vector Int n) (b : NonZeroVector n) : Vector Int n := sorry
@@ -18,6 +18,6 @@ theorem floorDivide_length {n : Nat} (a : Vector Int n) (b : NonZeroVector n) :
 
 /-- Specification: Each element is the floor division of corresponding input elements -/
 theorem floorDivide_spec {n : Nat} (a : Vector Int n) (b : NonZeroVector n) :
-  ∀ i : Fin n, (floorDivide a b).get i = a.get i / (b.val.get i) := sorry
+  ∀ i : Fin n, (floorDivide a b)[i] = a[i] / (b.val[i]) := sorry
 
 end DafnySpecs.NpFloorDivide

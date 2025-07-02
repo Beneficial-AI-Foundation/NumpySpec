@@ -15,6 +15,6 @@ theorem greaterEqual_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is true iff corresponding element in a is >= element in b -/
 theorem greaterEqual_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (greaterEqual a b).get i = (a.get i ≥ b.get i) := sorry
+  ∀ i : Fin n, (greaterEqual a b)[i] = (a[i] ≥ b[i]) := sorry
 
 end DafnySpecs.NpGreaterEqual

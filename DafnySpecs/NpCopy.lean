@@ -15,6 +15,6 @@ theorem copy_length {n : Nat} (arr : Vector Int n) :
 
 /-- Specification: Each element equals the corresponding input element -/
 theorem copy_spec {n : Nat} (arr : Vector Int n) :
-  ∀ i : Fin n, (copy arr).get i = arr.get i := sorry
+  ∀ i : Fin n, (copy arr)[i] = arr[i] := sorry
 
 end DafnySpecs.NpCopy

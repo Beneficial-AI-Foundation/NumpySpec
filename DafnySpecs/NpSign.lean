@@ -16,8 +16,8 @@ theorem sign_length {n : Nat} (a : Vector Int n) :
 /-- Specification: Each element is the sign of the corresponding input element -/
 theorem sign_spec {n : Nat} (a : Vector Int n) :
   ∀ i : Fin n,
-    (a.get i > 0 → (sign a).get i = 1) ∧
-    (a.get i = 0 → (sign a).get i = 0) ∧
-    (a.get i < 0 → (sign a).get i = -1) := sorry
+    (a[i] > 0 → (sign a)[i] = 1) ∧
+    (a[i] = 0 → (sign a)[i] = 0) ∧
+    (a[i] < 0 → (sign a)[i] = -1) := sorry
 
 end DafnySpecs.NpSign

@@ -15,6 +15,6 @@ theorem equal_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is true iff corresponding input elements are equal -/
 theorem equal_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (equal a b).get i = (a.get i = b.get i) := sorry
+  ∀ i : Fin n, (equal a b)[i] = (a[i] = b[i]) := sorry
 
 end DafnySpecs.NpEqual

@@ -15,6 +15,6 @@ theorem subtract_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is the difference of corresponding input elements -/
 theorem subtract_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (subtract a b).get i = a.get i - b.get i := sorry
+  ∀ i : Fin n, (subtract a b)[i] = a[i] - b[i] := sorry
 
 end DafnySpecs.NpSubtract

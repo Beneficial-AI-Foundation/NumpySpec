@@ -19,7 +19,7 @@ theorem sum_spec {n : Nat} (a : Vector Int n) :
 /-- Specification: sumArray with valid bounds computes partial sum -/
 theorem sumArray_spec {n : Nat} (a : Vector Int n) (start finish : Nat) 
   (h_start : start ≤ finish) (h_finish : finish ≤ n) :
-  sumArray a start finish = (List.range (finish - start)).foldl (fun acc i => acc + a.get ⟨start + i, sorry⟩) 0 := sorry
+  sumArray a start finish = (List.range (finish - start)).foldl (fun acc i => acc + a[start + i]'sorry) 0 := sorry
 
 /-- Specification: sum is associative with concatenation -/
 theorem sum_concat {m n : Nat} (a : Vector Int m) (b : Vector Int n) :

@@ -18,10 +18,10 @@ theorem abs_length {n : Nat} (a : Vector Int n) :
 
 /-- Specification: Each element is the absolute value of the corresponding input element -/
 theorem abs_spec {n : Nat} (a : Vector Int n) :
-  ∀ i : Fin n, (abs a).get i = absInt (a.get i) := sorry
+  ∀ i : Fin n, (abs a)[i] = absInt (a[i]) := sorry
 
 /-- Specification: All elements in the result are non-negative -/
 theorem abs_nonnegative {n : Nat} (a : Vector Int n) :
-  ∀ i : Fin n, (abs a).get i ≥ 0 := sorry
+  ∀ i : Fin n, (abs a)[i] ≥ 0 := sorry
 
 end DafnySpecs.NpAbs

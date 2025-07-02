@@ -15,6 +15,6 @@ theorem add_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is the sum of corresponding input elements -/
 theorem add_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (add a b).get i = a.get i + b.get i := sorry
+  ∀ i : Fin n, (add a b)[i] = a[i] + b[i] := sorry
 
 end DafnySpecs.NpAdd

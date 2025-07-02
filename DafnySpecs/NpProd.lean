@@ -19,7 +19,7 @@ theorem prod_spec {n : Nat} (a : Vector Int n) :
 /-- Specification: prodArray with valid bounds computes partial product -/
 theorem prodArray_spec {n : Nat} (a : Vector Int n) (start finish : Nat) 
   (h_start : start ≤ finish) (h_finish : finish ≤ n) :
-  prodArray a start finish = (List.range (finish - start)).foldl (fun acc i => acc * a.get ⟨start + i, sorry⟩) 1 := sorry
+  prodArray a start finish = (List.range (finish - start)).foldl (fun acc i => acc * a[start + i]'sorry) 1 := sorry
 
 /-- Specification: product is multiplicative with concatenation -/
 theorem prod_concat {m n : Nat} (a : Vector Int m) (b : Vector Int n) :
@@ -27,6 +27,6 @@ theorem prod_concat {m n : Nat} (a : Vector Int m) (b : Vector Int n) :
 
 /-- Specification: product with a zero element is zero -/
 theorem prod_zero {n : Nat} (a : Vector Int n) (i : Fin n) :
-  a.get i = 0 → prod a = 0 := sorry
+  a[i] = 0 → prod a = 0 := sorry
 
 end DafnySpecs.NpProd

@@ -15,6 +15,6 @@ theorem power_length {n : Nat} (a : Vector Int n) (b : Vector Nat n) :
 
 /-- Specification: Each element is the power of corresponding input elements -/
 theorem power_spec {n : Nat} (a : Vector Int n) (b : Vector Nat n) :
-  ∀ i : Fin n, (power a b).get i = (a.get i) ^ (b.get i) := sorry
+  ∀ i : Fin n, (power a b)[i] = (a[i]) ^ (b[i]) := sorry
 
 end DafnySpecs.NpPower

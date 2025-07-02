@@ -16,6 +16,6 @@ theorem invert_length {n : Nat} (bitWidth : Nat) (a : Vector Nat n) :
 /-- Specification: Each element is the bitwise NOT of the corresponding input element 
     within the specified bit width (i.e., flips all bits up to bitWidth) -/
 theorem invert_spec {n : Nat} (bitWidth : Nat) (a : Vector Nat n) :
-  ∀ i : Fin n, (invert bitWidth a).get i = (2^bitWidth - 1) - a.get i := sorry
+  ∀ i : Fin n, (invert bitWidth a)[i] = (2^bitWidth - 1) - a[i] := sorry
 
 end DafnySpecs.NpInvert

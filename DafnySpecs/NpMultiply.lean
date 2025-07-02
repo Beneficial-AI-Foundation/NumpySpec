@@ -15,6 +15,6 @@ theorem multiply_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is the product of corresponding input elements -/
 theorem multiply_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (multiply a b).get i = a.get i * b.get i := sorry
+  ∀ i : Fin n, (multiply a b)[i] = a[i] * b[i] := sorry
 
 end DafnySpecs.NpMultiply

@@ -15,6 +15,6 @@ theorem less_length {n : Nat} (a b : Vector Int n) :
 
 /-- Specification: Each element is true iff first input element is less than second -/
 theorem less_spec {n : Nat} (a b : Vector Int n) :
-  ∀ i : Fin n, (less a b).get i = (a.get i < b.get i) := sorry
+  ∀ i : Fin n, (less a b)[i] = (a[i] < b[i]) := sorry
 
 end DafnySpecs.NpLess
