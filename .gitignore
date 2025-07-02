@@ -33,3 +33,6 @@ _out/
 
 # Claude local settings
 .claude/settings.local.json
+
+# MCP tools directory
+.mcp-tools/
