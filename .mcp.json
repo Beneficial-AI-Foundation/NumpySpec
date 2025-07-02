@@ -6,17 +6,6 @@
         "lean-lsp-mcp"
       ]
     },
-    "leanexplore": {
-      "command": "uv",
-      "args": [
-        "run",
-        "leanexplore",
-        "mcp",
-        "serve",
-        "--backend",
-        "local"
-      ]
-    },
     "LeanTool": {
       "command": "poetry",
       "args": [
@@ -25,6 +14,19 @@
         "leanmcp.py"
       ],
       "cwd": ".mcp-tools/LeanTool"
+    },
+    "lean-explore": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/Users/alokbeniwal/lean-explore",
+        "leanexplore",
+        "mcp",
+        "serve",
+        "--backend",
+        "local"
+      ]
     }
   }
 }
