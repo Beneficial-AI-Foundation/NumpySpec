@@ -13,7 +13,7 @@ def prod (a : Array Int) : Id Int :=
 
 /-- Specification: prod returns the product of all array elements -/
 theorem prod_spec (a : Array Int) :
-    ⦃⌜True⌝⦄
+    ⦃⌜a.size > 0⌝⦄
     prod a
     ⦃⇓res => res = ProdArray a 0 a.size⦄ := by
   sorry

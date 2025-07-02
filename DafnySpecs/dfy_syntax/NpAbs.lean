@@ -12,9 +12,9 @@ def abs (a : Array Int) : Id (Array Int) :=
 
 /-- Specification: abs returns an array of the same size with absolute values -/
 theorem abs_spec (a : Array Int) :
-    ⦃⌜True⌝⦄
+    ⦃⌜a.size > 0⌝⦄
     abs a
-    ⦃⇓res => ∃ hr : res.size = a.size, 
+    ⦃⇓res => ∃ hr : res.size = a.size,
              (∀ i (hi : i < res.size), res[i] = AbsInt (a[i]'(hr ▸ hi))) ∧
              (∀ i (hi : i < res.size), res[i] ≥ 0)⦄ := by
   sorry

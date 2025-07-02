@@ -9,7 +9,7 @@ def min (a : Array Int) : Id Int :=
 
 /-- Specification: min returns the minimum element from a non-empty array -/
 theorem min_spec (a : Array Int) (h : a.size > 0) :
-    ⦃⌜True⌝⦄
+    ⦃⌜a.size > 0⌝⦄
     min a
     ⦃⇓res => ∃ i : Nat, ∃ hi : i < a.size, res = a[i]'hi ∧
              ∀ j : Nat, ∀ hj : j < a.size, res ≤ a[j]'hj⦄ := by
