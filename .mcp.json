@@ -5,6 +5,17 @@
       "args": [
         "lean-lsp-mcp"
       ]
+    },
+    "leanexplore": {
+      "command": "uv",
+      "args": [
+        "run",
+        "leanexplore",
+        "mcp",
+        "serve",
+        "--backend",
+        "local"
+      ]
     }
   }
 }
