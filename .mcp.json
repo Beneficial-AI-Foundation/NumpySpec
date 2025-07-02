@@ -6,17 +6,6 @@
         "lean-lsp-mcp"
       ]
     },
-    "leanexplore": {
-      "command": "uv",
-      "args": [
-        "run",
-        "leanexplore",
-        "mcp",
-        "serve",
-        "--backend",
-        "local"
-      ]
-    },
     "LeanTool": {
       "command": "poetry",
       "args": [

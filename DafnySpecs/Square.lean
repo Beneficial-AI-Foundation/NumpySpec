@@ -10,16 +10,14 @@ Return the element-wise square of the input.
 namespace DafnySpecs.Square
 
 /-- Element-wise square of a vector -/
-def square {n : Nat} (arr : Vector Int n) : Vector Int n := Vector.map (fun x => x * x) arr
+def square {n : Nat} (arr : Vector Int n) : Vector Int n := sorry
 
 /-- Specification: The result has the same length as input -/
 theorem square_length {n : Nat} (arr : Vector Int n) :
-  (square arr).size = n := rfl
+  (square arr).size = n := sorry
 
 /-- Specification: Each element is the square of the corresponding input element -/
 theorem square_spec {n : Nat} (arr : Vector Int n) :
-  ∀ i : Fin n, (square arr)[i] = (arr[i]) * (arr[i]) := by
-    intro i
-    simp [square]
+  ∀ i : Fin n, (square arr)[i] = (arr[i]) * (arr[i]) := sorry
 
 end DafnySpecs.Square

@@ -12,22 +12,17 @@ namespace DafnySpecs.Zeros
     
     This corresponds to numpy.zeros for 1D arrays.
 -/
-def zeros (n : Nat) : Vector Int n := Vector.replicate n 0
+def zeros (n : Nat) : Vector Int n := sorry
 
 /-- Specification: all elements are zero -/
 theorem zeros_all_zero (n : Nat) :
-    ∀ i : Fin n, (zeros n)[i] = 0 := by
-    intro i
-    simp [zeros]
+    ∀ i : Fin n, (zeros n)[i] = 0 := sorry
 
 /-- For 2D arrays, create a matrix of zeros with given dimensions -/
-def zeros2d (rows cols : Nat) : Vector (Vector Int cols) rows := 
-  Vector.replicate rows (Vector.replicate cols 0)
+def zeros2d (rows cols : Nat) : Vector (Vector Int cols) rows := sorry
 
 /-- Specification: all elements in 2D array are zero -/
 theorem zeros2d_all_zero (rows cols : Nat) :
-    ∀ (i : Fin rows) (j : Fin cols), (zeros2d rows cols)[i][j] = 0 := by
-    intro i j
-    simp [zeros2d]
+    ∀ (i : Fin rows) (j : Fin cols), (zeros2d rows cols)[i][j] = 0 := sorry
 
 end DafnySpecs.Zeros

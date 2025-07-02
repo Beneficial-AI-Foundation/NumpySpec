@@ -7,16 +7,14 @@ Port of np_bitwise_xor.dfy to Lean 4
 namespace DafnySpecs.BitwiseXor
 
 /-- Element-wise bitwise XOR of two vectors -/
-def bitwiseXor {n : Nat} (a b : Vector Nat n) : Vector Nat n := Vector.zipWith (· ^^^ ·) a b
+def bitwiseXor {n : Nat} (a b : Vector Nat n) : Vector Nat n := sorry
 
 /-- Specification: The result has the same length as inputs -/
 theorem bitwiseXor_length {n : Nat} (a b : Vector Nat n) :
-  (bitwiseXor a b).size = n := rfl
+  (bitwiseXor a b).size = n := sorry
 
 /-- Specification: Each element is the bitwise XOR of corresponding input elements -/
 theorem bitwiseXor_spec {n : Nat} (a b : Vector Nat n) :
-  ∀ i : Fin n, (bitwiseXor a b)[i] = a[i] ^^^ b[i] := by
-    intro i
-    simp [bitwiseXor]
+  ∀ i : Fin n, (bitwiseXor a b)[i] = a[i] ^^^ b[i] := sorry
 
 end DafnySpecs.BitwiseXor
