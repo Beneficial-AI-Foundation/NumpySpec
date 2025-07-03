@@ -248,12 +248,6 @@ When working with Lean 4, consult these authoritative sources:
 
 ## Development Tools and Workflow
 
-### Task Delegation
-
-- Use `codex` for delegating tasks to sub-agents: `codex -q --project-doc CLAUDE.md -a full-auto "<task>"`
-- Sub-agents can recursively invoke other sub-agents
-- Use `terminal-notifier` to get completion notifications
-
 ### Version Control
 
 **Jujutsu (jj) Setup for GitHub-friendly Development:**
