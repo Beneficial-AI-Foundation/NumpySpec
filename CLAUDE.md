@@ -213,6 +213,27 @@ lake build --verbose
 - Category theory wiring diagram style for complex systems
 - Apply the scientific method for debugging
 
+### Lean Compiler Passes and Infrastructure
+
+**Note**: Lean 4's compiler pass infrastructure is primarily internal and not typically exposed for general user programming.
+
+**Compiler Pass Types** (internal to Lean):
+- `Lean.Compiler.PassManager` - Manages compiler transformation sequences
+- `Lean.Compiler.Pass` - Individual compiler transformations
+- `Lean.Compiler.CompilerM` - The compiler monad
+
+**For General Programming Use Instead**:
+- **Metaprogramming**: Use `MetaM` and `TacticM` monads for code transformation
+- **Simplification**: Use `simp` and `simproc` for pattern-based reductions
+- **Custom Syntax**: Build elaborators and syntax extensions
+- **Optimization**: Write efficient functional code and let the compiler optimize
+
+**Key Insight**: While compiler passes exist for internal optimization (CSE, inlining, etc.), user-level optimization in Lean 4 happens through:
+1. Writing efficient algorithms using proper data structures
+2. Using `simp` lemmas and `simproc` for compile-time simplification
+3. Metaprogramming for code generation and transformation
+4. Leveraging Lean's built-in optimizations automatically
+
 ## Numpy Porting Progress
 
 ### Current Status
@@ -235,6 +256,7 @@ lake build --verbose
 - **Performance Later**: Focus on mathematical correctness before optimization
 - **Compositionality**: Build complex operations from verified primitives
 - **Type Safety**: Use Lean's type system to prevent numerical errors
+- **Mutable-First Porting**: When porting NumPy code, initially use mutable notation and imperative style where it makes the port more direct and easier to verify. Then, as an optional optimization pass, refactor to functional style where it improves clarity or performance
 
 ## Important Lean Documentation Resources
 
