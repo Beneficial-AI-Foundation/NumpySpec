@@ -51,6 +51,11 @@ lean_lib DafnySpecs where
   -- Include all DafnySpecs modules
   globs := #[.andSubmodules `DafnySpecs]
 
+/-- Numpy library for abstract specifications of NumPy functions -/
+lean_lib Numpy where
+  -- Include all Numpy modules
+  globs := #[.andSubmodules `Numpy]
+
 /-- Main library. NumPy-compatible n-dimensional arrays -/
 @[default_target]
 lean_lib NDArray where
