@@ -1,0 +1,269 @@
+{
+  "numpy_linalg_operations": [
+    {
+      "category": "Matrix and Vector Products",
+      "functions": [
+        {
+          "name": "numpy.dot",
+          "description": "Dot product of two arrays",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.dot.html"
+        },
+        {
+          "name": "numpy.linalg.multi_dot",
+          "description": "Compute the dot product of two or more arrays in a single function call",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.multi_dot.html"
+        },
+        {
+          "name": "numpy.vdot",
+          "description": "Return the dot product of two vectors",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.vdot.html"
+        },
+        {
+          "name": "numpy.vecdot", 
+          "description": "Vector dot product of two arrays",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.vecdot.html"
+        },
+        {
+          "name": "numpy.linalg.vecdot",
+          "description": "Computes the vector dot product",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.vecdot.html"
+        },
+        {
+          "name": "numpy.inner",
+          "description": "Inner product of two arrays",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.inner.html"
+        },
+        {
+          "name": "numpy.outer",
+          "description": "Compute the outer product of two vectors",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.outer.html"
+        },
+        {
+          "name": "numpy.linalg.outer",
+          "description": "Compute the outer product of two vectors",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.outer.html"
+        },
+        {
+          "name": "numpy.matmul",
+          "description": "Matrix product of two arrays",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.matmul.html"
+        },
+        {
+          "name": "numpy.linalg.matmul",
+          "description": "Computes the matrix product",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matmul.html"
+        },
+        {
+          "name": "numpy.matvec",
+          "description": "Matrix-vector dot product of two arrays",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.matvec.html"
+        },
+        {
+          "name": "numpy.vecmat",
+          "description": "Vector-matrix dot product of two arrays",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.vecmat.html"
+        },
+        {
+          "name": "numpy.tensordot",
+          "description": "Compute tensor dot product along specified axes",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.tensordot.html"
+        },
+        {
+          "name": "numpy.linalg.tensordot",
+          "description": "Compute tensor dot product along specified axes",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.tensordot.html"
+        },
+        {
+          "name": "numpy.einsum",
+          "description": "Evaluates the Einstein summation convention on the operands",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.einsum.html"
+        },
+        {
+          "name": "numpy.einsum_path",
+          "description": "Evaluates the lowest cost contraction order for an einsum expression",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.einsum_path.html"
+        },
+        {
+          "name": "numpy.linalg.matrix_power",
+          "description": "Raise a square matrix to the (integer) power n",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_power.html"
+        },
+        {
+          "name": "numpy.kron",
+          "description": "Kronecker product of two arrays",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.kron.html"
+        },
+        {
+          "name": "numpy.linalg.cross",
+          "description": "Returns the cross product of 3-element vectors",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.cross.html"
+        }
+      ]
+    },
+    {
+      "category": "Decompositions",
+      "functions": [
+        {
+          "name": "numpy.linalg.cholesky",
+          "description": "Cholesky decomposition",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.cholesky.html"
+        },
+        {
+          "name": "numpy.linalg.qr",
+          "description": "QR decomposition",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html"
+        },
+        {
+          "name": "numpy.linalg.svd",
+          "description": "Singular Value Decomposition",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.svd.html"
+        },
+        {
+          "name": "numpy.linalg.svdvals",
+          "description": "Singular values of a matrix",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.svdvals.html"
+        }
+      ]
+    },
+    {
+      "category": "Eigenvalues and Eigenvectors",
+      "functions": [
+        {
+          "name": "numpy.linalg.eig",
+          "description": "Compute eigenvalues and eigenvectors of a square array",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.eig.html"
+        },
+        {
+          "name": "numpy.linalg.eigh",
+          "description": "Return eigenvalues and eigenvectors of Hermitian or symmetric matrix",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigh.html"
+        },
+        {
+          "name": "numpy.linalg.eigvals",
+          "description": "Compute eigenvalues of a general matrix",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvals.html"
+        },
+        {
+          "name": "numpy.linalg.eigvalsh",
+          "description": "Compute eigenvalues of Hermitian or symmetric matrix",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.eigvalsh.html"
+        }
+      ]
+    },
+    {
+      "category": "Norms and Other Numbers",
+      "functions": [
+        {
+          "name": "numpy.linalg.norm",
+          "description": "Matrix or vector norm",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html"
+        },
+        {
+          "name": "numpy.linalg.matrix_norm",
+          "description": "Matrix norm",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_norm.html"
+        },
+        {
+          "name": "numpy.linalg.vector_norm",
+          "description": "Vector norm",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.vector_norm.html"
+        },
+        {
+          "name": "numpy.linalg.cond",
+          "description": "Compute the condition number of a matrix",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.cond.html"
+        },
+        {
+          "name": "numpy.linalg.det",
+          "description": "Compute the determinant of an array",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.det.html"
+        },
+        {
+          "name": "numpy.linalg.matrix_rank",
+          "description": "Return matrix rank of array using SVD method",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_rank.html"
+        },
+        {
+          "name": "numpy.linalg.slogdet",
+          "description": "Compute the sign and natural logarithm of the determinant",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.slogdet.html"
+        },
+        {
+          "name": "numpy.trace",
+          "description": "Return the sum along diagonals of the array",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.trace.html"
+        },
+        {
+          "name": "numpy.linalg.trace",
+          "description": "Return the sum along diagonals of the array",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.trace.html"
+        }
+      ]
+    },
+    {
+      "category": "Solving Equations and Inverting Matrices",
+      "functions": [
+        {
+          "name": "numpy.linalg.solve",
+          "description": "Solve a linear matrix equation or system of linear scalar equations",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.solve.html"
+        },
+        {
+          "name": "numpy.linalg.tensorsolve",
+          "description": "Solve the tensor equation a x = b for x",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.tensorsolve.html"
+        },
+        {
+          "name": "numpy.linalg.lstsq",
+          "description": "Return the least-squares solution to a linear matrix equation",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html"
+        },
+        {
+          "name": "numpy.linalg.inv",
+          "description": "Compute the multiplicative inverse of a matrix",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.inv.html"
+        },
+        {
+          "name": "numpy.linalg.pinv",
+          "description": "Compute the Moore-Penrose pseudoinverse of a matrix",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.pinv.html"
+        },
+        {
+          "name": "numpy.linalg.tensorinv",
+          "description": "Compute the inverse of a N-dimensional array",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.tensorinv.html"
+        }
+      ]
+    },
+    {
+      "category": "Other Matrix Operations",
+      "functions": [
+        {
+          "name": "numpy.diagonal",
+          "description": "Return specified diagonals",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.diagonal.html"
+        },
+        {
+          "name": "numpy.linalg.diagonal",
+          "description": "Return specified diagonals",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.diagonal.html"
+        },
+        {
+          "name": "numpy.linalg.matrix_transpose",
+          "description": "Transpose a stack of matrices",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_transpose.html"
+        }
+      ]
+    },
+    {
+      "category": "Exceptions",
+      "functions": [
+        {
+          "name": "numpy.linalg.LinAlgError",
+          "description": "Generic Python-exception-derived object raised by linalg functions",
+          "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.LinAlgError.html"
+        }
+      ]
+    }
+  ]
+}

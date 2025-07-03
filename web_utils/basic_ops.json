@@ -1,0 +1,144 @@
+{
+  "basic_numpy_matrix_operations": [
+    {
+      "name": "numpy.add",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.add.html"
+    },
+    {
+      "name": "numpy.subtract",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.subtract.html"
+    },
+    {
+      "name": "numpy.multiply",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.multiply.html"
+    },
+    {
+      "name": "numpy.divide",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.divide.html"
+    },
+    {
+      "name": "numpy.matmul",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.matmul.html"
+    },
+    {
+      "name": "numpy.dot",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.dot.html"
+    },
+    {
+      "name": "numpy.linalg.matmul", 
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matmul.html"
+    },
+    {
+      "name": "numpy.power",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.power.html"
+    },
+    {
+      "name": "numpy.linalg.matrix_power",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_power.html"
+    },
+    {
+      "name": "numpy.sqrt",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.sqrt.html"
+    },
+    {
+      "name": "numpy.square",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.square.html"
+    },
+    {
+      "name": "numpy.absolute",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.absolute.html"
+    },
+    {
+      "name": "numpy.sum",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.sum.html"
+    },
+    {
+      "name": "numpy.prod",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.prod.html"
+    },
+    {
+      "name": "numpy.maximum",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.maximum.html"
+    },
+    {
+      "name": "numpy.minimum",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.minimum.html"
+    },
+    {
+      "name": "numpy.transpose",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.transpose.html"
+    },
+    {
+      "name": "numpy.linalg.matrix_transpose",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_transpose.html"
+    },
+    {
+      "name": "numpy.trace",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.trace.html"
+    },
+    {
+      "name": "numpy.linalg.trace",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.trace.html"
+    },
+    {
+      "name": "numpy.linalg.det",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.det.html"
+    },
+    {
+      "name": "numpy.linalg.inv",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.inv.html"
+    },
+    {
+      "name": "numpy.linalg.norm",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html"
+    },
+    {
+      "name": "numpy.linalg.matrix_norm",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_norm.html"
+    },
+    {
+      "name": "numpy.linalg.vector_norm",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.linalg.vector_norm.html"
+    },
+    {
+      "name": "numpy.exp",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.exp.html"
+    },
+    {
+      "name": "numpy.log",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.log.html"
+    },
+    {
+      "name": "numpy.sin",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.sin.html"
+    },
+    {
+      "name": "numpy.cos",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.cos.html"
+    },
+    {
+      "name": "numpy.tan",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.tan.html"
+    },
+    {
+      "name": "numpy.floor",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.floor.html"
+    },
+    {
+      "name": "numpy.ceil",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ceil.html"
+    },
+    {
+      "name": "numpy.round",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.round.html"
+    },
+    {
+      "name": "numpy.clip",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.clip.html"
+    },
+    {
+      "name": "numpy.sign",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.sign.html"
+    }
+  ]
+}
