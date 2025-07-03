@@ -146,7 +146,7 @@ lake build --verbose
 
 1. **Core types**: implement `NDarray` (TODO we have to work out if shape/stride are to be at compile time)
 2. **Extract specs from NumPy docs**: NumPy gives existing implementations and docs. These have implicit specs (like addition should be commutative) that we can extract.
-   - [ ] make `lean_lib` in `lakefile.lean` for HTML -> openai api -> lean code (metaprogramming).
+   - [ ] make `lean_lib` in `lakefile.lean` for HTML -> AI -> lean code (metaprogramming).
 3. **Property test probe**: Use <https://github.com/leanprover-community/plausible> to test properties of the spec in a cheap way, a sort of Pareto frontier point in between unit tests and formal proofs. Write code with an eye towards generalizing to future use.
    - [ ] make `lean_lib` in `lakefile.lean` for property tests
 
