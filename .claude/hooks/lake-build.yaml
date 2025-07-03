@@ -1,0 +1,15 @@
+# Claude Code hook for automatic Lean building
+name: lake-build
+description: Automatically build Lean project on file changes
+trigger:
+  - on: file_modified
+    pattern: "**/*.lean"
+action:
+  command: lake build
+  show_output: on_error
+  # Consider adding debounce to avoid running on every keystroke
+  # debounce: 500  # milliseconds
+
+# Additional configuration options that might be useful:
+# - verbose mode: lake build --verbose
+# - specific targets: lake build NumpySpec
