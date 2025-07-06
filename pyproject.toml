@@ -40,6 +40,7 @@ dependencies = [
     "leantool @ git+https://github.com/alok/LeanTool.git@v0.4.3+uv",
     "ast-grep-py>=0.38.6",
     "lean-explore",
+    "beautifulsoup4>=4.13.4",
 ]
 
 [project.scripts]

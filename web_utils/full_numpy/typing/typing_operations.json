@@ -1,0 +1,256 @@
+{
+  "metadata": {
+    "module": "numpy.typing",
+    "source": "https://github.com/numpy/numpy/tree/main/numpy/typing",
+    "internal_module": "numpy._typing",
+    "description": "NumPy typing module providing type annotations and type aliases for static type checking. Large parts of the NumPy API have PEP 484-style type annotations.",
+    "key_features": [
+      "Type aliases for array-like objects and dtypes",
+      "Protocol classes for array interface",
+      "Generic type parameters for precision",
+      "Mypy plugin support",
+      "Runtime type checking support"
+    ]
+  },
+  "type_aliases": [
+    {
+      "name": "ArrayLike",
+      "category": "Core Type Aliases",
+      "description": "Union type representing objects that can be converted to arrays",
+      "url": "https://numpy.org/doc/stable/reference/typing.html#numpy.typing.ArrayLike",
+      "doc": "A union type representing objects that can be coerced into an ndarray.\n\nAmong others this includes the likes of:\n- Scalars\n- (Nested) sequences\n- Objects implementing the __array__ protocol\n\nThe ArrayLike type tries to avoid creating object arrays by excluding certain types that would otherwise be valid. For example, ArrayLike does not include arbitrary sequences of strings to prevent string sequences from being interpreted as object arrays.",
+      "code": "# From numpy._typing._array_like.py\n_ArrayLike = Union[\n    _SupportsArray[dtype[_ScalarT]],\n    _NestedSequence[_SupportsArray[dtype[_ScalarT]]],\n    # Accept also bare dtypes\n    # Sequence[Sequence] ... e.g. [[1, 2], [3, 4]]\n    _FiniteNestedSequence[_NumberLike | _BoolLike],\n    # Mypy can't handle extended precision datatypes\n    # _FiniteNestedSequence[str | bytes | _ExtendedPrecision],\n    _FiniteNestedSequence[str | bytes],\n]\n\n# The actual ArrayLike type\nArrayLike = _ArrayLike[Any]"
+    },
+    {
+      "name": "DTypeLike",
+      "category": "Core Type Aliases",
+      "description": "Union type representing objects that can be converted to dtypes",
+      "url": "https://numpy.org/doc/stable/reference/typing.html#numpy.typing.DTypeLike",
+      "doc": "A union type representing objects that can be coerced into a dtype.\n\nAmong others this includes the likes of:\n- Type objects (e.g. np.int32)\n- Character codes (e.g. 'i4')\n- Objects with a .dtype attribute\n- Tuples for structured types\n- None (which gives the default dtype)\n\nThe DTypeLike type tries to avoid creation of dtype objects using dictionary of fields like np.dtype({'field1': ..., 'field2': ..., ...}) and direct usage of dictionaries as a dtype is disallowed.",
+      "code": "# From numpy._typing._dtype_like.py\nDTypeLike: TypeAlias = Union[\n    dtype[Any],\n    # default data type (float64)\n    None,\n    # array-scalar types and generic types\n    type[Any],\n    # character codes, type strings or comma-separated fields, e.g., 'float64'\n    str,\n    # (flexible_dtype, itemsize)\n    tuple[_DTypeLikeNested, int],\n    # (fixed_dtype, shape)\n    tuple[_DTypeLikeNested, _ShapeLike],\n    # (base_dtype, new_dtype)\n    tuple[_DTypeLikeNested, _DTypeLikeNested],\n    # a list of fields\n    list[tuple[str, _DTypeLikeNested]],\n    # (field_name, field_dtype, field_shape)\n    _DTypeDict,\n    # e.g., [('x', '<i4'), ('y', '<i4')]\n    tuple[_DTypeLikeNested, ...],\n]"
+    },
+    {
+      "name": "NDArray",
+      "category": "Core Type Aliases",
+      "description": "Generic type alias for numpy.ndarray that is generic with respect to its dtype",
+      "url": "https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NDArray",
+      "doc": "A generic type alias for numpy.ndarray[Any, dtype[+ScalarT]].\n\nCan be used during runtime for typing arrays with a given dtype and unspecified shape.\n\nExamples:\n>>> import numpy as np\n>>> import numpy.typing as npt\n\n>>> print(npt.NDArray)\nnumpy.ndarray[typing.Any, numpy.dtype[+_ScalarType_co]]\n\n>>> print(npt.NDArray[np.float64])\nnumpy.ndarray[typing.Any, numpy.dtype[numpy.float64]]\n\n>>> NDArrayInt = npt.NDArray[np.int_]\n>>> a: NDArrayInt = np.arange(10)",
+      "code": "# From numpy._typing._array_like.py\nfrom ._shape import _AnyShape\n\n_ScalarT = TypeVar(\"_ScalarT\", bound=np.generic)\n\nNDArray: TypeAlias = np.ndarray[_AnyShape, dtype[_ScalarT]]"
+    },
+    {
+      "name": "NBitBase",
+      "category": "Precision Types",
+      "description": "A type representing numpy.number precision during static type checking",
+      "url": "https://numpy.org/doc/stable/reference/typing.html#numpy.typing.NBitBase",
+      "doc": "A type representing numpy.number precision during static type checking.\n\nUsed exclusively for static type checking, NBitBase represents the base of a hierarchical set of subclasses. Each subsequent subclass represents a lower level of precision, e.g. 64Bit > 32Bit > 16Bit.\n\n.. deprecated:: 2.3\n    NBitBase is deprecated and will be removed from numpy.typing in the future. Use @typing.overload or a TypeVar with a scalar-type as upper bound, instead.",
+      "code": "# From numpy._typing._nbit_base.py\n@final  # Disallow the creation of arbitrary `NBitBase` subclasses\n@set_module(\"numpy.typing\")\nclass NBitBase:\n    \"\"\"\n    A type representing `numpy.number` precision during static type checking.\n\n    Used exclusively for static type checking, `NBitBase` represents the base\n    of a hierarchical set of subclasses. Each subsequent subclass represents\n    a lower level of precision, e.g. `64Bit > 32Bit > 16Bit`.\n\n    .. deprecated:: 2.3\n    Use `@typing.overload` or a `TypeVar` with a scalar-type as upper bound.\n    \"\"\"\n    def __init_subclass__(cls) -> None:\n        allowed_names = {\n            \"NBitBase\", \"_128Bit\", \"_96Bit\", \"_64Bit\", \"_32Bit\", \"_16Bit\", \"_8Bit\"\n        }\n        if cls.__name__ not in allowed_names:\n            raise TypeError('cannot inherit from final class \"NBitBase\"')\n        super().__init_subclass__()"
+    }
+  ],
+  "protocol_classes": [
+    {
+      "name": "_SupportsArray",
+      "category": "Protocol Classes",
+      "description": "Protocol for objects that implement the __array__ method",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A protocol defining objects that can be converted to NumPy arrays via the __array__ method.\n\nThe _SupportsArray protocol only cares about the default dtype (i.e. dtype=None or no dtype parameter at all) of the to-be returned array. Concrete implementations of the protocol are responsible for adding any and all remaining overloads.",
+      "code": "@runtime_checkable\nclass _SupportsArray(Protocol[_DTypeT_co]):\n    def __array__(self) -> np.ndarray[Any, _DTypeT_co]: ..."
+    },
+    {
+      "name": "_SupportsArrayFunc",
+      "category": "Protocol Classes",
+      "description": "Protocol for objects that implement the __array_function__ method",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A protocol defining objects that support the NumPy function protocol via __array_function__.\n\nThis allows objects to override the behavior of NumPy functions when they are passed as arguments.",
+      "code": "@runtime_checkable\nclass _SupportsArrayFunc(Protocol):\n    def __array_function__(\n        self,\n        func: Callable[..., Any],\n        types: Collection[type[Any]],\n        args: tuple[Any, ...],\n        kwargs: dict[str, Any]\n    ) -> object: ..."
+    },
+    {
+      "name": "_Buffer",
+      "category": "Protocol Classes",
+      "description": "Protocol for objects that support the buffer protocol",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A protocol defining objects that support the Python buffer protocol.\n\nIn Python 3.12+, this uses collections.abc.Buffer. For earlier versions, it defines a protocol with __buffer__ method.",
+      "code": "if sys.version_info >= (3, 12):\n    from collections.abc import Buffer as _Buffer\nelse:\n    @runtime_checkable\n    class _Buffer(Protocol):\n        def __buffer__(self, flags: int, /) -> memoryview: ..."
+    }
+  ],
+  "precision_types": [
+    {
+      "name": "_128Bit",
+      "category": "Bit Precision Types",
+      "description": "Type representing 128-bit precision",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_nbit_base.py",
+      "doc": "A type representing 128-bit precision for numpy.number subclasses during static type checking.",
+      "code": "@final\n@set_module(\"numpy._typing\")\nclass _128Bit(NBitBase):\n    pass"
+    },
+    {
+      "name": "_96Bit",
+      "category": "Bit Precision Types",
+      "description": "Type representing 96-bit precision",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_nbit_base.py",
+      "doc": "A type representing 96-bit precision for numpy.number subclasses during static type checking.",
+      "code": "@final\n@set_module(\"numpy._typing\")\nclass _96Bit(_128Bit):\n    pass"
+    },
+    {
+      "name": "_64Bit",
+      "category": "Bit Precision Types",
+      "description": "Type representing 64-bit precision",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_nbit_base.py",
+      "doc": "A type representing 64-bit precision for numpy.number subclasses during static type checking.",
+      "code": "@final\n@set_module(\"numpy._typing\")\nclass _64Bit(_96Bit):\n    pass"
+    },
+    {
+      "name": "_32Bit",
+      "category": "Bit Precision Types",
+      "description": "Type representing 32-bit precision",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_nbit_base.py",
+      "doc": "A type representing 32-bit precision for numpy.number subclasses during static type checking.",
+      "code": "@final\n@set_module(\"numpy._typing\")\nclass _32Bit(_64Bit):\n    pass"
+    },
+    {
+      "name": "_16Bit",
+      "category": "Bit Precision Types",
+      "description": "Type representing 16-bit precision",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_nbit_base.py",
+      "doc": "A type representing 16-bit precision for numpy.number subclasses during static type checking.",
+      "code": "@final\n@set_module(\"numpy._typing\")\nclass _16Bit(_32Bit):\n    pass"
+    },
+    {
+      "name": "_8Bit",
+      "category": "Bit Precision Types",
+      "description": "Type representing 8-bit precision",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_nbit_base.py",
+      "doc": "A type representing 8-bit precision for numpy.number subclasses during static type checking.",
+      "code": "@final\n@set_module(\"numpy._typing\")\nclass _8Bit(_16Bit):\n    pass"
+    }
+  ],
+  "specialized_array_types": [
+    {
+      "name": "_ArrayLikeInt_co",
+      "category": "Specialized ArrayLike Types",
+      "description": "ArrayLike type specialized for integer arrays",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A specialized version of ArrayLike that represents objects that can be converted to integer arrays. The '_co' suffix indicates covariance.",
+      "code": "_ArrayLikeInt_co = _ArrayLike[\n    Union[\n        bool_,\n        int_,\n        integer[Any],\n        unsignedinteger[Any],\n        signedinteger[Any],\n    ]\n]"
+    },
+    {
+      "name": "_ArrayLikeFloat_co",
+      "category": "Specialized ArrayLike Types",
+      "description": "ArrayLike type specialized for floating-point arrays",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A specialized version of ArrayLike that represents objects that can be converted to floating-point arrays. The '_co' suffix indicates covariance.",
+      "code": "_ArrayLikeFloat_co = _ArrayLike[\n    Union[\n        float_,\n        floating[Any],\n        integer[Any],\n        unsignedinteger[Any],\n        signedinteger[Any],\n    ]\n]"
+    },
+    {
+      "name": "_ArrayLikeComplex_co",
+      "category": "Specialized ArrayLike Types",
+      "description": "ArrayLike type specialized for complex arrays",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A specialized version of ArrayLike that represents objects that can be converted to complex arrays. The '_co' suffix indicates covariance.",
+      "code": "_ArrayLikeComplex_co = _ArrayLike[\n    Union[\n        complex_,\n        number[Any],\n        complexfloating[Any],\n    ]\n]"
+    },
+    {
+      "name": "_ArrayLikeBool_co",
+      "category": "Specialized ArrayLike Types",
+      "description": "ArrayLike type specialized for boolean arrays",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A specialized version of ArrayLike that represents objects that can be converted to boolean arrays. The '_co' suffix indicates covariance.",
+      "code": "_ArrayLikeBool_co = _ArrayLike[bool_]"
+    },
+    {
+      "name": "_ArrayLikeStr_co",
+      "category": "Specialized ArrayLike Types",
+      "description": "ArrayLike type specialized for string arrays",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A specialized version of ArrayLike that represents objects that can be converted to string arrays. The '_co' suffix indicates covariance.",
+      "code": "_ArrayLikeStr_co = _ArrayLike[str_]"
+    }
+  ],
+  "shape_types": [
+    {
+      "name": "_Shape",
+      "category": "Shape Types",
+      "description": "Type representing array shapes",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_shape.py",
+      "doc": "A type alias representing the shape of an array as a tuple of integers.",
+      "code": "_Shape: TypeAlias = tuple[int, ...]"
+    },
+    {
+      "name": "_ShapeLike",
+      "category": "Shape Types",
+      "description": "Type representing objects that can be interpreted as shapes",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_shape.py",
+      "doc": "A union type representing objects that can be interpreted as array shapes. This includes single integers (for 1D arrays) and tuples of integers.",
+      "code": "_ShapeLike: TypeAlias = Union[int, Sequence[int]]"
+    }
+  ],
+  "utility_types": [
+    {
+      "name": "_NestedSequence",
+      "category": "Utility Types",
+      "description": "Type for nested sequences of arbitrary depth",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_nested_sequence.py",
+      "doc": "A generic type representing nested sequences of arbitrary depth. Used internally to type nested lists/sequences that can be converted to arrays.",
+      "code": "_T = TypeVar(\"_T\")\n\nclass _NestedSequence(Protocol[_T]):\n    def __len__(self, /) -> int: ...\n    def __getitem__(self, index: int, /) -> _T | _NestedSequence[_T]: ...\n    def __contains__(self, x: object, /) -> bool: ...\n    def __iter__(self, /) -> Iterator[_T | _NestedSequence[_T]]: ...\n    def __reversed__(self, /) -> Iterator[_T | _NestedSequence[_T]]: ..."
+    },
+    {
+      "name": "_FiniteNestedSequence",
+      "category": "Utility Types",
+      "description": "Type for nested sequences with finite depth",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_array_like.py",
+      "doc": "A type alias representing nested sequences with a finite maximum depth (up to 4 levels). Used to avoid infinite recursion in type definitions.",
+      "code": "_FiniteNestedSequence: TypeAlias = (\n    _T\n    | Sequence[_T]\n    | Sequence[Sequence[_T]]\n    | Sequence[Sequence[Sequence[_T]]]\n    | Sequence[Sequence[Sequence[Sequence[_T]]]]\n)"
+    }
+  ],
+  "dtype_character_codes": [
+    {
+      "name": "_BoolCodes",
+      "category": "Character Code Types",
+      "description": "Literal type for boolean dtype character codes",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_char_codes.py",
+      "doc": "Character codes representing boolean data types in NumPy.",
+      "code": "_BoolCodes: TypeAlias = Literal[\"?\", \"=?\", \"<?\", \">?\", \"bool\", \"bool_\"]"
+    },
+    {
+      "name": "_IntCodes",
+      "category": "Character Code Types",
+      "description": "Literal types for integer dtype character codes",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_char_codes.py",
+      "doc": "Character codes representing various integer data types in NumPy, including signed and unsigned variants.",
+      "code": "_UnsignedIntegerCodes: TypeAlias = Literal[\n    \"uint8\", \"uint16\", \"uint32\", \"uint64\",\n    \"ubyte\", \"ushort\", \"uintc\", \"uint\", \"ulonglong\",\n    \"B\", \"=B\", \"<B\", \">B\",\n    \"H\", \"=H\", \"<H\", \">H\",\n    \"I\", \"=I\", \"<I\", \">I\",\n    \"L\", \"=L\", \"<L\", \">L\",\n    \"Q\", \"=Q\", \"<Q\", \">Q\",\n    \"P\", \"=P\", \"<P\", \">P\"\n]\n\n_SignedIntegerCodes: TypeAlias = Literal[\n    \"int8\", \"int16\", \"int32\", \"int64\",\n    \"byte\", \"short\", \"intc\", \"int_\", \"longlong\",\n    \"b\", \"=b\", \"<b\", \">b\",\n    \"h\", \"=h\", \"<h\", \">h\",\n    \"i\", \"=i\", \"<i\", \">i\",\n    \"l\", \"=l\", \"<l\", \">l\",\n    \"q\", \"=q\", \"<q\", \">q\",\n    \"p\", \"=p\", \"<p\", \">p\"\n]"
+    },
+    {
+      "name": "_FloatCodes",
+      "category": "Character Code Types",
+      "description": "Literal types for floating-point dtype character codes",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_char_codes.py",
+      "doc": "Character codes representing various floating-point data types in NumPy.",
+      "code": "_FloatingCodes: TypeAlias = Literal[\n    \"float16\", \"float32\", \"float64\",\n    \"half\", \"single\", \"double\", \"float_\",\n    \"e\", \"=e\", \"<e\", \">e\",\n    \"f\", \"=f\", \"<f\", \">f\",\n    \"d\", \"=d\", \"<d\", \">d\",\n    \"g\", \"=g\", \"<g\", \">g\"\n]"
+    },
+    {
+      "name": "_ComplexCodes",
+      "category": "Character Code Types",
+      "description": "Literal types for complex dtype character codes",
+      "url": "https://github.com/numpy/numpy/blob/main/numpy/_typing/_char_codes.py",
+      "doc": "Character codes representing various complex number data types in NumPy.",
+      "code": "_ComplexFloatingCodes: TypeAlias = Literal[\n    \"complex64\", \"complex128\",\n    \"csingle\", \"cdouble\", \"complex_\",\n    \"F\", \"=F\", \"<F\", \">F\",\n    \"D\", \"=D\", \"<D\", \">D\",\n    \"G\", \"=G\", \"<G\", \">G\"\n]"
+    }
+  ],
+  "mypy_plugin": {
+    "name": "numpy.typing.mypy_plugin",
+    "description": "Mypy plugin for enhanced NumPy type checking",
+    "url": "https://github.com/numpy/numpy/blob/main/numpy/typing/mypy_plugin.py",
+    "doc": "A mypy plugin that enhances type checking for NumPy code. Features include:\n\n- Managing platform-specific type annotations\n- Handling precision of numpy.number subclasses\n- Removing unavailable extended-precision data types on platforms that don't support them\n- Improved type inference for NumPy-specific patterns\n\nTo enable the plugin, add to your mypy configuration:\n[mypy]\nplugins = numpy.typing.mypy_plugin",
+    "features": [
+      "Platform-specific type handling",
+      "Extended precision type management",
+      "Enhanced type inference for NumPy patterns",
+      "Automatic handling of unavailable types"
+    ]
+  },
+  "usage_notes": {
+    "importing": "Import typing utilities from numpy.typing, not numpy._typing (which is internal)",
+    "type_checking": "Use TYPE_CHECKING guards for imports that are only needed for type annotations",
+    "runtime_usage": "Type aliases like ArrayLike, DTypeLike, and NDArray are available at runtime",
+    "deprecations": "NBitBase is deprecated as of NumPy 2.3. Use @typing.overload or TypeVar with scalar-type bounds instead",
+    "strictness": "The typed NumPy API is often stricter than the runtime API to provide more helpful type hints"
+  }
+}
