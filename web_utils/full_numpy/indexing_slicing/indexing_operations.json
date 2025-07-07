@@ -1,0 +1,297 @@
+{
+  "metadata": {
+    "module": "numpy indexing and slicing",
+    "description": "NumPy indexing and slicing operations for array manipulation and element access",
+    "categories": [
+      "Basic indexing",
+      "Advanced indexing",
+      "Index generation",
+      "Boolean/mask indexing",
+      "Iterating over arrays",
+      "Diagonal operations",
+      "Index finding"
+    ]
+  },
+  "functions": [
+    {
+      "name": "numpy.take",
+      "category": "Basic indexing",
+      "description": "Take elements from an array along an axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.take.html",
+      "doc": "Take elements from an array along an axis.\n\nWhen axis is not None, this function does the same thing as \"fancy\" indexing (indexing arrays using arrays); however, it can be easier to use if you need elements along a given axis.\n\nParameters\n----------\na : array_like (Ni..., M, Nk...)\n    The source array.\nindices : array_like (Nj...)\n    The indices of the values to extract.\n    Also allow scalars for indices.\naxis : int, optional\n    The axis over which to select values. By default, the flattened\n    input array is used.\nout : ndarray, optional (Ni..., Nj..., Nk...)\n    If provided, the result will be placed in this array.\nmode : {'raise', 'wrap', 'clip'}, optional\n    Specifies how out-of-bounds indices will behave.\n\nReturns\n-------\nout : ndarray (Ni..., Nj..., Nk...)\n    The returned array has the same type as `a`.\n\nExamples\n--------\n>>> import numpy as np\n>>> a = [4, 3, 5, 7, 6, 8]\n>>> indices = [0, 1, 4]\n>>> np.take(a, indices)\narray([4, 3, 6])",
+      "code": "@array_function_dispatch(_take_dispatcher)\ndef take(a, indices, axis=None, out=None, mode='raise'):\n    \"\"\"\n    Take elements from an array along an axis.\n\n    When axis is not None, this function does the same thing as \"fancy\"\n    indexing (indexing arrays using arrays); however, it can be easier to use\n    if you need elements along a given axis.\n\n    Parameters\n    ----------\n    a : array_like (Ni..., M, Nk...)\n        The source array.\n    indices : array_like (Nj...)\n        The indices of the values to extract.\n        Also allow scalars for indices.\n    axis : int, optional\n        The axis over which to select values. By default, the flattened\n        input array is used.\n    out : ndarray, optional (Ni..., Nj..., Nk...)\n        If provided, the result will be placed in this array.\n    mode : {'raise', 'wrap', 'clip'}, optional\n        Specifies how out-of-bounds indices will behave.\n\n    Returns\n    -------\n    out : ndarray (Ni..., Nj..., Nk...)\n        The returned array has the same type as `a`.\n\n    Examples\n    --------\n    >>> import numpy as np\n    >>> a = [4, 3, 5, 7, 6, 8]\n    >>> indices = [0, 1, 4]\n    >>> np.take(a, indices)\n    array([4, 3, 6])\n    \"\"\"\n    return _wrapfunc(a, 'take', indices, axis=axis, out=out, mode=mode)"
+    },
+    {
+      "name": "numpy.put",
+      "category": "Basic indexing",
+      "description": "Replaces specified elements of an array with given values",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.put.html",
+      "doc": "Replaces specified elements of an array with given values.\n\nThe indexing works on the flattened target array.\n\nParameters\n----------\na : ndarray\n    Target array.\nind : array_like\n    Target indices, interpreted as integers.\nv : array_like\n    Values to place in `a` at target indices.\nmode : {'raise', 'wrap', 'clip'}, optional\n    Specifies how out-of-bounds indices will behave.\n\nReturns\n-------\nNone",
+      "code": "@array_function_dispatch(_put_dispatcher)\ndef put(a, ind, v, mode='raise'):\n    \"\"\"\n    Replaces specified elements of an array with given values.\n\n    The indexing works on the flattened target array.\n\n    Parameters\n    ----------\n    a : ndarray\n        Target array.\n    ind : array_like\n        Target indices, interpreted as integers.\n    v : array_like\n        Values to place in `a` at target indices.\n    mode : {'raise', 'wrap', 'clip'}, optional\n        Specifies how out-of-bounds indices will behave.\n\n    Returns\n    -------\n    None\n    \"\"\"\n    try:\n        put = a.put\n    except AttributeError as e:\n        raise TypeError(f\"argument 1 must be numpy.ndarray, not {type(a)}\") from e\n\n    return put(ind, v, mode=mode)"
+    },
+    {
+      "name": "numpy.compress",
+      "category": "Basic indexing",
+      "description": "Return selected slices of an array along given axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.compress.html",
+      "doc": "Return selected slices of an array along given axis.\n\nWhen working on a 1-D array, compress is equivalent to extract.\n\nParameters\n----------\ncondition : 1-D array of bools\n    Array that selects which entries to return.\na : array_like\n    Array from which to extract a part.\naxis : int, optional\n    Axis along which to take slices.\nout : ndarray, optional\n    Output array.\n\nReturns\n-------\ncompressed_array : ndarray\n    A copy of `a` without the slices along axis for which corresponding element in condition is False.",
+      "code": "@array_function_dispatch(_compress_dispatcher)\ndef compress(condition, a, axis=None, out=None):\n    \"\"\"\n    Return selected slices of an array along given axis.\n\n    When working on a 1-D array, compress is equivalent to extract.\n\n    Parameters\n    ----------\n    condition : 1-D array of bools\n        Array that selects which entries to return.\n    a : array_like\n        Array from which to extract a part.\n    axis : int, optional\n        Axis along which to take slices.\n    out : ndarray, optional\n        Output array.\n\n    Returns\n    -------\n    compressed_array : ndarray\n        A copy of `a` without the slices along axis for which corresponding element in condition is False.\n    \"\"\"\n    return _wrapfunc(a, 'compress', condition, axis=axis, out=out)"
+    },
+    {
+      "name": "numpy.choose",
+      "category": "Basic indexing",
+      "description": "Construct an array from an index array and a set of arrays to choose from",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.choose.html",
+      "doc": "Construct an array from an index array and a set of arrays to choose from.\n\nFirst of all, if confused or uncertain, definitely look at the Examples - in its full generality, this function is less simple than it might seem from the following code description (below ndi = numpy.lib.index_tricks):\n\nnp.choose(a,c) == np.array([c[a[I]][I] for I in ndi.ndindex(a.shape)]).\n\nBut this omits some subtleties. Here is a fully general summary:\n\nGiven an \"index\" array (a) of integers and a sequence of n arrays (choices), a and each choice array are first broadcast, as necessary, to arrays of a common shape; calling these Ba and Bchoices[i], i = 0,...,n-1 we have that, necessarily, Ba.shape == Bchoices[i].shape for each i. Then, a new array with shape Ba.shape is created as follows:\n\n- if mode='raise' (the default), then, first of all, each element of a (and thus Ba) must be in the range [0, n-1]; now, suppose that i (in that range) is the value at the (j0, j1, ..., jm) position in Ba - then the value at the same position in the new array is the value in Bchoices[i] at that same position;\n\n- if mode='wrap', values in a (and thus Ba) may be any (signed) integer; modular arithmetic is used to map integers outside the range [0, n-1] back into that range; and then the new array is constructed as above;\n\n- if mode='clip', values in a (and thus Ba) may be any (signed) integer; negative integers are mapped to 0; values greater than n-1 are mapped to n-1; and then the new array is constructed as above.",
+      "code": "@array_function_dispatch(_choose_dispatcher)\ndef choose(a, choices, out=None, mode='raise'):\n    \"\"\"\n    Construct an array from an index array and a set of arrays to choose from.\n    \n    [Full docstring truncated for brevity]\n    \"\"\"\n    return _wrapfunc(a, 'choose', choices, out=out, mode=mode)"
+    },
+    {
+      "name": "numpy.select",
+      "category": "Basic indexing",
+      "description": "Return an array drawn from elements in choicelist, depending on conditions",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.select.html",
+      "doc": "Return an array drawn from elements in choicelist, depending on conditions.\n\nParameters\n----------\ncondlist : list of bool ndarrays\n    The list of conditions which determine from which array in `choicelist`\n    the output elements are taken. When multiple conditions are satisfied,\n    the first one encountered in `condlist` is used.\nchoicelist : list of ndarrays\n    The list of arrays from which the output elements are taken. It has\n    to be of the same length as `condlist`.\ndefault : scalar, optional\n    The element inserted in `output` when all conditions evaluate to False.\n\nReturns\n-------\noutput : ndarray\n    The output at position m is the m-th element of the array in\n    `choicelist` where the m-th element of the corresponding array in\n    `condlist` is True.",
+      "code": "@array_function_dispatch(_select_dispatcher)\ndef select(condlist, choicelist, default=0):\n    \"\"\"\n    Return an array drawn from elements in choicelist, depending on conditions.\n\n    Parameters\n    ----------\n    condlist : list of bool ndarrays\n        The list of conditions which determine from which array in `choicelist`\n        the output elements are taken. When multiple conditions are satisfied,\n        the first one encountered in `condlist` is used.\n    choicelist : list of ndarrays\n        The list of arrays from which the output elements are taken. It has\n        to be of the same length as `condlist`.\n    default : scalar, optional\n        The element inserted in `output` when all conditions evaluate to False.\n\n    Returns\n    -------\n    output : ndarray\n        The output at position m is the m-th element of the array in\n        `choicelist` where the m-th element of the corresponding array in\n        `condlist` is True.\n    \"\"\"\n    # [Implementation details in the actual function]"
+    },
+    {
+      "name": "numpy.ix_",
+      "category": "Advanced indexing",
+      "description": "Construct an open mesh from multiple sequences",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ix_.html",
+      "doc": "Construct an open mesh from multiple sequences.\n\nThis function takes N 1-D sequences and returns N outputs with N dimensions each, such that the shape is 1 in all but one dimension and the dimension with the non-unit shape value cycles through all N dimensions.\n\nParameters\n----------\nargs : 1-D sequences\n    Each sequence should be of integer or boolean type.\n    Boolean sequences will be interpreted as boolean masks.\n\nReturns\n-------\nout : tuple of ndarrays\n    N arrays with N dimensions each, with N the number of input\n    sequences. Together these arrays form an open mesh.",
+      "code": "def ix_(*args):\n    \"\"\"\n    Construct an open mesh from multiple sequences.\n\n    This function takes N 1-D sequences and returns N outputs with N\n    dimensions each, such that the shape is 1 in all but one dimension\n    and the dimension with the non-unit shape value cycles through all\n    N dimensions.\n\n    Parameters\n    ----------\n    args : 1-D sequences\n        Each sequence should be of integer or boolean type.\n        Boolean sequences will be interpreted as boolean masks.\n\n    Returns\n    -------\n    out : tuple of ndarrays\n        N arrays with N dimensions each, with N the number of input\n        sequences. Together these arrays form an open mesh.\n    \"\"\"\n    out = []\n    nd = len(args)\n    for k, new in enumerate(args):\n        if not isinstance(new, _nx.ndarray):\n            new = np.asarray(new)\n            if new.size == 0:\n                new = new.astype(_nx.intp)\n        if new.ndim != 1:\n            raise ValueError(\"Cross index must be 1 dimensional\")\n        if issubdtype(new.dtype, _nx.bool):\n            new, = new.nonzero()\n        new = new.reshape((1,) * k + (new.size,) + (1,) * (nd - k - 1))\n        out.append(new)\n    return tuple(out)"
+    },
+    {
+      "name": "numpy.r_",
+      "category": "Advanced indexing",
+      "description": "Translates slice objects to concatenation along the first axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.r_.html",
+      "doc": "Translates slice objects to concatenation along the first axis.\n\nThis is a simple way to build up arrays quickly. There are two use cases.\n\n1. If the index expression contains comma separated arrays, then stack them along their first axis.\n2. If the index expression contains slice notation or scalars then create a 1-D array with a range indicated by the slice notation.\n\nIf slice notation is used, the syntax ``start:stop:step`` is equivalent to ``np.arange(start, stop, step)`` inside of the brackets. However, if ``step`` is an imaginary number (i.e. 100j) then its integer portion is interpreted as a number-of-points desired and the start and stop are inclusive. In other words ``start:stop:stepj`` is interpreted as ``np.linspace(start, stop, step, endpoint=1)`` inside of the brackets. After expansion of slice notation, all comma separated sequences are concatenated together.",
+      "code": "# numpy.r_ is an instance of RClass which implements special indexing behavior"
+    },
+    {
+      "name": "numpy.c_",
+      "category": "Advanced indexing",
+      "description": "Translates slice objects to concatenation along the second axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.c_.html",
+      "doc": "Translates slice objects to concatenation along the second axis.\n\nThis is short-hand for ``np.r_['-1,2,0', index expression]``, which is useful because of its common occurrence. In particular, arrays will be stacked along their last axis after being upgraded to at least 2-D with 1's post-pended to the shape (column vectors made out of 1-D arrays).",
+      "code": "# numpy.c_ is an instance of CClass which implements special indexing behavior"
+    },
+    {
+      "name": "numpy.s_",
+      "category": "Advanced indexing",
+      "description": "A nicer way to build up index tuples for arrays",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.s_.html",
+      "doc": "A nicer way to build up index tuples for arrays.\n\nUse one of the two predefined instances `index_exp` or `s_` rather than directly using IndexExpression.\n\nFor any index combination, including slicing and axis insertion, ``a[indices]`` is the same as ``a[np.index_exp[indices]]`` for any array `a`. However, ``np.index_exp[indices]`` can be used anywhere in Python code and returns a tuple of slice objects that can be used in the construction of complex index expressions.",
+      "code": "# numpy.s_ is an instance of IndexExpression"
+    },
+    {
+      "name": "numpy.ogrid",
+      "category": "Advanced indexing",
+      "description": "Open multi-dimensional \"meshgrid\"",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ogrid.html",
+      "doc": "Open multi-dimensional \"meshgrid\".\n\nAn instance of `numpy.lib.index_tricks.nd_grid` which returns an open (i.e. not fleshed out) mesh-grid when indexed, so that only one dimension of each returned array is greater than 1. The dimension and number of the output arrays are equal to the number of indexing dimensions. If the step length is not a complex number, then the stop is not inclusive.\n\nHowever, if the step length is a complex number (e.g. 5j), then the integer part of its magnitude is interpreted as specifying the number of points to create between the start and stop values, where the stop value is inclusive.",
+      "code": "# numpy.ogrid is an instance of nd_grid with sparse=True"
+    },
+    {
+      "name": "numpy.mgrid",
+      "category": "Advanced indexing",
+      "description": "Dense multi-dimensional \"meshgrid\"",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.mgrid.html",
+      "doc": "Dense multi-dimensional \"meshgrid\".\n\nAn instance of `numpy.lib.index_tricks.nd_grid` which returns a dense (or fleshed out) mesh-grid when indexed, so that each returned argument has the same shape. The dimensions and number of the output arrays are equal to the number of indexing dimensions. If the step length is not a complex number, then the stop is not inclusive.\n\nHowever, if the step length is a complex number (e.g. 5j), then the integer part of its magnitude is interpreted as specifying the number of points to create between the start and stop values, where the stop value is inclusive.",
+      "code": "# numpy.mgrid is an instance of nd_grid with sparse=False"
+    },
+    {
+      "name": "numpy.indices",
+      "category": "Index generation",
+      "description": "Return an array representing the indices of a grid",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.indices.html",
+      "doc": "Return an array representing the indices of a grid.\n\nCompute an array where the subarrays contain index values 0, 1, ... varying only along the corresponding axis.\n\nParameters\n----------\ndimensions : sequence of ints\n    The shape of the grid.\ndtype : dtype, optional\n    Data type of the result.\nsparse : boolean, optional\n    Return a sparse representation of the grid instead of a dense representation.\n\nReturns\n-------\ngrid : one ndarray or tuple of ndarrays\n    If sparse is False:\n        Returns one array of grid indices, ``grid.shape = (len(dimensions),) + tuple(dimensions)``.\n    If sparse is True:\n        Returns a tuple of arrays, with ``grid[i].shape = (1, ..., dimensions[i], ..., 1)`` with dimensions[i] in the ith place.",
+      "code": "# Implementation in numpy/lib/_index_tricks_impl.py or numpy/_core/numeric.py"
+    },
+    {
+      "name": "numpy.ndindex",
+      "category": "Index generation",
+      "description": "An N-dimensional iterator object to index arrays",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ndindex.html",
+      "doc": "An N-dimensional iterator object to index arrays.\n\nGiven the shape of an array, an `ndindex` instance iterates over the N-dimensional index of the array.",
+      "code": "@set_module('numpy')\nclass ndindex:\n    \"\"\"\n    An N-dimensional iterator object to index arrays.\n\n    Given the shape of an array, an `ndindex` instance iterates over\n    the N-dimensional index of the array.\n    \"\"\"\n\n    def __init__(self, *shape):\n        if len(shape) == 1 and isinstance(shape[0], tuple):\n            shape = shape[0]\n        x = as_strided(_nx.zeros(1), shape=shape,\n                       strides=_nx.zeros_like(shape))\n        self._it = _nx.nditer(x, flags=['multi_index', 'zerosize_ok'],\n                              order='C')\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        next(self._it)\n        return self._it.multi_index"
+    },
+    {
+      "name": "numpy.unravel_index",
+      "category": "Index generation",
+      "description": "Converts a flat index or array of flat indices into a tuple of coordinate arrays",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.unravel_index.html",
+      "doc": "Converts a flat index or array of flat indices into a tuple of coordinate arrays.\n\nParameters\n----------\nindices : array_like\n    An integer array whose elements are indices into the flattened version of an array of dimensions shape.\nshape : tuple of ints\n    The shape of the array to use for unraveling indices.\norder : {'C', 'F'}, optional\n    Determines whether the indices should be viewed as indexing in row-major (C-style) or column-major (Fortran-style) order.\n\nReturns\n-------\nunraveled_coords : tuple of ndarray\n    Each array in the tuple has the same shape as the indices array.",
+      "code": "# C implementation: from numpy._core.multiarray import unravel_index"
+    },
+    {
+      "name": "numpy.ravel_multi_index",
+      "category": "Index generation",
+      "description": "Converts a tuple of index arrays into an array of flat indices",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ravel_multi_index.html",
+      "doc": "Converts a tuple of index arrays into an array of flat indices, applying boundary modes to the multi-index.\n\nParameters\n----------\nmulti_index : tuple of array_like\n    A tuple of integer arrays, one array for each dimension.\ndims : tuple of ints\n    The shape of array into which the indices from multi_index apply.\nmode : {'raise', 'wrap', 'clip'}, optional\n    Specifies how out-of-bounds indices are handled.\norder : {'C', 'F'}, optional\n    Determines whether the multi-index should be viewed as indexing in row-major (C-style) or column-major (Fortran-style) order.\n\nReturns\n-------\nraveled_indices : ndarray\n    An array of indices into the flattened version of an array of dimensions dims.",
+      "code": "# C implementation: from numpy._core.multiarray import ravel_multi_index"
+    },
+    {
+      "name": "numpy.where",
+      "category": "Boolean/mask indexing",
+      "description": "Return elements chosen from x or y depending on condition",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.where.html",
+      "doc": "Return elements chosen from `x` or `y` depending on `condition`.\n\nParameters\n----------\ncondition : array_like, bool\n    Where True, yield `x`, otherwise yield `y`.\nx, y : array_like\n    Values from which to choose. `x`, `y` and `condition` need to be broadcastable to some shape.\n\nReturns\n-------\nout : ndarray\n    If both `x` and `y` are given, the output array contains elements of `x` where `condition` is True, and those from `y` elsewhere.\n\nNote\n----\nIf only `condition` is given, return ``condition.nonzero()``.",
+      "code": "# C implementation: from numpy._core.multiarray import where"
+    },
+    {
+      "name": "numpy.extract",
+      "category": "Boolean/mask indexing",
+      "description": "Return the elements of an array that satisfy some condition",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.extract.html",
+      "doc": "Return the elements of an array that satisfy some condition.\n\nThis is equivalent to ``np.compress(ravel(condition), ravel(arr))``. If `condition` is boolean ``np.extract`` is equivalent to ``arr[condition]``.\n\nNote that `place` does the exact opposite of `extract`.\n\nParameters\n----------\ncondition : array_like\n    An array whose nonzero or True entries indicate the elements of `arr` to extract.\narr : array_like\n    Input array of the same size as `condition`.\n\nReturns\n-------\nextract : ndarray\n    Rank 1 array of values from `arr` where `condition` is True.",
+      "code": "@array_function_dispatch(_extract_dispatcher)\ndef extract(condition, arr):\n    \"\"\"\n    Return the elements of an array that satisfy some condition.\n\n    This is equivalent to ``np.compress(ravel(condition), ravel(arr))``.  If\n    `condition` is boolean ``np.extract`` is equivalent to ``arr[condition]``.\n\n    Note that `place` does the exact opposite of `extract`.\n\n    Parameters\n    ----------\n    condition : array_like\n        An array whose nonzero or True entries indicate the elements of `arr`\n        to extract.\n    arr : array_like\n        Input array of the same size as `condition`.\n\n    Returns\n    -------\n    extract : ndarray\n        Rank 1 array of values from `arr` where `condition` is True.\n    \"\"\"\n    return _nx.take(ravel(arr), nonzero(ravel(condition))[0])"
+    },
+    {
+      "name": "numpy.place",
+      "category": "Boolean/mask indexing",
+      "description": "Change elements of an array based on conditional and input values",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.place.html",
+      "doc": "Change elements of an array based on conditional and input values.\n\nSimilar to ``np.copyto(arr, vals, where=mask)``, the difference is that `place` uses the first N elements of `vals`, where N is the number of True values in `mask`, while `copyto` uses the elements where `mask` is True.\n\nNote that `extract` does the exact opposite of `place`.\n\nParameters\n----------\narr : ndarray\n    Array to put data into.\nmask : array_like\n    Boolean mask array. Must have the same size as `a`.\nvals : 1-D sequence\n    Values to put into `a`. Only the first N elements are used, where N is the number of True values in `mask`. If `vals` is smaller than N, it will be repeated, and if elements of `a` are to be masked, this sequence must be non-empty.",
+      "code": "# C implementation: from numpy._core.multiarray import _place as place"
+    },
+    {
+      "name": "numpy.putmask",
+      "category": "Boolean/mask indexing",
+      "description": "Changes elements of an array based on conditional and input values",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.putmask.html",
+      "doc": "Changes elements of an array based on conditional and input values.\n\nSets ``a.flat[n] = values[n]`` for each n where ``mask.flat[n]==True``.\n\nIf `values` is not the same size as `a` and `mask` then it will repeat. This gives behavior different from ``a[mask] = values``.\n\nParameters\n----------\na : array_like\n    Target array.\nmask : array_like\n    Boolean mask array. It has to be the same shape as `a`.\nvalues : array_like\n    Values to put into `a` where `mask` is True. If `values` is smaller than `a` it will be repeated.",
+      "code": "# C implementation: from numpy._core import putmask"
+    },
+    {
+      "name": "numpy.nonzero",
+      "category": "Boolean/mask indexing",
+      "description": "Return the indices of the elements that are non-zero",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.nonzero.html",
+      "doc": "Return the indices of the elements that are non-zero.\n\nReturns a tuple of arrays, one for each dimension of `a`, containing the indices of the non-zero elements in that dimension. The values in `a` are always tested and returned in row-major, C-style order.\n\nParameters\n----------\na : array_like\n    Input array.\n\nReturns\n-------\ntuple_of_arrays : tuple\n    Indices of elements that are non-zero.",
+      "code": "@array_function_dispatch(_nonzero_dispatcher)\ndef nonzero(a):\n    \"\"\"\n    Return the indices of the elements that are non-zero.\n\n    Returns a tuple of arrays, one for each dimension of `a`,\n    containing the indices of the non-zero elements in that\n    dimension. The values in `a` are always tested and returned in\n    row-major, C-style order.\n\n    Parameters\n    ----------\n    a : array_like\n        Input array.\n\n    Returns\n    -------\n    tuple_of_arrays : tuple\n        Indices of elements that are non-zero.\n    \"\"\"\n    return _wrapfunc(a, 'nonzero')"
+    },
+    {
+      "name": "numpy.argwhere",
+      "category": "Boolean/mask indexing",
+      "description": "Find the indices of array elements that are non-zero, grouped by element",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.argwhere.html",
+      "doc": "Find the indices of array elements that are non-zero, grouped by element.\n\nParameters\n----------\na : array_like\n    Input data.\n\nReturns\n-------\nindex_array : (N, a.ndim) ndarray\n    Indices of elements that are non-zero. Indices are grouped by element.\n    This array will have shape ``(N, a.ndim)`` where ``N`` is the number of\n    non-zero items.\n\nNotes\n-----\n``np.argwhere(a)`` is almost the same as ``np.transpose(np.nonzero(a))``, but produces the correct result for a 0D array.\n\nThe output of ``argwhere`` is not suitable for indexing arrays. For this purpose use ``nonzero(a)`` instead.",
+      "code": "@array_function_dispatch(_argwhere_dispatcher)\ndef argwhere(a):\n    \"\"\"\n    Find the indices of array elements that are non-zero, grouped by element.\n\n    Parameters\n    ----------\n    a : array_like\n        Input data.\n\n    Returns\n    -------\n    index_array : (N, a.ndim) ndarray\n        Indices of elements that are non-zero. Indices are grouped by element.\n        This array will have shape ``(N, a.ndim)`` where ``N`` is the number of\n        non-zero items.\n\n    See Also\n    --------\n    where, nonzero\n\n    Notes\n    -----\n    ``np.argwhere(a)`` is almost the same as ``np.transpose(np.nonzero(a))``,\n    but produces the correct result for a 0D array.\n\n    The output of ``argwhere`` is not suitable for indexing arrays.\n    For this purpose use ``nonzero(a)`` instead.\n    \"\"\"\n    # nonzero does not behave well on 0d, so promote to 1d\n    if np.ndim(a) == 0:\n        a = shape_base.atleast_1d(a)\n        # then remove the added dimension\n        return argwhere(a)[:, :0]\n    return transpose(nonzero(a))"
+    },
+    {
+      "name": "numpy.nditer",
+      "category": "Iterating over arrays",
+      "description": "Efficient multi-dimensional iterator object to iterate over arrays",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.nditer.html",
+      "doc": "Efficient multi-dimensional iterator object to iterate over arrays.\n\nTo get started using this object, see the introductory guide to array iteration.\n\nParameters\n----------\nop : ndarray or sequence of array_like\n    The array(s) to iterate over.\nflags : sequence of str, optional\n    Flags to control the behavior of the iterator.\nbuffersize : int, optional\n    When buffering is enabled, controls the size of the temporary buffers.\norder : {'C', 'F', 'A', 'K'}, optional\n    Controls the iteration order.\ncasting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional\n    Controls what kind of data casting may occur when making a copy or buffering.\nop_dtypes : dtype or tuple of dtype(s), optional\n    The required data type(s) of the operands.\n\nAttributes\n----------\ndtypes : tuple of dtype(s)\n    The data types of the values provided in `value`.\nfinished : bool\n    Whether the iteration over the operands is finished or not.\nhas_delayed_bufalloc : bool\n    If True, the iterator was created with the `delay_bufalloc` flag.\nhas_index : bool\n    If True, the iterator was created with either the `c_index` or `f_index` flag.\nhas_multi_index : bool\n    If True, the iterator was created with the `multi_index` flag.\nindex\n    When the `c_index` or `f_index` flag was used, this property provides access to it.\niterationneedsapi : bool\n    Whether iteration requires access to the Python API.\niterindex : int\n    An index which matches the order of iteration.\nitersize : int\n    Size of the iterator.\nitviews\n    Structured view(s) of `operands` in memory.\nmulti_index\n    When the `multi_index` flag was used, this property provides access to it.\nndim : int\n    The number of dimensions being iterated.\nnop : int\n    The number of operands being iterated.\noperands : tuple of operand(s)\n    The operands being iterated over.\nshape : tuple of ints\n    Shape of the iterator.\nvalue\n    Value of `operands` at current iteration.",
+      "code": "# C implementation - nditer is implemented in C for performance"
+    },
+    {
+      "name": "numpy.ndenumerate",
+      "category": "Iterating over arrays",
+      "description": "Multidimensional index iterator",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ndenumerate.html",
+      "doc": "Multidimensional index iterator.\n\nReturn an iterator yielding pairs of array coordinates and values.\n\nParameters\n----------\narr : ndarray\n    Input array.",
+      "code": "@set_module('numpy')\nclass ndenumerate:\n    \"\"\"\n    Multidimensional index iterator.\n\n    Return an iterator yielding pairs of array coordinates and values.\n\n    Parameters\n    ----------\n    arr : ndarray\n      Input array.\n    \"\"\"\n\n    def __init__(self, arr):\n        self.iter = np.asarray(arr).flat\n\n    def __next__(self):\n        return self.iter.coords, next(self.iter)\n\n    def __iter__(self):\n        return self"
+    },
+    {
+      "name": "numpy.flatiter",
+      "category": "Iterating over arrays",
+      "description": "Flat iterator object to iterate over arrays",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.flatiter.html",
+      "doc": "Flat iterator object to iterate over arrays.\n\nA `flatiter` iterator is returned by ``x.flat`` for any array `x`. It allows iterating over the array as if it were a 1-D array, either in a for-loop or by calling its `next` method.\n\nIteration is done in row-major, C-style order (the last index varying the fastest). The iterator can also be indexed using basic slicing or advanced indexing.\n\nNotes\n-----\nA `flatiter` iterator can not be constructed directly from Python code by calling the `flatiter` constructor.",
+      "code": "# C implementation - flatiter is implemented in C"
+    },
+    {
+      "name": "numpy.diagonal",
+      "category": "Diagonal operations",
+      "description": "Return specified diagonals",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.diagonal.html",
+      "doc": "Return specified diagonals.\n\nIf `a` is 2-D, returns the diagonal of `a` with the given offset, i.e., the collection of elements of the form ``a[i, i+offset]``. If `a` has more than two dimensions, then the axes specified by `axis1` and `axis2` are used to determine the 2-D sub-array whose diagonal is returned. The shape of the resulting array can be determined by removing `axis1` and `axis2` and appending an index to the right equal to the size of the resulting diagonals.\n\nParameters\n----------\na : array_like\n    Array from which the diagonals are taken.\noffset : int, optional\n    Offset of the diagonal from the main diagonal. Can be positive or negative.\naxis1 : int, optional\n    Axis to be used as the first axis of the 2-D sub-arrays from which the diagonals should be taken.\naxis2 : int, optional\n    Axis to be used as the second axis of the 2-D sub-arrays from which the diagonals should be taken.\n\nReturns\n-------\narray_of_diagonals : ndarray\n    If `a` is 2-D, then a 1-D array containing the diagonal and of the same type as `a` is returned. If `a` has more than two dimensions, then the dimensions specified by `axis1` and `axis2` are removed, and a new axis inserted at the end corresponding to the diagonal.",
+      "code": "@array_function_dispatch(_diagonal_dispatcher)\ndef diagonal(a, offset=0, axis1=0, axis2=1):\n    \"\"\"\n    Return specified diagonals.\n    \n    [Full docstring truncated for brevity]\n    \"\"\"\n    if isinstance(a, np.matrix):\n        # Optimize the common case where axis1, axis2 are 0, 1 and the\n        # array is 2D to avoid the array transpose (since matrix is strict 2D)\n        if axis1 == 0 and axis2 == 1 and a.ndim == 2:\n            return asarray(a)._diagonal_retval(\n                offset=offset, axis1=axis1, axis2=axis2\n            )\n        else:\n            return asanyarray(a).diagonal(\n                offset=offset, axis1=axis1, axis2=axis2\n            )\n    else:\n        return asanyarray(a).diagonal(offset=offset, axis1=axis1, axis2=axis2)"
+    },
+    {
+      "name": "numpy.diag",
+      "category": "Diagonal operations",
+      "description": "Extract a diagonal or construct a diagonal array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.diag.html",
+      "doc": "Extract a diagonal or construct a diagonal array.\n\nParameters\n----------\nv : array_like\n    If `v` is a 2-D array, return a copy of its `k`-th diagonal.\n    If `v` is a 1-D array, return a 2-D array with `v` on the `k`-th diagonal.\nk : int, optional\n    Diagonal in question. The default is 0. Use `k>0` for diagonals above the main diagonal, and `k<0` for diagonals below the main diagonal.\n\nReturns\n-------\nout : ndarray\n    The extracted diagonal or constructed diagonal array.",
+      "code": "@array_function_dispatch(_diag_dispatcher)\ndef diag(v, k=0):\n    \"\"\"\n    Extract a diagonal or construct a diagonal array.\n\n    Parameters\n    ----------\n    v : array_like\n        If `v` is a 2-D array, return a copy of its `k`-th diagonal.\n        If `v` is a 1-D array, return a 2-D array with `v` on the `k`-th\n        diagonal.\n    k : int, optional\n        Diagonal in question. The default is 0. Use `k>0` for diagonals\n        above the main diagonal, and `k<0` for diagonals below the main\n        diagonal.\n\n    Returns\n    -------\n    out : ndarray\n        The extracted diagonal or constructed diagonal array.\n    \"\"\"\n    v = asanyarray(v)\n    s = v.shape\n    if len(s) == 1:\n        n = s[0] + abs(k)\n        res = zeros((n, n), v.dtype)\n        if k >= 0:\n            i = k\n        else:\n            i = (-k) * n\n        res[:n - k].flat[i::n + 1] = v\n        return res\n    elif len(s) == 2:\n        return diagonal(v, k)\n    else:\n        raise ValueError(\"Input must be 1- or 2-d.\")"
+    },
+    {
+      "name": "numpy.diagflat",
+      "category": "Diagonal operations",
+      "description": "Create a two-dimensional array with the flattened input as a diagonal",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.diagflat.html",
+      "doc": "Create a two-dimensional array with the flattened input as a diagonal.\n\nParameters\n----------\nv : array_like\n    Input data, which is flattened and set as the `k`-th diagonal of the output.\nk : int, optional\n    Diagonal to set; 0, the default, corresponds to the \"main\" diagonal.\n\nReturns\n-------\nout : ndarray\n    The 2-D output array.",
+      "code": "@array_function_dispatch(_diag_dispatcher)\ndef diagflat(v, k=0):\n    \"\"\"\n    Create a two-dimensional array with the flattened input as a diagonal.\n\n    Parameters\n    ----------\n    v : array_like\n        Input data, which is flattened and set as the `k`-th\n        diagonal of the output.\n    k : int, optional\n        Diagonal to set; 0, the default, corresponds to the \"main\" diagonal.\n\n    Returns\n    -------\n    out : ndarray\n        The 2-D output array.\n    \"\"\"\n    try:\n        wrap = v.__array_wrap__\n    except AttributeError:\n        wrap = None\n    v = asarray(v).ravel()\n    s = len(v)\n    n = s + abs(k)\n    res = zeros((n, n), v.dtype)\n    if (k >= 0):\n        i = arange(0, n - k, dtype=intp)\n        fi = i + k + i * n\n    else:\n        i = arange(0, n + k, dtype=intp)\n        fi = i + (i - k) * n\n    res.flat[fi] = v\n    if wrap:\n        return wrap(res)\n    return res"
+    },
+    {
+      "name": "numpy.trace",
+      "category": "Diagonal operations",
+      "description": "Return the sum along diagonals of the array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.trace.html",
+      "doc": "Return the sum along diagonals of the array.\n\nIf `a` is 2-D, the sum along its diagonal with the given offset is returned, i.e., the sum of elements ``a[i,i+offset]`` for all i.\n\nIf `a` has more than two dimensions, then the axes specified by axis1 and axis2 are used to determine the 2-D sub-arrays whose traces are returned. The shape of the resulting array is the same as that of `a` with `axis1` and `axis2` removed.\n\nParameters\n----------\na : array_like\n    Input array, from which the diagonals are taken.\noffset : int, optional\n    Offset of the diagonal from the main diagonal. Can be both positive and negative.\naxis1, axis2 : int, optional\n    Axes to be used as the first and second axis of the 2-D sub-arrays from which the diagonals should be taken.\ndtype : dtype, optional\n    Determines the data-type of the returned array and of the accumulator where the elements are summed.\nout : ndarray, optional\n    Array into which the output is placed.\n\nReturns\n-------\nsum_along_diagonals : ndarray\n    If `a` is 2-D, the sum along the diagonal is returned. If `a` has larger dimensions, then an array of sums along diagonals is returned.",
+      "code": "@array_function_dispatch(_trace_dispatcher)\ndef trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):\n    \"\"\"\n    Return the sum along diagonals of the array.\n\n    If `a` is 2-D, the sum along its diagonal with the given offset\n    is returned, i.e., the sum of elements ``a[i,i+offset]`` for all i.\n\n    If `a` has more than two dimensions, then the axes specified by axis1 and\n    axis2 are used to determine the 2-D sub-arrays whose traces are returned.\n    The shape of the resulting array is the same as that of `a` with `axis1`\n    and `axis2` removed.\n\n    Parameters\n    ----------\n    a : array_like\n        Input array, from which the diagonals are taken.\n    offset : int, optional\n        Offset of the diagonal from the main diagonal. Can be both positive\n        and negative. Defaults to 0.\n    axis1, axis2 : int, optional\n        Axes to be used as the first and second axis of the 2-D sub-arrays\n        from which the diagonals should be taken. Defaults are the first two\n        axes of `a`.\n    dtype : dtype, optional\n        Determines the data-type of the returned array and of the accumulator\n        where the elements are summed.\n    out : ndarray, optional\n        Array into which the output is placed.\n\n    Returns\n    -------\n    sum_along_diagonals : ndarray\n        If `a` is 2-D, the sum along the diagonal is returned.  If `a` has\n        larger dimensions, then an array of sums along diagonals is returned.\n    \"\"\"\n    if isinstance(a, np.matrix):\n        # Get trace of matrix via an array to preserve backward compatibility.\n        return asarray(a).trace(\n            offset=offset, axis1=axis1, axis2=axis2, dtype=dtype, out=out\n        )\n    else:\n        return asanyarray(a).trace(\n            offset=offset, axis1=axis1, axis2=axis2, dtype=dtype, out=out\n        )"
+    },
+    {
+      "name": "numpy.tril",
+      "category": "Diagonal operations",
+      "description": "Lower triangle of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.tril.html",
+      "doc": "Lower triangle of an array.\n\nReturn a copy of an array with elements above the `k`-th diagonal zeroed. For arrays with ``ndim`` exceeding 2, `tril` will apply to the final two axes.\n\nParameters\n----------\nm : array_like, shape (..., M, N)\n    Input array.\nk : int, optional\n    Diagonal above which to zero elements. `k = 0` (the default) is the main diagonal, `k < 0` is below it and `k > 0` is above.\n\nReturns\n-------\ntril : ndarray, shape (..., M, N)\n    Lower triangle of `m`, of same shape and data-type as `m`.",
+      "code": "@array_function_dispatch(_trilu_dispatcher)\ndef tril(m, k=0):\n    \"\"\"\n    Lower triangle of an array.\n\n    Return a copy of an array with elements above the `k`-th diagonal zeroed.\n    For arrays with ``ndim`` exceeding 2, `tril` will apply to the final two\n    axes.\n\n    Parameters\n    ----------\n    m : array_like, shape (..., M, N)\n        Input array.\n    k : int, optional\n        Diagonal above which to zero elements.  `k = 0` (the default) is the\n        main diagonal, `k < 0` is below it and `k > 0` is above.\n\n    Returns\n    -------\n    tril : ndarray, shape (..., M, N)\n        Lower triangle of `m`, of same shape and data-type as `m`.\n    \"\"\"\n    m = asanyarray(m)\n    mask = tri(*m.shape[-2:], k=k, dtype=bool)\n\n    return where(mask, m, zeros(1, m.dtype))"
+    },
+    {
+      "name": "numpy.triu",
+      "category": "Diagonal operations",
+      "description": "Upper triangle of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.triu.html",
+      "doc": "Upper triangle of an array.\n\nReturn a copy of an array with the elements below the `k`-th diagonal zeroed. For arrays with ``ndim`` exceeding 2, `triu` will apply to the final two axes.\n\nParameters\n----------\nm : array_like, shape (..., M, N)\n    Input array.\nk : int, optional\n    Diagonal below which to zero elements. `k = 0` (the default) is the main diagonal, `k < 0` is below it and `k > 0` is above.\n\nReturns\n-------\ntriu : ndarray, shape (..., M, N)\n    Upper triangle of `m`, of same shape and data-type as `m`.",
+      "code": "@array_function_dispatch(_trilu_dispatcher)\ndef triu(m, k=0):\n    \"\"\"\n    Upper triangle of an array.\n\n    Return a copy of an array with the elements below the `k`-th diagonal\n    zeroed. For arrays with ``ndim`` exceeding 2, `triu` will apply to the\n    final two axes.\n\n    Parameters\n    ----------\n    m : array_like, shape (..., M, N)\n        Input array.\n    k : int, optional\n        Diagonal below which to zero elements.  `k = 0` (the default) is the\n        main diagonal, `k < 0` is below it and `k > 0` is above.\n\n    Returns\n    -------\n    triu : ndarray, shape (..., M, N)\n        Upper triangle of `m`, of same shape and data-type as `m`.\n    \"\"\"\n    m = asanyarray(m)\n    mask = tri(*m.shape[-2:], k=k-1, dtype=bool)\n\n    return where(mask, zeros(1, m.dtype), m)"
+    },
+    {
+      "name": "numpy.fill_diagonal",
+      "category": "Diagonal operations",
+      "description": "Fill the main diagonal of the given array of any dimensionality",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.fill_diagonal.html",
+      "doc": "Fill the main diagonal of the given array of any dimensionality.\n\nFor an array `a` with ``a.ndim >= 2``, the diagonal is the list of locations with indices ``a[i, ..., i]`` all identical. This function modifies the input array in-place, it does not return a value.\n\nParameters\n----------\na : array, at least 2-D.\n    Array whose diagonal is to be filled, it gets modified in-place.\nval : scalar or array_like\n    Value(s) to write on the diagonal. If `val` is scalar, the value is written along the diagonal. If array-like, the flattened `val` is written along the diagonal, repeating if necessary to fill all diagonal entries.\nwrap : bool\n    For tall matrices in NumPy version up to 1.6.2, the diagonal \"wrapped\" after N columns. You can have this behavior with this option. This affects only tall matrices.",
+      "code": "def fill_diagonal(a, val, wrap=False):\n    \"\"\"Fill the main diagonal of the given array of any dimensionality.\n\n    For an array `a` with ``a.ndim >= 2``, the diagonal is the list of\n    locations with indices ``a[i, ..., i]`` all identical. This function\n    modifies the input array in-place, it does not return a value.\n\n    Parameters\n    ----------\n    a : array, at least 2-D.\n      Array whose diagonal is to be filled in-place.\n    val : scalar or array_like\n      Value(s) to write on the diagonal.\n    wrap : bool\n      For tall matrices, control diagonal wrapping behavior.\n\n    Modifies the input array in-place without returning a value.\n    \"\"\"\n    if a.ndim < 2:\n        raise ValueError(\"array must be at least 2-d\")\n    end = None\n    if a.ndim == 2:\n        # Explicit, fast formula for the common case.  For 2-d arrays, we\n        # accept rectangular ones.\n        step = a.shape[1] + 1\n        # This is needed to don't have tall matrix have the diagonal wrap.\n        if not wrap:\n            end = a.shape[1] * a.shape[1]\n    else:\n        # For more than d=2, the strided formula is only valid for arrays with\n        # all dimensions equal, so we check first.\n        if not np.all(diff(a.shape) == 0):\n            raise ValueError(\"All dimensions of input must be of equal length\")\n        step = 1 + np.cumprod(a.shape[:-1]).sum()\n\n    # Write the value out into the diagonal.\n    a.flat[:end:step] = val"
+    },
+    {
+      "name": "numpy.argmax",
+      "category": "Index finding",
+      "description": "Returns the indices of the maximum values along an axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.argmax.html",
+      "doc": "Returns the indices of the maximum values along an axis.\n\nParameters\n----------\na : array_like\n    Input array.\naxis : int, optional\n    By default, the index is into the flattened array, otherwise along the specified axis.\nout : array, optional\n    If provided, the result will be inserted into this array.\nkeepdims : bool, optional\n    If this is set to True, the axes which are reduced are left in the result as dimensions with size one.\n\nReturns\n-------\nindex_array : ndarray of ints\n    Array of indices into the array. It has the same shape as ``a.shape`` with the dimension along `axis` removed.\n\nNotes\n-----\nIn case of multiple occurrences of the maximum values, the indices corresponding to the first occurrence are returned.",
+      "code": "@array_function_dispatch(_argmax_dispatcher)\ndef argmax(a, axis=None, out=None, *, keepdims=np._NoValue):\n    \"\"\"\n    Returns the indices of the maximum values along an axis.\n\n    Parameters\n    ----------\n    a : array_like\n        Input array.\n    axis : int, optional\n        By default, the index is into the flattened array, otherwise\n        along the specified axis.\n    out : array, optional\n        If provided, the result will be inserted into this array. It should\n        be of the appropriate shape and dtype.\n    keepdims : bool, optional\n        If this is set to True, the axes which are reduced are left\n        in the result as dimensions with size one. With this option,\n        the result will broadcast correctly against the array.\n\n    Returns\n    -------\n    index_array : ndarray of ints\n        Array of indices into the array. It has the same shape as ``a.shape``\n        with the dimension along `axis` removed.\n\n    Notes\n    -----\n    In case of multiple occurrences of the maximum values, the indices\n    corresponding to the first occurrence are returned.\n    \"\"\"\n    kwds = {'keepdims': keepdims} if keepdims is not np._NoValue else {}\n    return _wrapfunc(a, 'argmax', axis=axis, out=out, **kwds)"
+    },
+    {
+      "name": "numpy.argmin",
+      "category": "Index finding",
+      "description": "Returns the indices of the minimum values along an axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.argmin.html",
+      "doc": "Returns the indices of the minimum values along an axis.\n\nParameters\n----------\na : array_like\n    Input array.\naxis : int, optional\n    By default, the index is into the flattened array, otherwise along the specified axis.\nout : array, optional\n    If provided, the result will be inserted into this array.\nkeepdims : bool, optional\n    If this is set to True, the axes which are reduced are left in the result as dimensions with size one.\n\nReturns\n-------\nindex_array : ndarray of ints\n    Array of indices into the array. It has the same shape as ``a.shape`` with the dimension along `axis` removed.\n\nNotes\n-----\nIn case of multiple occurrences of the minimum values, the indices corresponding to the first occurrence are returned.",
+      "code": "@array_function_dispatch(_argmin_dispatcher)\ndef argmin(a, axis=None, out=None, *, keepdims=np._NoValue):\n    \"\"\"\n    Returns the indices of the minimum values along an axis.\n\n    Parameters\n    ----------\n    a : array_like\n        Input array.\n    axis : int, optional\n        By default, the index is into the flattened array, otherwise\n        along the specified axis.\n    out : array, optional\n        If provided, the result will be inserted into this array. It should\n        be of the appropriate shape and dtype.\n    keepdims : bool, optional\n        If this is set to True, the axes which are reduced are left\n        in the result as dimensions with size one. With this option,\n        the result will broadcast correctly against the array.\n\n    Returns\n    -------\n    index_array : ndarray of ints\n        Array of indices into the array. It has the same shape as ``a.shape``\n        with the dimension along `axis` removed.\n\n    Notes\n    -----\n    In case of multiple occurrences of the minimum values, the indices\n    corresponding to the first occurrence are returned.\n    \"\"\"\n    kwds = {'keepdims': keepdims} if keepdims is not np._NoValue else {}\n    return _wrapfunc(a, 'argmin', axis=axis, out=out, **kwds)"
+    },
+    {
+      "name": "numpy.nanargmax",
+      "category": "Index finding",
+      "description": "Return the indices of the maximum values in the specified axis ignoring NaNs",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.nanargmax.html",
+      "doc": "Return the indices of the maximum values in the specified axis ignoring NaNs.\n\nFor all-NaN slices ``ValueError`` is raised. Warning: the results cannot be trusted if a slice contains only NaNs and -Infs.\n\nParameters\n----------\na : array_like\n    Input data.\naxis : int, optional\n    Axis along which to operate. By default flattened input is used.\nout : array, optional\n    If provided, the result will be inserted into this array.\nkeepdims : bool, optional\n    If this is set to True, the axes which are reduced are left in the result as dimensions with size one.\n\nReturns\n-------\nindex_array : ndarray\n    An array of indices or a single index value.",
+      "code": "@array_function_dispatch(_nanargmax_dispatcher)\ndef nanargmax(a, axis=None, out=None, *, keepdims=np._NoValue):\n    \"\"\"\n    Return the indices of the maximum values in the specified axis ignoring\n    NaNs. For all-NaN slices ``ValueError`` is raised. Warning: the\n    results cannot be trusted if a slice contains only NaNs and -Infs.\n\n    Parameters\n    ----------\n    a : array_like\n        Input data.\n    axis : int, optional\n        Axis along which to operate.  By default flattened input is used.\n    out : array, optional\n        If provided, the result will be inserted into this array. It should\n        be of the appropriate shape and dtype.\n\n        .. versionadded:: 1.22.0\n    keepdims : bool, optional\n        If this is set to True, the axes which are reduced are left\n        in the result as dimensions with size one. With this option,\n        the result will broadcast correctly against the array.\n\n        .. versionadded:: 1.22.0\n\n    Returns\n    -------\n    index_array : ndarray\n        An array of indices or a single index value.\n\n    See Also\n    --------\n    argmax, nanargmin\n    \"\"\"\n    a, mask = _replace_nan(a, -np.inf)\n    if mask is not None and mask.size:\n        mask = np.all(mask, axis=axis)\n        if np.any(mask):\n            raise ValueError(\"All-NaN slice encountered\")\n    res = np.argmax(a, axis=axis, out=out, keepdims=keepdims)\n    return res"
+    },
+    {
+      "name": "numpy.nanargmin",
+      "category": "Index finding",
+      "description": "Return the indices of the minimum values in the specified axis ignoring NaNs",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.nanargmin.html",
+      "doc": "Return the indices of the minimum values in the specified axis ignoring NaNs.\n\nFor all-NaN slices ``ValueError`` is raised. Warning: the results cannot be trusted if a slice contains only NaNs and Infs.\n\nParameters\n----------\na : array_like\n    Input data.\naxis : int, optional\n    Axis along which to operate. By default flattened input is used.\nout : array, optional\n    If provided, the result will be inserted into this array.\nkeepdims : bool, optional\n    If this is set to True, the axes which are reduced are left in the result as dimensions with size one.\n\nReturns\n-------\nindex_array : ndarray\n    An array of indices or a single index value.",
+      "code": "@array_function_dispatch(_nanargmin_dispatcher)\ndef nanargmin(a, axis=None, out=None, *, keepdims=np._NoValue):\n    \"\"\"\n    Return the indices of the minimum values in the specified axis ignoring\n    NaNs. For all-NaN slices ``ValueError`` is raised. Warning: the results\n    cannot be trusted if a slice contains only NaNs and Infs.\n\n    Parameters\n    ----------\n    a : array_like\n        Input data.\n    axis : int, optional\n        Axis along which to operate.  By default flattened input is used.\n    out : array, optional\n        If provided, the result will be inserted into this array. It should\n        be of the appropriate shape and dtype.\n\n        .. versionadded:: 1.22.0\n    keepdims : bool, optional\n        If this is set to True, the axes which are reduced are left\n        in the result as dimensions with size one. With this option,\n        the result will broadcast correctly against the array.\n\n        .. versionadded:: 1.22.0\n\n    Returns\n    -------\n    index_array : ndarray\n        An array of indices or a single index value.\n\n    See Also\n    --------\n    argmin, nanargmax\n    \"\"\"\n    a, mask = _replace_nan(a, np.inf)\n    if mask is not None and mask.size:\n        mask = np.all(mask, axis=axis)\n        if np.any(mask):\n            raise ValueError(\"All-NaN slice encountered\")\n    res = np.argmin(a, axis=axis, out=out, keepdims=keepdims)\n    return res"
+    }
+  ]
+}
