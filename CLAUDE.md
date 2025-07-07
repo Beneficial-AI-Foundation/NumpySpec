@@ -167,6 +167,7 @@ lake build --verbose
 - Practice "sorry-friendly programming": Instead of a comment you put down a spec, but it is only "proved" with `sorry`. This is strictly better than a comment, because the typechecker will use it for program generation.
 - Decompose proofs until tools like `canonical`, `grind`, and `simp` dissolve the pieces. Use them to do the "how", the AI should do the "what".
 - Don't use `i` and `j` as variable names when you could use `r`(ow) and `c`(olumn) instead. Ditto for `m` and `n` as matrix dimensions. Use `R` and `C`.
+- Use `#v[1,2]` syntax to create vectors with literals (builtin Lean 4 feature for creating vectors of natural numbers)
 ### Import and Module Structure
 
 - Imports MUST come before any syntax elements, including module and doc comments
