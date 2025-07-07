@@ -1,0 +1,484 @@
+{
+  "categories": {
+    "array_objects": {
+      "description": "Core array types and data structures",
+      "subcategories": {
+        "ndarray": {
+          "description": "N-dimensional array object and its methods",
+          "search_strategy": "numpy.ndarray documentation and methods"
+        },
+        "scalars": {
+          "description": "NumPy scalar types and operations",
+          "search_strategy": "numpy scalar types documentation"
+        },
+        "dtype": {
+          "description": "Data type objects and type conversion",
+          "search_strategy": "numpy.dtype and data type documentation"
+        }
+      },
+      "fetch_strategy": "Extract from numpy.ndarray and data type references"
+    },
+    "array_creation": {
+      "description": "Functions for creating arrays",
+      "subcategories": {
+        "from_shape": {
+          "description": "Create arrays with specific shapes (zeros, ones, empty, etc.)",
+          "search_strategy": "numpy.zeros, numpy.ones, numpy.empty, numpy.full"
+        },
+        "from_data": {
+          "description": "Create arrays from existing data (array, asarray, etc.)",
+          "search_strategy": "numpy.array, numpy.asarray, numpy.frombuffer"
+        },
+        "ranges": {
+          "description": "Create arrays with ranges (arange, linspace, etc.)",
+          "search_strategy": "numpy.arange, numpy.linspace, numpy.logspace"
+        },
+        "meshgrid": {
+          "description": "Create coordinate matrices",
+          "search_strategy": "numpy.meshgrid, numpy.mgrid, numpy.ogrid"
+        }
+      },
+      "fetch_strategy": "Extract from routines.array-creation documentation"
+    },
+    "array_manipulation": {
+      "description": "Functions for manipulating array shapes and contents",
+      "subcategories": {
+        "shape_operations": {
+          "description": "Reshape, resize, flatten operations",
+          "search_strategy": "reshape, resize, ravel, flatten methods"
+        },
+        "transpose_operations": {
+          "description": "Transpose and axis swapping",
+          "search_strategy": "transpose, swapaxes, moveaxis, rollaxis"
+        },
+        "joining_splitting": {
+          "description": "Concatenate, stack, split arrays",
+          "search_strategy": "concatenate, stack, split, hsplit, vsplit"
+        },
+        "tiling_repeating": {
+          "description": "Repeat and tile arrays",
+          "search_strategy": "repeat, tile, broadcast"
+        }
+      },
+      "fetch_strategy": "Extract from routines.array-manipulation documentation"
+    },
+    "mathematical_functions": {
+      "description": "Mathematical operations on arrays",
+      "subcategories": {
+        "trigonometric": {
+          "description": "Trigonometric functions",
+          "search_strategy": "sin, cos, tan, arcsin, arccos, arctan"
+        },
+        "hyperbolic": {
+          "description": "Hyperbolic functions",
+          "search_strategy": "sinh, cosh, tanh, arcsinh, arccosh, arctanh"
+        },
+        "rounding": {
+          "description": "Rounding and precision functions",
+          "search_strategy": "around, round, floor, ceil, trunc"
+        },
+        "sums_products": {
+          "description": "Sums, products, differences",
+          "search_strategy": "sum, prod, cumsum, cumprod, diff"
+        },
+        "exponents_logarithms": {
+          "description": "Exponential and logarithmic functions",
+          "search_strategy": "exp, log, log10, log2, power, sqrt"
+        },
+        "special": {
+          "description": "Special mathematical functions",
+          "search_strategy": "sinc, sign, heaviside, nan_to_num"
+        },
+        "arithmetic": {
+          "description": "Basic arithmetic operations",
+          "search_strategy": "add, subtract, multiply, divide, mod"
+        },
+        "complex": {
+          "description": "Complex number operations",
+          "search_strategy": "real, imag, conj, angle"
+        }
+      },
+      "fetch_strategy": "Extract from routines.math documentation"
+    },
+    "linear_algebra": {
+      "description": "Linear algebra operations (numpy.linalg)",
+      "subcategories": {
+        "matrix_products": {
+          "description": "Matrix multiplication and dot products",
+          "search_strategy": "numpy.linalg.multi_dot, numpy.dot, numpy.matmul"
+        },
+        "decompositions": {
+          "description": "Matrix decompositions (SVD, QR, Cholesky, etc.)",
+          "search_strategy": "numpy.linalg.svd, numpy.linalg.qr, numpy.linalg.cholesky"
+        },
+        "eigenvalues": {
+          "description": "Eigenvalue and eigenvector computations",
+          "search_strategy": "numpy.linalg.eig, numpy.linalg.eigh, numpy.linalg.eigvals"
+        },
+        "norms": {
+          "description": "Vector and matrix norms",
+          "search_strategy": "numpy.linalg.norm, numpy.linalg.cond"
+        },
+        "solving_equations": {
+          "description": "Solving linear equations and inverses",
+          "search_strategy": "numpy.linalg.solve, numpy.linalg.inv, numpy.linalg.pinv"
+        },
+        "other_operations": {
+          "description": "Determinant, trace, and other operations",
+          "search_strategy": "numpy.linalg.det, numpy.linalg.slogdet, trace"
+        }
+      },
+      "fetch_strategy": "Extract all functions from numpy.linalg module documentation"
+    },
+    "random": {
+      "description": "Random number generation (numpy.random)",
+      "subcategories": {
+        "simple_random": {
+          "description": "Simple random data generation",
+          "search_strategy": "numpy.random.rand, numpy.random.randn, numpy.random.randint"
+        },
+        "distributions": {
+          "description": "Random samples from distributions",
+          "search_strategy": "numpy.random.normal, numpy.random.uniform, numpy.random.binomial"
+        },
+        "permutations": {
+          "description": "Random permutations and shuffling",
+          "search_strategy": "numpy.random.shuffle, numpy.random.permutation, numpy.random.choice"
+        },
+        "generator": {
+          "description": "Random number generator and state",
+          "search_strategy": "numpy.random.Generator, numpy.random.default_rng"
+        }
+      },
+      "fetch_strategy": "Extract all functions from numpy.random module documentation"
+    },
+    "fft": {
+      "description": "Fast Fourier Transform operations (numpy.fft)",
+      "subcategories": {
+        "standard_ffts": {
+          "description": "Standard FFT operations",
+          "search_strategy": "numpy.fft.fft, numpy.fft.ifft, numpy.fft.rfft"
+        },
+        "multi_dimensional": {
+          "description": "Multi-dimensional FFTs",
+          "search_strategy": "numpy.fft.fft2, numpy.fft.fftn"
+        },
+        "helper_functions": {
+          "description": "FFT helper functions",
+          "search_strategy": "numpy.fft.fftfreq, numpy.fft.fftshift"
+        }
+      },
+      "fetch_strategy": "Extract all functions from numpy.fft module documentation"
+    },
+    "polynomial": {
+      "description": "Polynomial operations (numpy.polynomial)",
+      "subcategories": {
+        "polynomial_class": {
+          "description": "Polynomial class and operations",
+          "search_strategy": "numpy.polynomial.Polynomial"
+        },
+        "chebyshev": {
+          "description": "Chebyshev polynomials",
+          "search_strategy": "numpy.polynomial.Chebyshev"
+        },
+        "legendre": {
+          "description": "Legendre polynomials",
+          "search_strategy": "numpy.polynomial.Legendre"
+        },
+        "hermite": {
+          "description": "Hermite polynomials",
+          "search_strategy": "numpy.polynomial.Hermite"
+        },
+        "laguerre": {
+          "description": "Laguerre polynomials",
+          "search_strategy": "numpy.polynomial.Laguerre"
+        }
+      },
+      "fetch_strategy": "Extract all classes and functions from numpy.polynomial module"
+    },
+    "indexing_slicing": {
+      "description": "Array indexing and slicing operations",
+      "subcategories": {
+        "basic_indexing": {
+          "description": "Basic indexing and slicing",
+          "search_strategy": "Array indexing documentation"
+        },
+        "advanced_indexing": {
+          "description": "Advanced indexing with arrays",
+          "search_strategy": "ix_, where, take, put, compress"
+        },
+        "iterating": {
+          "description": "Iterating over arrays",
+          "search_strategy": "nditer, ndenumerate, flatiter"
+        }
+      },
+      "fetch_strategy": "Extract from routines.indexing documentation"
+    },
+    "io_operations": {
+      "description": "Input and output operations",
+      "subcategories": {
+        "text_files": {
+          "description": "Reading and writing text files",
+          "search_strategy": "loadtxt, savetxt, genfromtxt"
+        },
+        "binary_files": {
+          "description": "Binary file operations",
+          "search_strategy": "load, save, savez, memmap"
+        },
+        "string_formatting": {
+          "description": "String formatting for arrays",
+          "search_strategy": "array2string, array_repr, array_str"
+        }
+      },
+      "fetch_strategy": "Extract from routines.io documentation"
+    },
+    "sorting_searching": {
+      "description": "Sorting, searching, and counting operations",
+      "subcategories": {
+        "sorting": {
+          "description": "Sorting arrays",
+          "search_strategy": "sort, argsort, lexsort, partition"
+        },
+        "searching": {
+          "description": "Searching in arrays",
+          "search_strategy": "argmax, argmin, searchsorted, where"
+        },
+        "counting": {
+          "description": "Counting elements",
+          "search_strategy": "count_nonzero, unique, bincount"
+        }
+      },
+      "fetch_strategy": "Extract from routines.sort documentation"
+    },
+    "statistics": {
+      "description": "Statistical functions",
+      "subcategories": {
+        "order_statistics": {
+          "description": "Order statistics (min, max, percentiles)",
+          "search_strategy": "amin, amax, percentile, quantile"
+        },
+        "averages_variances": {
+          "description": "Means, variances, standard deviations",
+          "search_strategy": "mean, average, median, var, std"
+        },
+        "correlating": {
+          "description": "Correlation and covariance",
+          "search_strategy": "corrcoef, cov, correlate"
+        },
+        "histograms": {
+          "description": "Histogram computation",
+          "search_strategy": "histogram, histogram2d, histogramdd"
+        }
+      },
+      "fetch_strategy": "Extract from routines.statistics documentation"
+    },
+    "logic_functions": {
+      "description": "Logical and comparison operations",
+      "subcategories": {
+        "truth_testing": {
+          "description": "Truth value testing",
+          "search_strategy": "all, any, isfinite, isinf, isnan"
+        },
+        "array_comparison": {
+          "description": "Array comparison",
+          "search_strategy": "array_equal, array_equiv, allclose"
+        },
+        "logical_operations": {
+          "description": "Logical operations",
+          "search_strategy": "logical_and, logical_or, logical_not, logical_xor"
+        },
+        "comparison": {
+          "description": "Comparison operations",
+          "search_strategy": "greater, less, equal, not_equal"
+        }
+      },
+      "fetch_strategy": "Extract from routines.logic documentation"
+    },
+    "bitwise_operations": {
+      "description": "Bit-wise operations on integers",
+      "subcategories": {
+        "bitwise_ops": {
+          "description": "Bitwise AND, OR, XOR, NOT",
+          "search_strategy": "bitwise_and, bitwise_or, bitwise_xor, invert"
+        },
+        "bit_packing": {
+          "description": "Packing and unpacking bits",
+          "search_strategy": "packbits, unpackbits"
+        },
+        "bit_shifting": {
+          "description": "Bit shifting operations",
+          "search_strategy": "left_shift, right_shift"
+        }
+      },
+      "fetch_strategy": "Extract from routines.bitwise documentation"
+    },
+    "set_operations": {
+      "description": "Set operations on arrays",
+      "subcategories": {
+        "unique_operations": {
+          "description": "Finding unique elements",
+          "search_strategy": "unique, in1d, isin"
+        },
+        "set_operations": {
+          "description": "Set operations between arrays",
+          "search_strategy": "intersect1d, union1d, setdiff1d, setxor1d"
+        }
+      },
+      "fetch_strategy": "Extract from routines.set documentation"
+    },
+    "string_operations": {
+      "description": "String operations (numpy.strings)",
+      "subcategories": {
+        "string_operations": {
+          "description": "String manipulation functions",
+          "search_strategy": "numpy.strings module functions"
+        },
+        "comparison": {
+          "description": "String comparison operations",
+          "search_strategy": "String comparison functions"
+        }
+      },
+      "fetch_strategy": "Extract from numpy.strings module documentation"
+    },
+    "datetime_support": {
+      "description": "Date and time support",
+      "subcategories": {
+        "datetime_creation": {
+          "description": "Creating datetime arrays",
+          "search_strategy": "datetime64, timedelta64"
+        },
+        "datetime_operations": {
+          "description": "Operations on datetime arrays",
+          "search_strategy": "busday functions, datetime utilities"
+        }
+      },
+      "fetch_strategy": "Extract from routines.datetime documentation"
+    },
+    "data_type_routines": {
+      "description": "Data type related functions",
+      "subcategories": {
+        "dtype_information": {
+          "description": "Getting information about data types",
+          "search_strategy": "finfo, iinfo, dtype"
+        },
+        "dtype_testing": {
+          "description": "Testing data types",
+          "search_strategy": "issubdtype, issctype, common_type"
+        },
+        "dtype_creation": {
+          "description": "Creating and converting data types",
+          "search_strategy": "dtype, format_parser"
+        }
+      },
+      "fetch_strategy": "Extract from routines.dtype documentation"
+    },
+    "masked_arrays": {
+      "description": "Masked array operations (numpy.ma)",
+      "subcategories": {
+        "masked_creation": {
+          "description": "Creating masked arrays",
+          "search_strategy": "numpy.ma.array, numpy.ma.masked"
+        },
+        "masked_operations": {
+          "description": "Operations on masked arrays",
+          "search_strategy": "numpy.ma module functions"
+        }
+      },
+      "fetch_strategy": "Extract from numpy.ma module documentation"
+    },
+    "functional_programming": {
+      "description": "Functional programming tools",
+      "subcategories": {
+        "applying_functions": {
+          "description": "Applying functions over arrays",
+          "search_strategy": "apply_along_axis, apply_over_axes, vectorize"
+        },
+        "array_iteration": {
+          "description": "Tools for iterating over arrays",
+          "search_strategy": "nditer, ndenumerate"
+        }
+      },
+      "fetch_strategy": "Extract from routines.functional documentation"
+    },
+    "window_functions": {
+      "description": "Window functions for signal processing",
+      "subcategories": {
+        "window_functions": {
+          "description": "Various window functions",
+          "search_strategy": "hamming, hanning, blackman, bartlett, kaiser"
+        }
+      },
+      "fetch_strategy": "Extract from routines.window documentation"
+    },
+    "testing": {
+      "description": "Testing utilities (numpy.testing)",
+      "subcategories": {
+        "assertions": {
+          "description": "Testing assertions",
+          "search_strategy": "assert_allclose, assert_array_equal, assert_array_almost_equal"
+        },
+        "decorators": {
+          "description": "Testing decorators",
+          "search_strategy": "numpy.testing decorators"
+        }
+      },
+      "fetch_strategy": "Extract from numpy.testing module documentation"
+    },
+    "typing": {
+      "description": "Type annotations support (numpy.typing)",
+      "subcategories": {
+        "type_aliases": {
+          "description": "Type aliases for annotations",
+          "search_strategy": "numpy.typing.NDArray, ArrayLike"
+        },
+        "protocols": {
+          "description": "Typing protocols",
+          "search_strategy": "numpy.typing protocols"
+        }
+      },
+      "fetch_strategy": "Extract from numpy.typing module documentation"
+    },
+    "exceptions": {
+      "description": "NumPy exceptions and warnings",
+      "subcategories": {
+        "exceptions": {
+          "description": "NumPy-specific exceptions",
+          "search_strategy": "numpy.exceptions module"
+        },
+        "warnings": {
+          "description": "NumPy-specific warnings",
+          "search_strategy": "numpy warnings"
+        }
+      },
+      "fetch_strategy": "Extract from numpy.exceptions module documentation"
+    },
+    "constants": {
+      "description": "Mathematical and NumPy constants",
+      "subcategories": {
+        "mathematical": {
+          "description": "Mathematical constants like pi, e",
+          "search_strategy": "numpy.pi, numpy.e, numpy.inf"
+        },
+        "numpy_specific": {
+          "description": "NumPy-specific constants",
+          "search_strategy": "numpy.newaxis, numpy.nan"
+        }
+      },
+      "fetch_strategy": "Extract from constants documentation"
+    },
+    "universal_functions": {
+      "description": "Universal functions (ufuncs)",
+      "subcategories": {
+        "ufunc_methods": {
+          "description": "Methods available on all ufuncs",
+          "search_strategy": "ufunc.reduce, ufunc.accumulate, ufunc.outer"
+        },
+        "creating_ufuncs": {
+          "description": "Creating custom ufuncs",
+          "search_strategy": "frompyfunc, vectorize"
+        }
+      },
+      "fetch_strategy": "Extract from ufunc documentation"
+    }
+  }
+}

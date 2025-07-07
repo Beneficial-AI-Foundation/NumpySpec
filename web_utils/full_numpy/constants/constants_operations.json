@@ -1,0 +1,192 @@
+{
+  "metadata": {
+    "module": "numpy",
+    "source": "https://github.com/numpy/numpy",
+    "description": "NumPy constants including mathematical constants, special float values, and indexing helpers",
+    "notes": [
+      "Mathematical constants are defined in numpy/core/include/numpy/npy_math.h and exposed via umathmodule.c",
+      "Special float values follow IEEE 754 standard",
+      "Some constants (NINF, NZERO, PZERO, PINF) were removed from main namespace in NumPy 2.0 (NEP 52)"
+    ]
+  },
+  "constants": [
+    {
+      "name": "numpy.pi",
+      "category": "Mathematical constants",
+      "description": "Ratio of a circle's circumference to its diameter",
+      "url": "https://numpy.org/doc/stable/reference/constants.html#numpy.pi",
+      "doc": "pi = 3.1415926535897932384626433...\n\nPi is the ratio of a circle's circumference to its diameter. It is a mathematical constant that appears in many formulas in mathematics and physics.",
+      "code": "#define NPY_PI 3.141592653589793238462643383279502884\n# Exposed in Python as:\nnumpy.pi = 3.141592653589793"
+    },
+    {
+      "name": "numpy.e",
+      "category": "Mathematical constants",
+      "description": "Euler's constant, base of natural logarithms, Napier's constant",
+      "url": "https://numpy.org/doc/stable/reference/constants.html#numpy.e",
+      "doc": "e = 2.71828182845904523536028747135266249775724709369995...\n\nEuler's number is the base of the natural logarithm. It is the unique number whose natural logarithm is equal to one.",
+      "code": "#define NPY_E 2.718281828459045235360287471352662498\n# Exposed in Python as:\nnumpy.e = 2.718281828459045"
+    },
+    {
+      "name": "numpy.euler_gamma",
+      "category": "Mathematical constants",
+      "description": "Euler-Mascheroni constant γ",
+      "url": "https://numpy.org/doc/stable/reference/constants.html#numpy.euler_gamma",
+      "doc": "γ = 0.5772156649015328606065120900824024310421...\n\nThe Euler-Mascheroni constant is a mathematical constant recurring in analysis and number theory, defined as the limiting difference between the harmonic series and the natural logarithm.",
+      "code": "#define NPY_EULER 0.577215664901532860606512090082402431\n# Exposed in Python as:\nnumpy.euler_gamma = 0.5772156649015329"
+    },
+    {
+      "name": "numpy.inf",
+      "category": "Special float values",
+      "description": "IEEE 754 floating point representation of (positive) infinity",
+      "url": "https://numpy.org/doc/stable/reference/constants.html#numpy.inf",
+      "doc": "IEEE 754 floating point representation of (positive) infinity.\n\nUse inf because Inf, Infinity, PINF and infty are aliases for inf. For more details, see inf.\n\nSee Also:\ninf",
+      "code": "# Defined in umathmodule.c\nnumpy.inf = float('inf')\n# Aliases: Inf, Infinity, PINF, infty"
+    },
+    {
+      "name": "numpy.nan",
+      "category": "Special float values",
+      "description": "IEEE 754 floating point representation of Not a Number (NaN)",
+      "url": "https://numpy.org/doc/stable/reference/constants.html#numpy.nan",
+      "doc": "IEEE 754 floating point representation of Not a Number (NaN).\n\nNaN and NAN are aliases for nan. Please use nan instead of NAN.\n\nSee Also:\nnan",
+      "code": "# Defined in umathmodule.c\nnumpy.nan = float('nan')\n# Aliases: NaN, NAN"
+    },
+    {
+      "name": "numpy.NINF",
+      "category": "Special float values (deprecated)",
+      "description": "IEEE 754 floating point representation of negative infinity",
+      "url": "https://numpy.org/doc/stable/reference/constants.html",
+      "doc": "IEEE 754 floating point representation of negative infinity.\n\nDEPRECATED: Removed from main namespace in NumPy 2.0. Use -np.inf instead.",
+      "code": "# Previously available as:\nnumpy.NINF = -float('inf')\n# Now use: -numpy.inf"
+    },
+    {
+      "name": "numpy.NZERO",
+      "category": "Special float values (deprecated)",
+      "description": "IEEE 754 floating point representation of negative zero",
+      "url": "https://numpy.org/doc/stable/reference/constants.html",
+      "doc": "IEEE 754 floating point representation of negative zero.\n\nDEPRECATED: Removed from main namespace in NumPy 2.0. Use -0.0 instead.",
+      "code": "# Previously available as:\nnumpy.NZERO = -0.0\n# Now use: -0.0"
+    },
+    {
+      "name": "numpy.PZERO",
+      "category": "Special float values (deprecated)",
+      "description": "IEEE 754 floating point representation of positive zero",
+      "url": "https://numpy.org/doc/stable/reference/constants.html",
+      "doc": "IEEE 754 floating point representation of positive zero.\n\nDEPRECATED: Removed from main namespace in NumPy 2.0. Use 0.0 instead.",
+      "code": "# Previously available as:\nnumpy.PZERO = 0.0\n# Now use: 0.0"
+    },
+    {
+      "name": "numpy.newaxis",
+      "category": "Indexing helpers",
+      "description": "A convenient alias for None, useful for indexing arrays",
+      "url": "https://numpy.org/doc/stable/reference/constants.html#numpy.newaxis",
+      "doc": "newaxis is an alias for None and is used to expand the dimensions of an array.\n\nExamples:\n>>> a = np.array([1, 2, 3])\n>>> a.shape\n(3,)\n>>> a[:, np.newaxis].shape\n(3, 1)\n>>> a[np.newaxis, :].shape\n(1, 3)",
+      "code": "# Defined in numeric.py\nnewaxis = None"
+    },
+    {
+      "name": "numpy.True_",
+      "category": "Boolean constants",
+      "description": "NumPy boolean scalar representing True",
+      "url": "https://numpy.org/doc/stable/reference/arrays.scalars.html",
+      "doc": "NumPy's boolean type. Character code: '?'. Alias for numpy.bool_.\n\nComparison operations in NumPy return numpy.True_ or numpy.False_ instead of Python's built-in True or False.",
+      "code": "# NumPy boolean scalar\nnumpy.True_ = numpy.bool_(True)"
+    },
+    {
+      "name": "numpy.False_",
+      "category": "Boolean constants",
+      "description": "NumPy boolean scalar representing False",
+      "url": "https://numpy.org/doc/stable/reference/arrays.scalars.html",
+      "doc": "NumPy's boolean type. Character code: '?'. Alias for numpy.bool_.\n\nComparison operations in NumPy return numpy.True_ or numpy.False_ instead of Python's built-in True or False.",
+      "code": "# NumPy boolean scalar\nnumpy.False_ = numpy.bool_(False)"
+    }
+  ],
+  "machine_constants": [
+    {
+      "name": "numpy.finfo",
+      "category": "Machine limits",
+      "description": "Machine limits for floating point types",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.finfo.html",
+      "doc": "Machine limits for floating point types.\n\nParameters:\ndtype : float, dtype, or instance\n    Kind of floating point or complex floating point data-type about which to get information.\n\nAttributes:\n- eps : float - The difference between 1.0 and the next smallest representable float larger than 1.0\n- epsneg : float - The difference between 1.0 and the next smallest representable float less than 1.0\n- max : floating point number of the appropriate type - Largest representable number\n- maxexp : int - The smallest positive power of the base (2) that causes overflow\n- min : floating point number of the appropriate type - Smallest representable number, typically -max\n- minexp : int - The most negative power of the base (2) consistent with there being no leading zeros in the mantissa\n- negep : int - The exponent that yields epsneg\n- nexp : int - The number of bits in the exponent including its sign and bias\n- nmant : int - The number of bits in the mantissa\n- precision : int - The approximate number of decimal digits to which this kind of float is precise\n- resolution : floating point number of the appropriate type - The approximate decimal resolution of this type\n- tiny : float - An alias for smallest_normal\n- smallest_normal : float - The smallest positive normal number\n- smallest_subnormal : float - The smallest positive number",
+      "code": "# Example usage:\nimport numpy as np\n\n# For float64:\nfinfo_64 = np.finfo(np.float64)\nprint(f\"eps: {finfo_64.eps}\")  # 2.220446049250313e-16\nprint(f\"max: {finfo_64.max}\")  # 1.7976931348623157e+308\nprint(f\"min: {finfo_64.min}\")  # -1.7976931348623157e+308\n\n# For float32:\nfinfo_32 = np.finfo(np.float32)\nprint(f\"eps: {finfo_32.eps}\")  # 1.1920929e-07\nprint(f\"max: {finfo_32.max}\")  # 3.4028235e+38\nprint(f\"min: {finfo_32.min}\")  # -3.4028235e+38"
+    },
+    {
+      "name": "numpy.iinfo",
+      "category": "Machine limits",
+      "description": "Machine limits for integer types",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.iinfo.html",
+      "doc": "Machine limits for integer types.\n\nParameters:\nint_type : integer type, dtype, or instance\n    The kind of integer data type to get information about.\n\nAttributes:\n- bits : int - The number of bits occupied by the type\n- dtype : dtype - The dtype for which iinfo returns information\n- min : int - Minimum value of given dtype\n- max : int - Maximum value of given dtype",
+      "code": "# Example usage:\nimport numpy as np\n\n# For int32:\niinfo_32 = np.iinfo(np.int32)\nprint(f\"min: {iinfo_32.min}\")  # -2147483648\nprint(f\"max: {iinfo_32.max}\")  # 2147483647\nprint(f\"bits: {iinfo_32.bits}\")  # 32\n\n# For int64:\niinfo_64 = np.iinfo(np.int64)\nprint(f\"min: {iinfo_64.min}\")  # -9223372036854775808\nprint(f\"max: {iinfo_64.max}\")  # 9223372036854775807\nprint(f\"bits: {iinfo_64.bits}\")  # 64"
+    }
+  ],
+  "internal_constants": [
+    {
+      "name": "NPY_LOG2E",
+      "category": "C API Mathematical constants",
+      "description": "Base 2 logarithm of e",
+      "doc": "log2(e) = 1.442695040888963407359924681001892137",
+      "code": "#define NPY_LOG2E 1.442695040888963407359924681001892137"
+    },
+    {
+      "name": "NPY_LOG10E",
+      "category": "C API Mathematical constants",
+      "description": "Base 10 logarithm of e",
+      "doc": "log10(e) = 0.434294481903251827651128918916605082",
+      "code": "#define NPY_LOG10E 0.434294481903251827651128918916605082"
+    },
+    {
+      "name": "NPY_LOGE2",
+      "category": "C API Mathematical constants",
+      "description": "Natural logarithm of 2",
+      "doc": "ln(2) = 0.693147180559945309417232121458176568",
+      "code": "#define NPY_LOGE2 0.693147180559945309417232121458176568"
+    },
+    {
+      "name": "NPY_LOGE10",
+      "category": "C API Mathematical constants",
+      "description": "Natural logarithm of 10",
+      "doc": "ln(10) = 2.302585092994045684017991454684364208",
+      "code": "#define NPY_LOGE10 2.302585092994045684017991454684364208"
+    },
+    {
+      "name": "NPY_PI_2",
+      "category": "C API Mathematical constants",
+      "description": "Pi divided by 2",
+      "doc": "π/2 = 1.570796326794896619231321691639751442",
+      "code": "#define NPY_PI_2 1.570796326794896619231321691639751442"
+    },
+    {
+      "name": "NPY_PI_4",
+      "category": "C API Mathematical constants",
+      "description": "Pi divided by 4",
+      "doc": "π/4 = 0.785398163397448309615660845819875721",
+      "code": "#define NPY_PI_4 0.785398163397448309615660845819875721"
+    },
+    {
+      "name": "NPY_1_PI",
+      "category": "C API Mathematical constants",
+      "description": "1 divided by pi",
+      "doc": "1/π = 0.318309886183790671537767526745028724",
+      "code": "#define NPY_1_PI 0.318309886183790671537767526745028724"
+    },
+    {
+      "name": "NPY_2_PI",
+      "category": "C API Mathematical constants",
+      "description": "2 divided by pi",
+      "doc": "2/π = 0.636619772367581343075535053490057448",
+      "code": "#define NPY_2_PI 0.636619772367581343075535053490057448"
+    },
+    {
+      "name": "NPY_SQRT2",
+      "category": "C API Mathematical constants",
+      "description": "Square root of 2",
+      "doc": "√2 = 1.414213562373095048801688724209698079",
+      "code": "#define NPY_SQRT2 1.414213562373095048801688724209698079"
+    },
+    {
+      "name": "NPY_SQRT1_2",
+      "category": "C API Mathematical constants",
+      "description": "Square root of 1/2",
+      "doc": "√(1/2) = 0.707106781186547524400844362104849039",
+      "code": "#define NPY_SQRT1_2 0.707106781186547524400844362104849039"
+    }
+  ]
+}

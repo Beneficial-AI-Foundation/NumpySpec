@@ -1,0 +1,1655 @@
+{
+  "module": "numpy.ma",
+  "description": "NumPy masked array operations for handling arrays with missing or invalid data",
+  "categories": {
+    "creation": {
+      "description": "Functions for creating masked arrays",
+      "functions": {
+        "MaskedArray": {
+          "signature": "class MaskedArray(data=None, mask=nomask, dtype=None, copy=False, subok=True, ndmin=0, fill_value=None, keep_mask=True, hard_mask=None, shrink=True, order=None)",
+          "description": "A subclass of ndarray designed to manipulate numerical arrays with missing data. A masked array is the combination of a standard numpy.ndarray and a mask.",
+          "parameters": {
+            "data": "Input data, can be a scalar, a sequence, or an array",
+            "mask": "Boolean array indicating masked values (True = masked)",
+            "dtype": "Data type of the output array",
+            "copy": "Whether to copy the input data",
+            "subok": "Whether to return a subclass of MaskedArray if appropriate",
+            "ndmin": "Minimum number of dimensions",
+            "fill_value": "Value used to fill in the masked values",
+            "keep_mask": "Whether to combine mask with input mask",
+            "hard_mask": "Whether to make the mask hard (not changeable through assignments)",
+            "shrink": "Whether to compress mask if all False",
+            "order": "Specify the memory layout of the array"
+          },
+          "returns": "MaskedArray instance",
+          "examples": [
+            "import numpy.ma as ma",
+            "x = ma.MaskedArray([1, 2, 3], mask=[0, 0, 1])",
+            "# Creates array where third element is masked"
+          ],
+          "code": "class MaskedArray(ndarray):\n    def __new__(cls, data=None, mask=nomask, dtype=None, copy=False,\n                subok=True, ndmin=0, fill_value=None, keep_mask=True,\n                hard_mask=None, shrink=True, order=None):\n        \"\"\"\n        Create a new masked array from scratch.\n        \n        Notes\n        -----\n        A masked array is the combination of a standard numpy.ndarray\n        and a mask. A mask is either nomask, indicating that no value\n        of the associated array is invalid, or an array of booleans\n        that determines for each element of the associated array whether\n        the value is valid or not.\n        \"\"\"\n        # Process data through numpy array creation\n        _data = np.array(data, dtype=dtype, copy=copy, order=order,\n                        subok=True, ndmin=ndmin)\n        # Process mask\n        if mask is nomask:\n            if not keep_mask:\n                if shrink:\n                    _mask = nomask\n                else:\n                    _mask = np.zeros(_data.shape, dtype=MaskType)\n            else:\n                _mask = getmask(data)\n                if _mask is nomask and shrink:\n                    _mask = nomask\n                else:\n                    _mask = np.zeros(_data.shape, dtype=MaskType)\n        else:\n            _mask = np.array(mask, dtype=MaskType, copy=copy, order=order)\n            if _mask.shape != _data.shape:\n                _mask = np.resize(_mask, _data.shape)\n        # Create view and set attributes\n        _baseclass = getattr(data, '_baseclass', type(_data))\n        _view = _data.view(cls)\n        _view._baseclass = _baseclass\n        _view._data = _data\n        _view._mask = _mask\n        _view._hardmask = hard_mask\n        _view.fill_value = fill_value\n        return _view"
+        },
+        "array": {
+          "signature": "array(data, dtype=None, copy=False, order=None, mask=False, fill_value=None, keep_mask=True, hard_mask=False, shrink=True, subok=True, ndmin=0)",
+          "description": "Create a masked array. Alias for MaskedArray constructor with more convenient interface.",
+          "parameters": {
+            "data": "Input data",
+            "dtype": "Data type of the output",
+            "copy": "Whether to copy the input data",
+            "order": "Memory layout ('C' or 'F')",
+            "mask": "Initial mask",
+            "fill_value": "Value to use for masked elements",
+            "keep_mask": "Whether to process mask",
+            "hard_mask": "Whether to use hard mask",
+            "shrink": "Whether to shrink mask",
+            "subok": "Whether to return subclass",
+            "ndmin": "Minimum dimensions"
+          },
+          "returns": "MaskedArray object",
+          "examples": [
+            "import numpy.ma as ma",
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([[1, 2], [3, 4]], mask=[[0, 1], [1, 0]])"
+          ],
+          "code": "def array(data, dtype=None, copy=False, order=None, mask=False,\n          fill_value=None, keep_mask=True, hard_mask=False,\n          shrink=True, subok=True, ndmin=0):\n    return MaskedArray(data, mask=mask, dtype=dtype, copy=copy,\n                       subok=subok, ndmin=ndmin, fill_value=fill_value,\n                       keep_mask=keep_mask, hard_mask=hard_mask,\n                       shrink=shrink, order=order)"
+        },
+        "masked_array": {
+          "signature": "masked_array(data, mask=False, fill_value=None, copy=False, keep_mask=True, hard_mask=False, dtype=None, subok=True, shrink=True)",
+          "description": "Alias for array function. Create a masked array.",
+          "parameters": {
+            "data": "Input data",
+            "mask": "Mask array or False",
+            "fill_value": "Fill value for masked elements",
+            "copy": "Whether to copy data",
+            "keep_mask": "Whether to combine with existing mask",
+            "hard_mask": "Whether to use hard masking",
+            "dtype": "Output data type",
+            "subok": "Whether to return MaskedArray subclass",
+            "shrink": "Whether to shrink mask"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "ma.masked_array([1, 2, 3], mask=[0, 0, 1])"
+          ],
+          "code": "masked_array = array  # Alias for array function"
+        },
+        "asarray": {
+          "signature": "asarray(a, dtype=None, order=None)",
+          "description": "Convert the input to a masked array, conserving subclasses.",
+          "parameters": {
+            "a": "Input data",
+            "dtype": "Output data type",
+            "order": "Memory layout"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "ma.asarray([1, 2, 3])  # Regular array to masked array",
+            "ma.asarray(ma.array([1, 2, 3], mask=[0, 0, 1]))  # Preserves mask"
+          ],
+          "code": "def asarray(a, dtype=None, order=None):\n    order = order or 'C'\n    return array(a, dtype=dtype, copy=False, keep_mask=True, subok=False, order=order)"
+        },
+        "asanyarray": {
+          "signature": "asanyarray(a, dtype=None)",
+          "description": "Convert the input to a masked array, conserving subclasses. Similar to asarray but preserves subclass.",
+          "parameters": {
+            "a": "Input data", 
+            "dtype": "Output data type"
+          },
+          "returns": "MaskedArray or subclass",
+          "examples": [
+            "ma.asanyarray([1, 2, 3])"
+          ],
+          "code": "def asanyarray(a, dtype=None):\n    if isinstance(a, MaskedArray) and (dtype is None or dtype == a.dtype):\n        return a\n    return array(a, dtype=dtype, copy=False, keep_mask=True, subok=True)"
+        },
+        "masked": {
+          "signature": "masked",
+          "description": "Constant representing a masked value. Special constant of MaskedArray class.",
+          "parameters": {},
+          "returns": "MaskedArray scalar with mask=True",
+          "examples": [
+            "print(ma.masked)  # Shows --",
+            "x = ma.array([1, ma.masked, 3])  # Use as placeholder"
+          ],
+          "code": "masked = MaskedArray(0, dtype=np.float64, mask=True)"
+        },
+        "nomask": {
+          "signature": "nomask", 
+          "description": "Special constant indicating no mask is needed. Value is False.",
+          "parameters": {},
+          "returns": "False",
+          "examples": [
+            "if x.mask is ma.nomask:",
+            "    print('No mask')"
+          ],
+          "code": "nomask = False"
+        }
+      }
+    },
+    "mask_access": {
+      "description": "Functions for accessing and retrieving mask information",
+      "functions": {
+        "getdata": {
+          "signature": "getdata(a, subok=True)",
+          "description": "Return the data of a as an ndarray.",
+          "parameters": {
+            "a": "Input MaskedArray or array",
+            "subok": "Whether to return subclass"
+          },
+          "returns": "ndarray containing data",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.getdata(x)  # Returns array([1, 2, 3])"
+          ],
+          "code": "def getdata(a, subok=True):\n    data = getattr(a, '_data', np.asarray(a))\n    if not subok:\n        return np.asarray(data)\n    return data"
+        },
+        "getmask": {
+          "signature": "getmask(a)",
+          "description": "Return the mask of a, or nomask.",
+          "parameters": {
+            "a": "Input array"
+          },
+          "returns": "Mask array or nomask",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.getmask(x)  # Returns array([False, False, True])"
+          ],
+          "code": "def getmask(a):\n    \"\"\"\n    Return the mask of a masked array, or nomask.\n\n    Return the mask of a as an ndarray if a is a MaskedArray and the\n    mask is not nomask, else return nomask.\n    \"\"\"\n    return getattr(a, '_mask', nomask)"
+        },
+        "getmaskarray": {
+          "signature": "getmaskarray(a)",
+          "description": "Return the mask of a as an array. Always returns an array (False array if no mask).",
+          "parameters": {
+            "a": "Input array"
+          },
+          "returns": "Boolean array",
+          "examples": [
+            "ma.getmaskarray([1, 2, 3])  # Returns array([False, False, False])"
+          ],
+          "code": "def getmaskarray(arr):\n    \"\"\"\n    Return the mask of a masked array, or full boolean array of False.\n\n    Return the mask of arr as an ndarray if arr is a MaskedArray and\n    the mask is not nomask, else return a full boolean array of False of\n    the same shape as arr.\n    \"\"\"\n    mask = getmask(arr)\n    if mask is nomask:\n        mask = make_mask_none(np.shape(arr), getattr(arr, 'dtype', None))\n    return mask"
+        }
+      }
+    },
+    "mask_creation": {
+      "description": "Functions for creating and manipulating masks",
+      "functions": {
+        "make_mask": {
+          "signature": "make_mask(m, copy=False, shrink=True, dtype=bool)",
+          "description": "Create a boolean mask from an array.",
+          "parameters": {
+            "m": "Input mask array",
+            "copy": "Whether to copy input",
+            "shrink": "Whether to shrink all-False mask to nomask",
+            "dtype": "Output dtype (usually bool)"
+          },
+          "returns": "Boolean mask or nomask",
+          "examples": [
+            "ma.make_mask([0, 0, 1])  # Returns array([False, False, True])",
+            "ma.make_mask([0, 0, 0], shrink=True)  # Returns nomask"
+          ],
+          "code": "def make_mask(m, copy=False, shrink=True, dtype=MaskType):\n    \"\"\"\n    Create a boolean mask from an array.\n\n    Return m as a boolean mask, creating a copy if necessary or requested.\n    The function can accept any sequence that is convertible to integers,\n    or nomask.\n    \"\"\"\n    if m is nomask:\n        return nomask\n    elif isinstance(m, ndarray):\n        m = filled(m, True)\n        if m.dtype == dtype:\n            if copy:\n                result = m.copy()\n            else:\n                result = m\n        else:\n            result = np.array(m, dtype=dtype, copy=copy)\n    else:\n        result = np.array(filled(m, True), dtype=dtype)\n    if shrink and (not result.any()):\n        return nomask\n    else:\n        return result"
+        },
+        "make_mask_none": {
+          "signature": "make_mask_none(shape, dtype=None)",
+          "description": "Create a mask of all False values of given shape.",
+          "parameters": {
+            "shape": "Shape of the mask",
+            "dtype": "Data type (for structured arrays)"
+          },
+          "returns": "Boolean array of False values",
+          "examples": [
+            "ma.make_mask_none((3,))  # Returns array([False, False, False])",
+            "ma.make_mask_none((2, 2))  # Returns 2x2 array of False"
+          ],
+          "code": "def make_mask_none(shape, dtype=None):\n    if dtype is None or not dtype.names:\n        return np.zeros(shape, dtype=MaskType)\n    # Handle structured dtype"
+        },
+        "mask_or": {
+          "signature": "mask_or(m1, m2, copy=False, shrink=True)",
+          "description": "Combine two masks with logical OR operation.",
+          "parameters": {
+            "m1": "First mask",
+            "m2": "Second mask", 
+            "copy": "Whether to copy result",
+            "shrink": "Whether to shrink result"
+          },
+          "returns": "Combined mask",
+          "examples": [
+            "m1 = ma.make_mask([0, 0, 1, 0])",
+            "m2 = ma.make_mask([0, 1, 0, 0])",
+            "ma.mask_or(m1, m2)  # Returns [False, True, True, False]"
+          ],
+          "code": "def mask_or(m1, m2, copy=False, shrink=True):\n    \"\"\"\n    Combine two masks with the logical_or operator.\n\n    The result may be a view on either m1 or m2 if the other is nomask\n    (i.e., False).\n    \"\"\"\n    if m1 is nomask:\n        return make_mask(m2, copy=copy, shrink=shrink)\n    if m2 is nomask:\n        return make_mask(m1, copy=copy, shrink=shrink)\n    if m1 is m2 and is_mask(m1):\n        return m1\n    return make_mask(umath.logical_or(m1, m2), copy=copy, shrink=shrink)"
+        },
+        "make_mask_descr": {
+          "signature": "make_mask_descr(ndtype)",
+          "description": "Create dtype description for mask of structured array.",
+          "parameters": {
+            "ndtype": "Data type of structured array"
+          },
+          "returns": "List of (name, bool) tuples",
+          "examples": [
+            "dt = np.dtype([('a', int), ('b', float)])",
+            "ma.make_mask_descr(dt)  # Returns [('a', '|b1'), ('b', '|b1')]"
+          ],
+          "code": "def make_mask_descr(ndtype):\n    if ndtype.names is not None:\n        mdescr = []\n        for name in ndtype.names:\n            mdescr.append((name, MaskType))\n        return mdescr\n    else:\n        return MaskType"
+        }
+      }
+    },
+    "mask_manipulation": {
+      "description": "Functions for modifying mask behavior",
+      "functions": {
+        "harden_mask": {
+          "signature": "harden_mask(a)",
+          "description": "Harden the mask of a MaskedArray, making it non-writeable through standard assignment.",
+          "parameters": {
+            "a": "Input MaskedArray"
+          },
+          "returns": "None (modifies in place)",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.harden_mask(x)",
+            "x[2] = 5  # Will not unmask the value"
+          ],
+          "code": "def harden_mask(a):\n    if hasattr(a, '_hardmask'):\n        a._hardmask = True"
+        },
+        "soften_mask": {
+          "signature": "soften_mask(a)",
+          "description": "Soften the mask of a MaskedArray, making it writeable through standard assignment.",
+          "parameters": {
+            "a": "Input MaskedArray"
+          },
+          "returns": "None (modifies in place)",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.soften_mask(x)",
+            "x[2] = 5  # Will unmask and assign value"
+          ],
+          "code": "def soften_mask(a):\n    if hasattr(a, '_hardmask'):\n        a._hardmask = False"
+        },
+        "mask_cols": {
+          "signature": "mask_cols(a, axis=None)",
+          "description": "Mask columns of a 2D array that contain masked values.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to perform the operation"
+          },
+          "returns": "MaskedArray with masked columns",
+          "examples": [
+            "x = ma.array([[1, 2, 3], [4, 5, 6]], mask=[[0, 0, 1], [0, 0, 0]])",
+            "ma.mask_cols(x)  # Masks entire third column"
+          ],
+          "code": "def mask_cols(a, axis=np._NoValue):\n    \"\"\"\n    Mask columns of a 2D array that contain masked values.\n    \"\"\"\n    if axis is not np._NoValue:\n        warnings.warn(\n            \"The axis argument has been deprecated since NumPy 1.18.0, \"\n            \"use mask_rowcols instead.\",\n            DeprecationWarning,\n            stacklevel=2\n        )\n        return mask_rowcols(a, axis)\n    return mask_rowcols(a, 1)"
+        },
+        "mask_rows": {
+          "signature": "mask_rows(a, axis=None)",
+          "description": "Mask rows of a 2D array that contain masked values.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to perform the operation"
+          },
+          "returns": "MaskedArray with masked rows",
+          "examples": [
+            "x = ma.array([[1, 2, 3], [4, 5, 6]], mask=[[0, 0, 1], [0, 0, 0]])",
+            "ma.mask_rows(x)  # Masks entire first row"
+          ],
+          "code": "def mask_rows(a, axis=np._NoValue):\n    \"\"\"\n    Mask rows of a 2D array that contain masked values.\n    \"\"\"\n    if axis is not np._NoValue:\n        warnings.warn(\n            \"The axis argument has been deprecated since NumPy 1.18.0, \"\n            \"use mask_rowcols instead.\",\n            DeprecationWarning,\n            stacklevel=2\n        )\n        return mask_rowcols(a, axis)\n    return mask_rowcols(a, 0)"
+        },
+        "mask_rowcols": {
+          "signature": "mask_rowcols(a, axis=None)",
+          "description": "Mask rows and columns of a 2D array that contain masked values.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Not used for 2D arrays"
+          },
+          "returns": "MaskedArray with masked rows and columns",
+          "examples": [
+            "x = ma.array([[1, 2, 3], [4, 5, 6]], mask=[[0, 0, 1], [0, 0, 0]])",
+            "ma.mask_rowcols(x)  # Masks first row and third column"
+          ],
+          "code": "def mask_rowcols(a, axis=None):\n    \"\"\"\n    Mask rows and/or columns of a 2D array that contain masked values.\n    \"\"\"\n    a = asarray(a)\n    if a.ndim != 2:\n        raise NotImplementedError(\"mask_rowcols only works for 2D arrays.\")\n    m = getmask(a)\n    if m is nomask or not m.any():\n        return a\n    if axis is None:\n        # Mask both rows and columns\n        row_mask = m.any(axis=1)\n        col_mask = m.any(axis=0)\n        m[row_mask] = True\n        m[:, col_mask] = True\n    elif axis == 0:\n        # Mask rows\n        row_mask = m.any(axis=1)\n        m[row_mask] = True\n    else:\n        # Mask columns\n        col_mask = m.any(axis=0)\n        m[:, col_mask] = True\n    return a"
+        }
+      }
+    },
+    "filling_compression": {
+      "description": "Functions for filling masked values and compressing arrays",
+      "functions": {
+        "filled": {
+          "signature": "filled(a, fill_value=None)",
+          "description": "Return a contiguous array with masked values filled.",
+          "parameters": {
+            "a": "Input MaskedArray",
+            "fill_value": "Value to use for filling masked elements"
+          },
+          "returns": "ndarray with masked values replaced",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.filled(x, -999)  # Returns array([1, 2, -999])"
+          ],
+          "code": "def filled(a, fill_value=None):\n    \"\"\"\n    Return input as an array with masked data replaced by a fill value.\n\n    If a is not a MaskedArray, a itself is returned.\n    If a is a MaskedArray and fill_value is None, fill_value is set to\n    a.fill_value.\n    \"\"\"\n    if hasattr(a, 'filled'):\n        return a.filled(fill_value)\n    elif isinstance(a, np.ndarray):\n        # Numpy array : return a copy\n        return np.asarray(a)\n    elif isinstance(a, (list, tuple)):\n        # List or tuple : return a filled array\n        return np.asarray(a)\n    else:\n        # scalar : return a scalar\n        return a"
+        },
+        "compressed": {
+          "signature": "compressed(x)",
+          "description": "Return all non-masked data as a 1-D array.",
+          "parameters": {
+            "x": "Input array"
+          },
+          "returns": "1-D array of non-masked elements",
+          "examples": [
+            "x = ma.array([[1, 2], [3, 4]], mask=[[0, 1], [0, 0]])",
+            "ma.compressed(x)  # Returns array([1, 3, 4])"
+          ],
+          "code": "def compressed(x):\n    \"\"\"\n    Return all the non-masked data as a 1-D array.\n\n    This function is equivalent to calling the compressed method of a\n    MaskedArray, see MaskedArray.compressed for details.\n    \"\"\"\n    if hasattr(x, 'compressed'):\n        return x.compressed()\n    else:\n        return np.asarray(x).ravel()"
+        },
+        "compress_cols": {
+          "signature": "compress_cols(x)",
+          "description": "Return a 2D array with columns containing only non-masked values.",
+          "parameters": {
+            "x": "Input 2D array"
+          },
+          "returns": "2D array with compressed columns",
+          "examples": [
+            "x = ma.array([[1, 2, 3], [4, 5, 6]], mask=[[0, 0, 1], [0, 0, 1]])",
+            "ma.compress_cols(x)  # Returns array([[1, 2], [4, 5]])"
+          ],
+          "code": "def compress_cols(a):\n    \"\"\"\n    Suppress whole columns of a 2-D array that contain masked values.\n    \"\"\"\n    a = asarray(a)\n    if a.ndim != 2:\n        raise NotImplementedError(\"compress_cols works for 2D arrays only.\")\n    return compress_rowcols(a, 1)"
+        },
+        "compress_rows": {
+          "signature": "compress_rows(x)",
+          "description": "Return a 2D array with rows containing only non-masked values.",
+          "parameters": {
+            "x": "Input 2D array"
+          },
+          "returns": "2D array with compressed rows", 
+          "examples": [
+            "x = ma.array([[1, 2, 3], [4, 5, 6]], mask=[[0, 0, 1], [0, 0, 0]])",
+            "ma.compress_rows(x)  # Returns array([[4, 5, 6]])"
+          ],
+          "code": "def compress_rows(a):\n    \"\"\"\n    Suppress whole rows of a 2-D array that contain masked values.\n    \"\"\"\n    a = asarray(a)\n    if a.ndim != 2:\n        raise NotImplementedError(\"compress_rows works for 2D arrays only.\")\n    return compress_rowcols(a, 0)"
+        },
+        "compress_rowcols": {
+          "signature": "compress_rowcols(x, axis=None)",
+          "description": "Return a 2D array with both rows and columns compressed.",
+          "parameters": {
+            "x": "Input 2D array",
+            "axis": "Not used"
+          },
+          "returns": "2D array with compressed rows and columns",
+          "examples": [
+            "x = ma.array([[1, 2, 3], [4, 5, 6]], mask=[[0, 0, 1], [0, 0, 0]])",
+            "ma.compress_rowcols(x)  # Returns array([[1, 2], [4, 5]])"
+          ],
+          "code": "def compress_rowcols(x, axis=None):\n    \"\"\"\n    Suppress rows and/or columns of a 2-D array that contain masked values.\n    \"\"\"\n    if asarray(x).ndim != 2:\n        raise NotImplementedError(\"compress_rowcols works for 2D arrays only.\")\n    return compress_nd(x, axis=axis)"
+        },
+        "fix_invalid": {
+          "signature": "fix_invalid(a, mask=False, copy=True, fill_value=None)",
+          "description": "Return array with invalid data masked and replaced by fill_value.",
+          "parameters": {
+            "a": "Input array",
+            "mask": "Additional mask",
+            "copy": "Whether to copy data",
+            "fill_value": "Fill value for invalid data"
+          },
+          "returns": "MaskedArray with invalid data masked",
+          "examples": [
+            "x = ma.array([1, 2, np.nan, np.inf, 5])",
+            "ma.fix_invalid(x)  # Masks NaN and Inf values"
+          ],
+          "code": "def fix_invalid(a, mask=False, copy=True, fill_value=None):\n    # Mask invalid values (NaN, Inf) and return MaskedArray"
+        },
+        "set_fill_value": {
+          "signature": "set_fill_value(a, fill_value)",
+          "description": "Set the fill value of a MaskedArray.",
+          "parameters": {
+            "a": "Input MaskedArray",
+            "fill_value": "New fill value"
+          },
+          "returns": "None",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.set_fill_value(x, -999)"
+          ],
+          "code": "def set_fill_value(a, fill_value):\n    if isinstance(a, MaskedArray):\n        a.set_fill_value(fill_value)"
+        },
+        "get_fill_value": {
+          "signature": "get_fill_value(a)",
+          "description": "Get the fill value of a MaskedArray.",
+          "parameters": {
+            "a": "Input MaskedArray"
+          },
+          "returns": "Fill value",
+          "examples": [
+            "x = ma.array([1, 2, 3], fill_value=-999)",
+            "ma.get_fill_value(x)  # Returns -999"
+          ],
+          "code": "def get_fill_value(a):\n    if hasattr(a, 'fill_value'):\n        return a.fill_value\n    return default_fill_value(a)"
+        },
+        "common_fill_value": {
+          "signature": "common_fill_value(a, b)",
+          "description": "Return common fill value of two masked arrays.",
+          "parameters": {
+            "a": "First MaskedArray",
+            "b": "Second MaskedArray"
+          },
+          "returns": "Common fill value or None",
+          "examples": [
+            "x = ma.array([1, 2], fill_value=-999)",
+            "y = ma.array([3, 4], fill_value=-999)",
+            "ma.common_fill_value(x, y)  # Returns -999"
+          ],
+          "code": "def common_fill_value(a, b):\n    # Return common fill value if they match"
+        },
+        "default_fill_value": {
+          "signature": "default_fill_value(obj)",
+          "description": "Return the default fill value for an object's data type.",
+          "parameters": {
+            "obj": "Input array or dtype"
+          },
+          "returns": "Default fill value",
+          "examples": [
+            "ma.default_fill_value(1.0)  # Returns 1e+20",
+            "ma.default_fill_value(1)  # Returns 999999"
+          ],
+          "code": "def default_fill_value(obj):\n    # Return appropriate fill value based on dtype"
+        }
+      }
+    },
+    "masked_operations": {
+      "description": "Operations that work with masked arrays",
+      "functions": {
+        "where": {
+          "signature": "where(condition, x=None, y=None)",
+          "description": "Return masked array with elements from x or y depending on condition.",
+          "parameters": {
+            "condition": "Boolean condition array",
+            "x": "Values where condition is True",
+            "y": "Values where condition is False"
+          },
+          "returns": "MaskedArray or indices",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5], mask=[0, 0, 1, 0, 0])",
+            "ma.where(x > 2, x, -1)  # Replace values <= 2 with -1"
+          ],
+          "code": "def where(condition, x=None, y=None):\n    \"\"\"\n    Return a masked array with elements from x or y, depending on condition.\n\n    If only condition is given, return condition.nonzero().\n    \"\"\"\n    if x is None and y is None:\n        return nonzero(condition)\n    elif x is None or y is None:\n        raise ValueError(\"either both or neither of x and y should be given\")\n    # Get the condition mask\n    fc = filled(condition, False)\n    notfc = ~fc\n    # Get the data\n    xv = getdata(x)\n    yv = getdata(y)\n    # Get the masks\n    xm = getmask(x)\n    ym = getmask(y)\n    # Combine the masks\n    d = np.where(fc, xv, yv)\n    # Create the mask for the result\n    m = np.where(fc, xm, ym)\n    # Update the mask to include masked condition values\n    m |= getmaskarray(condition)\n    return masked_array(d, mask=m)"
+        },
+        "choose": {
+          "signature": "choose(a, choices, out=None, mode='raise')",
+          "description": "Construct array from index array and set of arrays to choose from.",
+          "parameters": {
+            "a": "Index array",
+            "choices": "Arrays to choose from",
+            "out": "Output array",
+            "mode": "How to handle out-of-bounds indices"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "choices = [ma.array([0, 1, 2]), ma.array([10, 11, 12])]",
+            "ma.choose([0, 1, 0], choices)  # Returns [0, 11, 2]"
+          ],
+          "code": "def choose(a, choices, out=None, mode='raise'):\n    # Choose elements from choices based on indices in a"
+        },
+        "take": {
+          "signature": "take(a, indices, axis=None, out=None, fill_value=None, keep_mask=True, mode='raise')",
+          "description": "Take elements from array along an axis.",
+          "parameters": {
+            "a": "Input array",
+            "indices": "Indices of values to extract",
+            "axis": "Axis along which to take values",
+            "out": "Output array",
+            "fill_value": "Value for masked elements",
+            "keep_mask": "Whether to keep mask",
+            "mode": "How to handle out-of-bounds"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([0, 1, 2, 3, 4], mask=[0, 0, 0, 1, 0])",
+            "ma.take(x, [0, 2, 4])  # Returns array([0, 2, 4])"
+          ],
+          "code": "def take(a, indices, axis=None, out=None, fill_value=None, keep_mask=True, mode='raise'):\n    # Take elements from array using indices"
+        },
+        "put": {
+          "signature": "put(a, indices, values, mode='raise')",
+          "description": "Set storage-indexed locations to corresponding values.",
+          "parameters": {
+            "a": "Target array",
+            "indices": "Indices to set",
+            "values": "Values to put",
+            "mode": "How to handle out-of-bounds"
+          },
+          "returns": "None (modifies in place)",
+          "examples": [
+            "x = ma.array([0, 0, 0, 0, 0])",
+            "ma.put(x, [0, 2], [-1, -2])",
+            "# x is now [-1, 0, -2, 0, 0]"
+          ],
+          "code": "def put(a, indices, values, mode='raise'):\n    # Put values into array at indices"
+        }
+      }
+    },
+    "utilities": {
+      "description": "Utility functions for working with masked arrays",
+      "functions": {
+        "is_masked": {
+          "signature": "is_masked(x)",
+          "description": "Determine whether array has masked values.",
+          "parameters": {
+            "x": "Input array"
+          },
+          "returns": "bool",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.is_masked(x)  # Returns True"
+          ],
+          "code": "def is_masked(x):\n    \"\"\"\n    Determine whether input has masked values.\n\n    Return True if x is a MaskedArray with masked values, False otherwise.\n    \"\"\"\n    m = getmask(x)\n    if m is nomask:\n        return False\n    elif m.any():\n        return True\n    return False"
+        },
+        "is_mask": {
+          "signature": "is_mask(m)",
+          "description": "Return True if m is a valid mask.",
+          "parameters": {
+            "m": "Potential mask array"
+          },
+          "returns": "bool",
+          "examples": [
+            "ma.is_mask([True, False, True])  # Returns True",
+            "ma.is_mask(ma.nomask)  # Returns True"
+          ],
+          "code": "def is_mask(m):\n    try:\n        return m.dtype.type is MaskType\n    except AttributeError:\n        return False"
+        },
+        "isMaskedArray": {
+          "signature": "isMaskedArray(x)",
+          "description": "Test whether x is a MaskedArray instance.",
+          "parameters": {
+            "x": "Object to test"
+          },
+          "returns": "bool",
+          "examples": [
+            "x = ma.array([1, 2, 3])",
+            "ma.isMaskedArray(x)  # Returns True",
+            "ma.isMaskedArray([1, 2, 3])  # Returns False"
+          ],
+          "code": "def isMaskedArray(x):\n    return isinstance(x, MaskedArray)"
+        },
+        "isMA": {
+          "signature": "isMA(x)",
+          "description": "Alias for isMaskedArray.",
+          "parameters": {
+            "x": "Object to test"
+          },
+          "returns": "bool",
+          "examples": [
+            "ma.isMA(ma.array([1, 2, 3]))  # Returns True"
+          ],
+          "code": "isMA = isMaskedArray  # Alias"
+        },
+        "isarray": {
+          "signature": "isarray(x)",
+          "description": "Alias for isMaskedArray.",
+          "parameters": {
+            "x": "Object to test"
+          },
+          "returns": "bool",
+          "examples": [
+            "ma.isarray(ma.array([1, 2, 3]))  # Returns True"
+          ],
+          "code": "isarray = isMaskedArray  # Alias"
+        },
+        "allequal": {
+          "signature": "allequal(a, b, fill_value=True)",
+          "description": "Return True if all entries of a and b are equal.",
+          "parameters": {
+            "a": "First array",
+            "b": "Second array",
+            "fill_value": "Whether masked values are considered equal"
+          },
+          "returns": "bool",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.allequal(x, y)  # Returns True"
+          ],
+          "code": "def allequal(a, b, fill_value=True):\n    # Check if all elements are equal, considering masks"
+        },
+        "allclose": {
+          "signature": "allclose(a, b, masked_equal=True, rtol=1e-5, atol=1e-8)",
+          "description": "Return True if two arrays are element-wise equal within tolerance.",
+          "parameters": {
+            "a": "First array",
+            "b": "Second array",
+            "masked_equal": "Whether masked values are considered equal",
+            "rtol": "Relative tolerance",
+            "atol": "Absolute tolerance"
+          },
+          "returns": "bool",
+          "examples": [
+            "x = ma.array([1.0, 2.0, 3.0], mask=[0, 0, 1])",
+            "y = ma.array([1.0, 2.0, 3.0], mask=[0, 0, 1])",
+            "ma.allclose(x, y)  # Returns True"
+          ],
+          "code": "def allclose(a, b, masked_equal=True, rtol=1e-5, atol=1e-8):\n    # Check if arrays are close within tolerance"
+        },
+        "getdata": {
+          "signature": "getdata(a, subok=True)",
+          "description": "Return the data of a as an ndarray.",
+          "parameters": {
+            "a": "Input MaskedArray",
+            "subok": "Whether to return a subclass"
+          },
+          "returns": "ndarray",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.getdata(x)  # Returns array([1, 2, 3])"
+          ],
+          "code": "def getdata(a, subok=True):\n    data = getattr(a, '_data', np.asarray(a))\n    if not subok:\n        return np.asarray(data)\n    return data"
+        }
+      }
+    },
+    "statistics": {
+      "description": "Statistical functions for masked arrays",
+      "functions": {
+        "count": {
+          "signature": "count(a, axis=None, keepdims=False, split=None)",
+          "description": "Count non-masked elements along the given axis.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to count",
+            "keepdims": "Whether to keep dimensions",
+            "split": "Not used"
+          },
+          "returns": "Array or scalar",
+          "examples": [
+            "x = ma.array([[1, 2, 3], [4, 5, 6]], mask=[[0, 0, 1], [0, 1, 0]])",
+            "ma.count(x)  # Returns 4",
+            "ma.count(x, axis=0)  # Returns array([2, 1, 1])"
+          ],
+          "code": "def count(a, axis=None, keepdims=False, split=None):\n    \"\"\"\n    Count the non-masked elements of the array along the given axis.\n\n    This function counts non-masked elements by summing the inverse of\n    the mask array. When axis is None, it counts all non-masked elements.\n    \"\"\"\n    return umath.add.reduce(~getmaskarray(a), axis=axis, dtype=np.intp,\n                           keepdims=keepdims)"
+        },
+        "count_masked": {
+          "signature": "count_masked(arr, axis=None)",
+          "description": "Count masked elements.",
+          "parameters": {
+            "arr": "Input array",
+            "axis": "Axis along which to count"
+          },
+          "returns": "Count of masked elements",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4], mask=[0, 0, 1, 1])",
+            "ma.count_masked(x)  # Returns 2"
+          ],
+          "code": "def count_masked(arr, axis=None):\n    \"\"\"\n    Count the number of masked elements along the given axis.\n\n    A masked element is one for which the value of the mask is True.\n    \"\"\"\n    m = getmaskarray(arr)\n    return m.sum(axis=axis, dtype=np.intp)"
+        },
+        "mean": {
+          "signature": "mean(a, axis=None, dtype=None, out=None, keepdims=np._NoValue, *, where=np._NoValue)",
+          "description": "Return the mean along the specified axis, ignoring masked values.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to compute mean",
+            "dtype": "Type to use in computing the mean",
+            "out": "Output array",
+            "keepdims": "Whether to keep dimensions",
+            "where": "Elements to include"
+          },
+          "returns": "Mean value(s)",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4], mask=[0, 0, 0, 1])",
+            "ma.mean(x)  # Returns 2.0 (average of 1, 2, 3)"
+          ],
+          "code": "def mean(a, axis=None, dtype=None, out=None, keepdims=np._NoValue, *, where=np._NoValue):\n    # Compute mean ignoring masked values"
+        },
+        "median": {
+          "signature": "median(a, axis=None, out=None, overwrite_input=False, keepdims=False)",
+          "description": "Compute the median along the specified axis.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to compute median",
+            "out": "Output array",
+            "overwrite_input": "Whether input can be modified",
+            "keepdims": "Whether to keep dimensions"
+          },
+          "returns": "Median value(s)",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5], mask=[0, 0, 0, 1, 0])",
+            "ma.median(x)  # Returns 2.5"
+          ],
+          "code": "def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):\n    # Compute median ignoring masked values"
+        },
+        "std": {
+          "signature": "std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue, *, where=np._NoValue)",
+          "description": "Compute the standard deviation along the specified axis.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to compute",
+            "dtype": "Type to use",
+            "out": "Output array",
+            "ddof": "Delta degrees of freedom",
+            "keepdims": "Whether to keep dimensions",
+            "where": "Elements to include"
+          },
+          "returns": "Standard deviation",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5], mask=[0, 0, 0, 0, 1])",
+            "ma.std(x)  # Computes std of [1, 2, 3, 4]"
+          ],
+          "code": "def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue, *, where=np._NoValue):\n    # Compute standard deviation ignoring masked values"
+        },
+        "var": {
+          "signature": "var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue, *, where=np._NoValue)",
+          "description": "Compute the variance along the specified axis.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to compute",
+            "dtype": "Type to use",
+            "out": "Output array", 
+            "ddof": "Delta degrees of freedom",
+            "keepdims": "Whether to keep dimensions",
+            "where": "Elements to include"
+          },
+          "returns": "Variance",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5], mask=[0, 0, 0, 0, 1])",
+            "ma.var(x)  # Computes variance of [1, 2, 3, 4]"
+          ],
+          "code": "def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue, *, where=np._NoValue):\n    # Compute variance ignoring masked values"
+        },
+        "sum": {
+          "signature": "sum(a, axis=None, dtype=None, out=None, keepdims=np._NoValue, initial=np._NoValue, where=np._NoValue)",
+          "description": "Return the sum along the specified axis, ignoring masked values.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to sum",
+            "dtype": "Type of returned array",
+            "out": "Output array",
+            "keepdims": "Whether to keep dimensions",
+            "initial": "Starting value",
+            "where": "Elements to include"
+          },
+          "returns": "Sum of array elements",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4], mask=[0, 0, 1, 0])",
+            "ma.sum(x)  # Returns 7 (1 + 2 + 4)"
+          ],
+          "code": "def sum(a, axis=None, dtype=None, out=None, keepdims=np._NoValue, initial=np._NoValue, where=np._NoValue):\n    # Sum elements ignoring masked values"
+        },
+        "prod": {
+          "signature": "prod(a, axis=None, dtype=None, out=None, keepdims=np._NoValue, initial=np._NoValue, where=np._NoValue)",
+          "description": "Return the product along the specified axis, ignoring masked values.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to compute product",
+            "dtype": "Type of returned array",
+            "out": "Output array",
+            "keepdims": "Whether to keep dimensions",
+            "initial": "Starting value",
+            "where": "Elements to include"
+          },
+          "returns": "Product of array elements",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4], mask=[0, 0, 1, 0])",
+            "ma.prod(x)  # Returns 8 (1 * 2 * 4)"
+          ],
+          "code": "def prod(a, axis=None, dtype=None, out=None, keepdims=np._NoValue, initial=np._NoValue, where=np._NoValue):\n    # Product of elements ignoring masked values"
+        },
+        "average": {
+          "signature": "average(a, axis=None, weights=None, returned=False, *, keepdims=np._NoValue)",
+          "description": "Return the weighted average along the specified axis.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to average",
+            "weights": "Weights for averaging",
+            "returned": "Whether to return sum of weights",
+            "keepdims": "Whether to keep dimensions"
+          },
+          "returns": "Weighted average (and optionally sum of weights)",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4], mask=[0, 0, 1, 0])",
+            "ma.average(x, weights=[1, 1, 1, 2])  # Weighted avg of non-masked"
+          ],
+          "code": "def average(a, axis=None, weights=None, returned=False, *, keepdims=np._NoValue):\n    \"\"\"\n    Return the weighted average of array over the given axis.\n    \"\"\"\n    a = asarray(a)\n    m = getmask(a)\n    \n    # Set up weights\n    if weights is None:\n        avg = a.mean(axis, keepdims=keepdims)\n        scl = avg.dtype.type(a.count(axis))\n    else:\n        wgt = asarray(weights)\n        \n        # Sanity checks\n        if wgt.shape != a.shape and wgt.shape != ():\n            if axis is None:\n                raise TypeError(\n                    \"Axis must be specified when shapes of a and weights differ.\"\n                )\n            if wgt.ndim != 1:\n                raise TypeError(\n                    \"1D weights expected when shapes of a and weights differ.\"\n                )\n            if wgt.shape[0] != a.shape[axis]:\n                raise ValueError(\n                    \"Length of weights not compatible with specified axis.\"\n                )\n            \n            # Setup wgt to broadcast along axis\n            wgt = np.broadcast_to(wgt, (a.ndim-1)*(1,) + wgt.shape)\n            wgt = wgt.swapaxes(-1, axis)\n            \n        if m is not nomask:\n            wgt = wgt*(~a.mask)\n            \n        scl = wgt.sum(axis=axis, keepdims=keepdims)\n        avg = (a*wgt).sum(axis, keepdims=keepdims) / scl\n    \n    if returned:\n        if scl.shape != avg.shape:\n            scl = np.broadcast_to(scl, avg.shape).copy()\n        return avg, scl\n    else:\n        return avg"
+        }
+      }
+    },
+    "array_manipulation": {
+      "description": "Functions for reshaping and manipulating masked arrays",
+      "functions": {
+        "reshape": {
+          "signature": "reshape(a, newshape, order='C')",
+          "description": "Return an array containing the same data with a new shape.",
+          "parameters": {
+            "a": "Array to reshape",
+            "newshape": "New shape",
+            "order": "Read/write order"
+          },
+          "returns": "Reshaped MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4], mask=[0, 0, 1, 0])",
+            "ma.reshape(x, (2, 2))  # Returns 2x2 masked array"
+          ],
+          "code": "def reshape(a, newshape, order='C'):\n    \"\"\"\n    Returns an array containing the same data with a new shape.\n\n    This function preserves the mask of masked arrays.\n    \"\"\"\n    try:\n        return asarray(a).reshape(newshape, order=order)\n    except AttributeError:\n        return np.reshape(a, newshape, order=order)"
+        },
+        "resize": {
+          "signature": "resize(x, new_shape)",
+          "description": "Return a new array with specified shape.",
+          "parameters": {
+            "x": "Input array",
+            "new_shape": "Shape of resized array"
+          },
+          "returns": "Resized MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3])",
+            "ma.resize(x, (2, 3))  # Returns [[1, 2, 3], [1, 2, 3]]"
+          ],
+          "code": "def resize(x, new_shape):\n    # Resize array to new shape, repeating data if needed"
+        },
+        "ravel": {
+          "signature": "ravel(a, order='C')",
+          "description": "Return a flattened array.",
+          "parameters": {
+            "a": "Input array",
+            "order": "Order to read elements"
+          },
+          "returns": "1-D MaskedArray",
+          "examples": [
+            "x = ma.array([[1, 2], [3, 4]], mask=[[0, 1], [0, 0]])",
+            "ma.ravel(x)  # Returns [1, --, 3, 4]"
+          ],
+          "code": "def ravel(a, order='C'):\n    return asarray(a).ravel(order=order)"
+        },
+        "concatenate": {
+          "signature": "concatenate(arrays, axis=0, out=None, *, dtype=None, casting='same_kind')",
+          "description": "Concatenate a sequence of arrays along existing axis.",
+          "parameters": {
+            "arrays": "Sequence of arrays",
+            "axis": "Axis along which to concatenate",
+            "out": "Output array",
+            "dtype": "Output data type",
+            "casting": "Casting rule"
+          },
+          "returns": "Concatenated MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2], mask=[0, 1])",
+            "y = ma.array([3, 4], mask=[1, 0])",
+            "ma.concatenate([x, y])  # Returns [1, --, --, 4]"
+          ],
+          "code": "def concatenate(arrays, axis=0, out=None, *, dtype=None, casting='same_kind'):\n    \"\"\"\n    Concatenate a sequence of arrays along the given axis.\n\n    Preserves masks when concatenating masked arrays.\n    \"\"\"\n    # Convert inputs to masked arrays\n    arrays = [asarray(a) for a in arrays]\n    # Get data and masks\n    data_list = [getdata(a) for a in arrays]\n    mask_list = [getmaskarray(a) for a in arrays]\n    # Concatenate data and masks\n    data = np.concatenate(data_list, axis=axis, out=out, dtype=dtype, casting=casting)\n    mask = np.concatenate(mask_list, axis=axis, dtype=MaskType)\n    # Return masked array\n    return array(data, mask=mask)"
+        },
+        "stack": {
+          "signature": "stack(arrays, axis=0, out=None, *, dtype=None, casting='same_kind')",
+          "description": "Join a sequence of arrays along a new axis.",
+          "parameters": {
+            "arrays": "Sequence of arrays",
+            "axis": "Axis in result array",
+            "out": "Output array",
+            "dtype": "Output data type",
+            "casting": "Casting rule"
+          },
+          "returns": "Stacked MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3])",
+            "y = ma.array([4, 5, 6])",
+            "ma.stack([x, y])  # Returns [[1, 2, 3], [4, 5, 6]]"
+          ],
+          "code": "def stack(arrays, axis=0, out=None, *, dtype=None, casting='same_kind'):\n    # Stack arrays along new dimension"
+        },
+        "vstack": {
+          "signature": "vstack(arrays)",
+          "description": "Stack arrays vertically (row-wise).",
+          "parameters": {
+            "arrays": "Sequence of arrays"
+          },
+          "returns": "Vertically stacked MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3])",
+            "y = ma.array([4, 5, 6])",
+            "ma.vstack([x, y])  # Returns [[1, 2, 3], [4, 5, 6]]"
+          ],
+          "code": "def vstack(arrays):\n    return concatenate(arrays, axis=0)"
+        },
+        "hstack": {
+          "signature": "hstack(arrays)",
+          "description": "Stack arrays horizontally (column-wise).",
+          "parameters": {
+            "arrays": "Sequence of arrays"
+          },
+          "returns": "Horizontally stacked MaskedArray",
+          "examples": [
+            "x = ma.array([[1], [2]])",
+            "y = ma.array([[3], [4]])",
+            "ma.hstack([x, y])  # Returns [[1, 3], [2, 4]]"
+          ],
+          "code": "def hstack(arrays):\n    return concatenate(arrays, axis=1)"
+        },
+        "column_stack": {
+          "signature": "column_stack(arrays)",
+          "description": "Stack 1-D arrays as columns into a 2-D array.",
+          "parameters": {
+            "arrays": "Sequence of 1-D or 2-D arrays"
+          },
+          "returns": "2-D MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3])",
+            "y = ma.array([4, 5, 6])",
+            "ma.column_stack([x, y])  # Returns [[1, 4], [2, 5], [3, 6]]"
+          ],
+          "code": "def column_stack(arrays):\n    # Stack 1-D arrays as columns"
+        },
+        "row_stack": {
+          "signature": "row_stack(arrays)",
+          "description": "Alias for vstack.",
+          "parameters": {
+            "arrays": "Sequence of arrays"
+          },
+          "returns": "Row-stacked MaskedArray", 
+          "examples": [
+            "ma.row_stack([x, y])  # Same as vstack"
+          ],
+          "code": "row_stack = vstack  # Alias"
+        }
+      }
+    },
+    "arithmetic_operations": {
+      "description": "Arithmetic operations for masked arrays",
+      "functions": {
+        "add": {
+          "signature": "add(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Add arguments element-wise.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Sum of x1 and x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([10, 20, 30], mask=[0, 1, 0])",
+            "ma.add(x, y)  # Returns [11, --, --]"
+          ],
+          "code": "# ma.add is a masked array ufunc\n# Implemented in C with automatic mask propagation\n# When either input is masked, the output is masked\n# Result mask = x1.mask | x2.mask\nadd = _MaskedBinaryOperation(umath.add)"
+        },
+        "subtract": {
+          "signature": "subtract(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Subtract arguments element-wise.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Difference of x1 and x2",
+          "examples": [
+            "x = ma.array([10, 20, 30], mask=[0, 0, 1])",
+            "y = ma.array([1, 2, 3], mask=[0, 1, 0])",
+            "ma.subtract(x, y)  # Returns [9, --, --]"
+          ],
+          "code": "# Arithmetic operations are implemented as ufuncs"
+        },
+        "multiply": {
+          "signature": "multiply(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Multiply arguments element-wise.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Product of x1 and x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([10, 20, 30], mask=[0, 1, 0])",
+            "ma.multiply(x, y)  # Returns [10, --, --]"
+          ],
+          "code": "# Arithmetic operations are implemented as ufuncs"
+        },
+        "divide": {
+          "signature": "divide(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Divide arguments element-wise.",
+          "parameters": {
+            "x1": "Dividend array",
+            "x2": "Divisor array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Quotient of x1 and x2",
+          "examples": [
+            "x = ma.array([10, 20, 30], mask=[0, 0, 1])",
+            "y = ma.array([2, 4, 5], mask=[0, 1, 0])",
+            "ma.divide(x, y)  # Returns [5.0, --, --]"
+          ],
+          "code": "# Arithmetic operations are implemented as ufuncs"
+        },
+        "power": {
+          "signature": "power(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "First array elements raised to powers from second array, element-wise.",
+          "parameters": {
+            "x1": "Base array",
+            "x2": "Exponent array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "x1 raised to power of x2",
+          "examples": [
+            "x = ma.array([2, 3, 4], mask=[0, 0, 1])",
+            "y = ma.array([2, 2, 2], mask=[0, 1, 0])",
+            "ma.power(x, y)  # Returns [4, --, --]"
+          ],
+          "code": "# Arithmetic operations are implemented as ufuncs"
+        },
+        "mod": {
+          "signature": "mod(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Return element-wise remainder of division.",
+          "parameters": {
+            "x1": "Dividend array",
+            "x2": "Divisor array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Remainder of x1 / x2",
+          "examples": [
+            "x = ma.array([7, 8, 9], mask=[0, 0, 1])",
+            "y = ma.array([3, 3, 3], mask=[0, 1, 0])",
+            "ma.mod(x, y)  # Returns [1, --, --]"
+          ],
+          "code": "# Arithmetic operations are implemented as ufuncs"
+        }
+      }
+    },
+    "comparison_operations": {
+      "description": "Comparison operations for masked arrays",
+      "functions": {
+        "equal": {
+          "signature": "equal(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Return element-wise equality comparison.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 == x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([1, 2, 3], mask=[0, 1, 0])",
+            "ma.equal(x, y)  # Returns [True, --, --]"
+          ],
+          "code": "# Comparison operations are implemented as ufuncs"
+        },
+        "not_equal": {
+          "signature": "not_equal(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Return element-wise inequality comparison.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 != x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([1, 3, 3], mask=[0, 1, 0])",
+            "ma.not_equal(x, y)  # Returns [False, --, --]"
+          ],
+          "code": "# Comparison operations are implemented as ufuncs"
+        },
+        "less": {
+          "signature": "less(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Return element-wise less than comparison.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 < x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([2, 2, 2], mask=[0, 1, 0])",
+            "ma.less(x, y)  # Returns [True, --, --]"
+          ],
+          "code": "# Comparison operations are implemented as ufuncs"
+        },
+        "less_equal": {
+          "signature": "less_equal(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Return element-wise less than or equal comparison.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 <= x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([1, 2, 2], mask=[0, 1, 0])",
+            "ma.less_equal(x, y)  # Returns [True, --, --]"
+          ],
+          "code": "# Comparison operations are implemented as ufuncs"
+        },
+        "greater": {
+          "signature": "greater(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Return element-wise greater than comparison.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 > x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([0, 2, 2], mask=[0, 1, 0])",
+            "ma.greater(x, y)  # Returns [True, --, --]"
+          ],
+          "code": "# Comparison operations are implemented as ufuncs"
+        },
+        "greater_equal": {
+          "signature": "greater_equal(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Return element-wise greater than or equal comparison.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 >= x2",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "y = ma.array([1, 2, 2], mask=[0, 1, 0])",
+            "ma.greater_equal(x, y)  # Returns [True, --, --]"
+          ],
+          "code": "# Comparison operations are implemented as ufuncs"
+        }
+      }
+    },
+    "logical_operations": {
+      "description": "Logical operations for masked arrays",
+      "functions": {
+        "logical_and": {
+          "signature": "logical_and(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Compute element-wise logical AND.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 AND x2",
+          "examples": [
+            "x = ma.array([True, True, False], mask=[0, 0, 1])",
+            "y = ma.array([True, False, True], mask=[0, 1, 0])",
+            "ma.logical_and(x, y)  # Returns [True, --, --]"
+          ],
+          "code": "# Logical operations are implemented as ufuncs"
+        },
+        "logical_or": {
+          "signature": "logical_or(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Compute element-wise logical OR.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 OR x2",
+          "examples": [
+            "x = ma.array([True, False, False], mask=[0, 0, 1])",
+            "y = ma.array([False, False, True], mask=[0, 1, 0])",
+            "ma.logical_or(x, y)  # Returns [True, --, --]"
+          ],
+          "code": "# Logical operations are implemented as ufuncs"
+        },
+        "logical_xor": {
+          "signature": "logical_xor(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Compute element-wise logical XOR.",
+          "parameters": {
+            "x1": "First input array",
+            "x2": "Second input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of x1 XOR x2",
+          "examples": [
+            "x = ma.array([True, True, False], mask=[0, 0, 1])",
+            "y = ma.array([True, False, True], mask=[0, 1, 0])",
+            "ma.logical_xor(x, y)  # Returns [False, --, --]"
+          ],
+          "code": "# Logical operations are implemented as ufuncs"
+        },
+        "logical_not": {
+          "signature": "logical_not(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)",
+          "description": "Compute element-wise logical NOT.",
+          "parameters": {
+            "x": "Input array",
+            "out": "Output array",
+            "where": "Condition for operation",
+            "casting": "Casting rule",
+            "order": "Memory layout",
+            "dtype": "Output data type",
+            "subok": "Return subclass"
+          },
+          "returns": "Boolean array of NOT x",
+          "examples": [
+            "x = ma.array([True, False, True], mask=[0, 0, 1])",
+            "ma.logical_not(x)  # Returns [False, True, --]"
+          ],
+          "code": "# Logical operations are implemented as ufuncs"
+        }
+      }
+    },
+    "indexing_slicing": {
+      "description": "Indexing and slicing operations for masked arrays",
+      "functions": {
+        "argmax": {
+          "signature": "argmax(a, axis=None, out=None, *, keepdims=np._NoValue)",
+          "description": "Return indices of maximum values along axis.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to operate",
+            "out": "Output array",
+            "keepdims": "Whether to keep dimensions"
+          },
+          "returns": "Index array",
+          "examples": [
+            "x = ma.array([1, 3, 2, 4], mask=[0, 0, 1, 0])",
+            "ma.argmax(x)  # Returns 3"
+          ],
+          "code": "def argmax(a, axis=None, out=None, *, keepdims=np._NoValue):\n    # Return index of maximum ignoring masked values"
+        },
+        "argmin": {
+          "signature": "argmin(a, axis=None, out=None, *, keepdims=np._NoValue)",
+          "description": "Return indices of minimum values along axis.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to operate",
+            "out": "Output array",
+            "keepdims": "Whether to keep dimensions"
+          },
+          "returns": "Index array",
+          "examples": [
+            "x = ma.array([3, 1, 2, 4], mask=[0, 0, 1, 0])",
+            "ma.argmin(x)  # Returns 1"
+          ],
+          "code": "def argmin(a, axis=None, out=None, *, keepdims=np._NoValue):\n    # Return index of minimum ignoring masked values"
+        },
+        "argsort": {
+          "signature": "argsort(a, axis=-1, kind=None, order=None)",
+          "description": "Return indices that would sort array.",
+          "parameters": {
+            "a": "Input array",
+            "axis": "Axis along which to sort",
+            "kind": "Sorting algorithm",
+            "order": "Field order for structured arrays"
+          },
+          "returns": "Index array",
+          "examples": [
+            "x = ma.array([3, 1, 2], mask=[0, 0, 1])",
+            "ma.argsort(x)  # Returns indices to sort non-masked values"
+          ],
+          "code": "def argsort(a, axis=-1, kind=None, order=None):\n    # Return indices that would sort array"
+        },
+        "sort": {
+          "signature": "sort(a, axis=-1, kind=None, order=None)",
+          "description": "Sort array in-place.",
+          "parameters": {
+            "a": "Array to sort",
+            "axis": "Axis along which to sort",
+            "kind": "Sorting algorithm",
+            "order": "Field order for structured arrays"
+          },
+          "returns": "None (sorts in place)",
+          "examples": [
+            "x = ma.array([3, 1, 2], mask=[0, 0, 1])",
+            "ma.sort(x)  # Sorts in place"
+          ],
+          "code": "def sort(a, axis=-1, kind=None, order=None):\n    # Sort array in place"
+        }
+      }
+    },
+    "special_arrays": {
+      "description": "Functions for creating special masked arrays",
+      "functions": {
+        "zeros": {
+          "signature": "zeros(shape, dtype=float, order='C', *, like=None)",
+          "description": "Return a new masked array of given shape filled with zeros.",
+          "parameters": {
+            "shape": "Shape of the array",
+            "dtype": "Data type",
+            "order": "Memory layout",
+            "like": "Reference object for array creation"
+          },
+          "returns": "MaskedArray of zeros",
+          "examples": [
+            "ma.zeros((2, 3))  # Returns 2x3 array of zeros",
+            "ma.zeros(5, dtype=int)  # Returns [0, 0, 0, 0, 0]"
+          ],
+          "code": "def zeros(shape, dtype=float, order='C', *, like=None):\n    return MaskedArray(np.zeros(shape, dtype, order), mask=nomask)"
+        },
+        "ones": {
+          "signature": "ones(shape, dtype=float, order='C', *, like=None)",
+          "description": "Return a new masked array of given shape filled with ones.",
+          "parameters": {
+            "shape": "Shape of the array",
+            "dtype": "Data type",
+            "order": "Memory layout",
+            "like": "Reference object for array creation"
+          },
+          "returns": "MaskedArray of ones",
+          "examples": [
+            "ma.ones((2, 3))  # Returns 2x3 array of ones",
+            "ma.ones(5, dtype=int)  # Returns [1, 1, 1, 1, 1]"
+          ],
+          "code": "def ones(shape, dtype=float, order='C', *, like=None):\n    return MaskedArray(np.ones(shape, dtype, order), mask=nomask)"
+        },
+        "empty": {
+          "signature": "empty(shape, dtype=float, order='C', *, like=None)",
+          "description": "Return a new uninitialized masked array of given shape.",
+          "parameters": {
+            "shape": "Shape of the array",
+            "dtype": "Data type",
+            "order": "Memory layout",
+            "like": "Reference object for array creation"
+          },
+          "returns": "Uninitialized MaskedArray",
+          "examples": [
+            "ma.empty((2, 3))  # Returns uninitialized 2x3 array"
+          ],
+          "code": "def empty(shape, dtype=float, order='C', *, like=None):\n    return MaskedArray(np.empty(shape, dtype, order), mask=nomask)"
+        },
+        "masked_all": {
+          "signature": "masked_all(shape, dtype=float)",
+          "description": "Return a masked array with all elements masked.",
+          "parameters": {
+            "shape": "Shape of the array",
+            "dtype": "Data type"
+          },
+          "returns": "Fully masked MaskedArray",
+          "examples": [
+            "ma.masked_all((2, 3))  # Returns 2x3 array with all masked"
+          ],
+          "code": "def masked_all(shape, dtype=float):\n    a = masked_array(np.empty(shape, dtype), mask=True)\n    return a"
+        },
+        "masked_all_like": {
+          "signature": "masked_all_like(arr)",
+          "description": "Return a masked array with same shape as input, all masked.",
+          "parameters": {
+            "arr": "Input array"
+          },
+          "returns": "Fully masked MaskedArray",
+          "examples": [
+            "x = ma.array([[1, 2], [3, 4]])",
+            "ma.masked_all_like(x)  # Returns 2x2 fully masked array"
+          ],
+          "code": "def masked_all_like(arr):\n    a = masked_all(arr.shape, dtype=arr.dtype)\n    return a"
+        }
+      }
+    },
+    "mask_conditions": {
+      "description": "Functions for masking based on conditions",
+      "functions": {
+        "masked_where": {
+          "signature": "masked_where(condition, a, copy=True)",
+          "description": "Mask array where condition is True.",
+          "parameters": {
+            "condition": "Boolean condition",
+            "a": "Input array",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5])",
+            "ma.masked_where(x > 3, x)  # Masks 4 and 5"
+          ],
+          "code": "def masked_where(condition, a, copy=True):\n    # Mask elements where condition is True"
+        },
+        "masked_equal": {
+          "signature": "masked_equal(x, value, copy=True)",
+          "description": "Mask array where equal to given value.",
+          "parameters": {
+            "x": "Input array",
+            "value": "Value to mask",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 2, 1])",
+            "ma.masked_equal(x, 2)  # Masks all 2s"
+          ],
+          "code": "def masked_equal(x, value, copy=True):\n    return masked_where(equal(x, value), x, copy=copy)"
+        },
+        "masked_not_equal": {
+          "signature": "masked_not_equal(x, value, copy=True)",
+          "description": "Mask array where not equal to given value.",
+          "parameters": {
+            "x": "Input array",
+            "value": "Value to keep",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 2, 1])",
+            "ma.masked_not_equal(x, 2)  # Masks all non-2s"
+          ],
+          "code": "def masked_not_equal(x, value, copy=True):\n    return masked_where(not_equal(x, value), x, copy=copy)"
+        },
+        "masked_less": {
+          "signature": "masked_less(x, value, copy=True)",
+          "description": "Mask array where less than given value.",
+          "parameters": {
+            "x": "Input array",
+            "value": "Threshold value",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5])",
+            "ma.masked_less(x, 3)  # Masks 1 and 2"
+          ],
+          "code": "def masked_less(x, value, copy=True):\n    return masked_where(less(x, value), x, copy=copy)"
+        },
+        "masked_less_equal": {
+          "signature": "masked_less_equal(x, value, copy=True)",
+          "description": "Mask array where less than or equal to given value.",
+          "parameters": {
+            "x": "Input array",
+            "value": "Threshold value",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5])",
+            "ma.masked_less_equal(x, 3)  # Masks 1, 2, and 3"
+          ],
+          "code": "def masked_less_equal(x, value, copy=True):\n    return masked_where(less_equal(x, value), x, copy=copy)"
+        },
+        "masked_greater": {
+          "signature": "masked_greater(x, value, copy=True)",
+          "description": "Mask array where greater than given value.",
+          "parameters": {
+            "x": "Input array",
+            "value": "Threshold value", 
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5])",
+            "ma.masked_greater(x, 3)  # Masks 4 and 5"
+          ],
+          "code": "def masked_greater(x, value, copy=True):\n    return masked_where(greater(x, value), x, copy=copy)"
+        },
+        "masked_greater_equal": {
+          "signature": "masked_greater_equal(x, value, copy=True)",
+          "description": "Mask array where greater than or equal to given value.",
+          "parameters": {
+            "x": "Input array",
+            "value": "Threshold value",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5])",
+            "ma.masked_greater_equal(x, 3)  # Masks 3, 4, and 5"
+          ],
+          "code": "def masked_greater_equal(x, value, copy=True):\n    return masked_where(greater_equal(x, value), x, copy=copy)"
+        },
+        "masked_inside": {
+          "signature": "masked_inside(x, v1, v2, copy=True)",
+          "description": "Mask array inside given interval [v1, v2].",
+          "parameters": {
+            "x": "Input array",
+            "v1": "Lower bound",
+            "v2": "Upper bound",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5])",
+            "ma.masked_inside(x, 2, 4)  # Masks 2, 3, and 4"
+          ],
+          "code": "def masked_inside(x, v1, v2, copy=True):\n    condition = (x >= v1) & (x <= v2)\n    return masked_where(condition, x, copy=copy)"
+        },
+        "masked_outside": {
+          "signature": "masked_outside(x, v1, v2, copy=True)",
+          "description": "Mask array outside given interval [v1, v2].",
+          "parameters": {
+            "x": "Input array",
+            "v1": "Lower bound",
+            "v2": "Upper bound",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.array([1, 2, 3, 4, 5])",
+            "ma.masked_outside(x, 2, 4)  # Masks 1 and 5"
+          ],
+          "code": "def masked_outside(x, v1, v2, copy=True):\n    condition = (x < v1) | (x > v2)\n    return masked_where(condition, x, copy=copy)"
+        },
+        "masked_invalid": {
+          "signature": "masked_invalid(a, copy=True)",
+          "description": "Mask array where invalid (NaN or inf).",
+          "parameters": {
+            "a": "Input array",
+            "copy": "Whether to copy data"
+          },
+          "returns": "MaskedArray with invalid values masked",
+          "examples": [
+            "x = ma.array([1, np.nan, 3, np.inf])",
+            "ma.masked_invalid(x)  # Masks NaN and inf"
+          ],
+          "code": "def masked_invalid(a, copy=True):\n    return masked_where(~np.isfinite(a), a, copy=copy)"
+        }
+      }
+    },
+    "io_operations": {
+      "description": "Input/output operations for masked arrays",
+      "functions": {
+        "dump": {
+          "signature": "dump(a, F)",
+          "description": "Pickle a masked array to a file.",
+          "parameters": {
+            "a": "MaskedArray to pickle",
+            "F": "File object or filename"
+          },
+          "returns": "None",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "ma.dump(x, 'array.pkl')"
+          ],
+          "code": "def dump(a, F):\n    if hasattr(F, 'write'):\n        pickle.dump(a, F)\n    else:\n        with open(F, 'wb') as f:\n            pickle.dump(a, f)"
+        },
+        "dumps": {
+          "signature": "dumps(a)",
+          "description": "Return pickled representation of masked array as string.",
+          "parameters": {
+            "a": "MaskedArray to pickle"
+          },
+          "returns": "Pickled string",
+          "examples": [
+            "x = ma.array([1, 2, 3], mask=[0, 0, 1])",
+            "s = ma.dumps(x)"
+          ],
+          "code": "def dumps(a):\n    return pickle.dumps(a)"
+        },
+        "load": {
+          "signature": "load(F)",
+          "description": "Load a pickled masked array from file.",
+          "parameters": {
+            "F": "File object or filename"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.load('array.pkl')"
+          ],
+          "code": "def load(F):\n    if hasattr(F, 'read'):\n        return pickle.load(F)\n    else:\n        with open(F, 'rb') as f:\n            return pickle.load(f)"
+        },
+        "loads": {
+          "signature": "loads(strg)",
+          "description": "Load a pickled masked array from string.",
+          "parameters": {
+            "strg": "Pickled string"
+          },
+          "returns": "MaskedArray",
+          "examples": [
+            "x = ma.loads(pickled_string)"
+          ],
+          "code": "def loads(strg):\n    return pickle.loads(strg)"
+        }
+      }
+    }
+  }
+}
