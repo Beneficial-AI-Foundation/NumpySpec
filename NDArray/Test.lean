@@ -21,11 +21,11 @@ def testSuite : IO Unit := do
   let shape5d : Vector Nat 5 := Vector.ofFn fun i =>
     if i = 0 then 2 else if i = 1 then 3 else if i = 2 then 4 else if i = 3 then 5 else 6
   
-  IO.println s!"1D shape [5]: size = {shapeSize shape1d}"
-  IO.println s!"2D shape [3,4]: size = {shapeSize shape2d}"
-  IO.println s!"3D shape [2,3,4]: size = {shapeSize shape3d}"
-  IO.println s!"4D shape [10,28,28,3]: size = {shapeSize shape4d}"
-  IO.println s!"5D shape [2,3,4,5,6]: size = {shapeSize shape5d}"
+  IO.println s!"1D shape [5]: size = {shape1d.foldl (· * ·) 1}"
+  IO.println s!"2D shape [3,4]: size = {shape2d.foldl (· * ·) 1}"
+  IO.println s!"3D shape [2,3,4]: size = {shape3d.foldl (· * ·) 1}"
+  IO.println s!"4D shape [10,28,28,3]: size = {shape4d.foldl (· * ·) 1}"
+  IO.println s!"5D shape [2,3,4,5,6]: size = {shape5d.foldl (· * ·) 1}"
   IO.println ""
   
   -- Test 1D arrays
@@ -118,7 +118,7 @@ def testSuite : IO Unit := do
   IO.println s!"Original shape [6,4]: {arr_reshape.toList}"
   
   -- Note: Can only reshape if sizes match (6*4 = 24 = 8*3)
-  if h : shapeSize shape_before = shapeSize shape_after then
+  if h : shape_before.foldl (· * ·) 1 = shape_after.foldl (· * ·) 1 then
     let reshaped := arr_reshape.reshape h
     IO.println s!"Reshaped to [8,3]: {reshaped.toList}"
   else
