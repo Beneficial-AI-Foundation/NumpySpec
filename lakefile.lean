@@ -46,6 +46,11 @@ lean_lib FuncTracker where
   -- Include all FuncTracker modules
   globs := #[.andSubmodules `FuncTracker]
 
+/-- DafnySpecs library for ported Dafny specifications -/
+lean_lib DafnySpecs where
+  -- Include all DafnySpecs modules
+  globs := #[.andSubmodules `DafnySpecs]
+
 /-- Main library. NumPy-compatible n-dimensional arrays -/
 @[default_target]
 lean_lib NDArray where
