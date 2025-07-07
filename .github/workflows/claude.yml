@@ -19,10 +19,15 @@ jobs:
       (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: read
-      issues: read
-      id-token: write
+      contents: write      # Full write access to repository contents
+      pull-requests: write # Ability to create, update, and merge PRs
+      issues: write       # Ability to manage issues
+      id-token: write     # Required for OIDC authentication
+      actions: write      # Ability to manage GitHub Actions
+      checks: write       # Ability to create and update check runs
+      statuses: write     # Ability to update commit statuses
+      discussions: write  # Ability to manage discussions
+      packages: write     # Ability to manage packages
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,16 +49,35 @@ jobs:
           # Optional: Trigger when specific user is assigned to an issue
           # assignee_trigger: "claude-bot"
           
-          # Optional: Allow Claude to run specific commands
-          # allowed_tools: "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
+          # Allow Claude to run comprehensive commands
+          allowed_tools: |
+            Bash(*),
+            Read(*),
+            Write(*),
+            Edit(*),
+            MultiEdit(*),
+            NotebookEdit(*),
+            Glob(*),
+            Grep(*),
+            LS(*),
+            WebFetch(*),
+            TodoRead(*),
+            TodoWrite(*)
           
-          # Optional: Add custom instructions for Claude to customize its behavior for your project
-          # custom_instructions: |
-          #   Follow our coding standards
-          #   Ensure all new code has tests
-          #   Use TypeScript for new files
+          # Custom instructions for NumpySpec Lean 4 project
+          custom_instructions: |
+            This is a Lean 4 project porting NumPy functionality.
+            Key commands:
+            - Use `just build` or `lake build` to build Lean code
+            - Use `just test` or `uv run -m pytest` to run Python tests
+            - Always use `uv` for Python package management (not pip)
+            - Make atomic commits and use branches liberally
+            - Use `rg` and `fd` instead of grep/find
+            - Run `lake build` frequently for constant feedback
+            - Follow the project's CLAUDE.md guidelines
           
-          # Optional: Custom environment variables for Claude
-          # claude_env: |
-          #   NODE_ENV: test
+          # Custom environment variables for Claude
+          claude_env: |
+            LEAN_PATH: ${{ github.workspace }}
+            UV_SYSTEM_PYTHON: 1
 
