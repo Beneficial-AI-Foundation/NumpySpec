@@ -1,0 +1,632 @@
+[
+  {
+    "name": "numpy.sin",
+    "description": "Trigonometric sine, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.sin.html",
+    "doc": "Trigonometric sine, element-wise.\n\nSignature: numpy.sin(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - Angle, in radians (2\u03c0 rad equals 360 degrees)\n  out: ndarray, optional - A location into which the result is stored\n  where: array_like, optional - This condition is broadcast over the input\n\nReturns:\n  y: array_like - The sine of each element of x\n\nExamples:\n  >>> np.sin(np.pi/2.)\n  1.0\n  >>> np.sin(np.array((0., 30., 45., 60., 90.)) * np.pi / 180.)\n  array([0., 0.5, 0.70710678, 0.8660254, 1.])",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's sin function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef sin(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Compute sine element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply sin function element-wise\n    # In practice, this calls the C math library's sin()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.sin, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.cos",
+    "description": "Cosine element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.cos.html",
+    "doc": "Cosine element-wise.\n\nSignature: numpy.cos(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - Input array in radians\n  out: ndarray, optional - A location into which the result is stored\n\nReturns:\n  y: array_like - The corresponding cosine values",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's cos function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef cos(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Cosine element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply cos function element-wise\n    # In practice, this calls the C math library's cos()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.cos, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.tan",
+    "description": "Compute tangent element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.tan.html",
+    "doc": "Compute tangent element-wise.\n\nEquivalent to np.sin(x)/np.cos(x) element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's tan function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef tan(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Compute tangent element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply tan function element-wise\n    # In practice, this calls the C math library's tan()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.tan, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.arcsin",
+    "description": "Inverse sine, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.arcsin.html",
+    "doc": "Inverse sine, element-wise.\n\nSignature: numpy.arcsin(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - y-coordinate on the unit circle\n\nReturns:\n  angle: ndarray - The inverse sine of each element in x, in radians and in the closed interval [-pi/2, pi/2]",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's asin function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef arcsin(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Inverse sine, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply arcsin function element-wise\n    # In practice, this calls the C math library's asin()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.asin, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.arccos",
+    "description": "Trigonometric inverse cosine, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.arccos.html",
+    "doc": "Trigonometric inverse cosine, element-wise.\n\nThe inverse of cos so that, if y = cos(x), then x = arccos(y).",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's acos function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef arccos(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Trigonometric inverse cosine, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply arccos function element-wise\n    # In practice, this calls the C math library's acos()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.acos, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.arctan",
+    "description": "Trigonometric inverse tangent, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.arctan.html",
+    "doc": "Trigonometric inverse tangent, element-wise.\n\nThe inverse of tan, so that if y = tan(x) then x = arctan(y).",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's atan function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef arctan(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Trigonometric inverse tangent, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply arctan function element-wise\n    # In practice, this calls the C math library's atan()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.atan, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.hypot",
+    "description": "Given the 'legs' of a right triangle, return its hypotenuse",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.hypot.html",
+    "doc": "Given the 'legs' of a right triangle, return its hypotenuse.\n\nSignature: numpy.hypot(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nEquivalent to sqrt(x1**2 + x2**2), element-wise.\n\nParameters:\n  x1, x2: array_like - Legs of the triangle(s)\n\nReturns:\n  z: ndarray - The hypotenuse of the triangle(s)\n\nExample:\n  >>> np.hypot(3*np.ones((3, 3)), 4*np.ones((3, 3)))\n  array([[ 5.,  5.,  5.],\n         [ 5.,  5.,  5.],\n         [ 5.,  5.,  5.]])",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's hypot function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef hypot(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Given the 'legs' of a right triangle, return its hypotenuse'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply hypot function element-wise\n    # In practice, this calls the C math library's hypot()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.hypot, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.arctan2",
+    "description": "Element-wise arc tangent of x1/x2 choosing the quadrant correctly",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.arctan2.html",
+    "doc": "Element-wise arc tangent of x1/x2 choosing the quadrant correctly.\n\nThe quadrant (i.e., branch) is chosen so that arctan2(x1, x2) is the signed angle in radians between the ray ending at the origin and passing through the point (1, 0), and the ray ending at the origin and passing through the point (x2, x1).",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's atan2 function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef arctan2(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Element-wise arc tangent of x1/x2 choosing the quadrant correctly'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply arctan2 function element-wise\n    # In practice, this calls the C math library's atan2()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.atan2, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.degrees",
+    "description": "Convert angles from radians to degrees",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.degrees.html",
+    "doc": "Convert angles from radians to degrees.\n\nSignature: numpy.degrees(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - Input array in radians\n\nReturns:\n  y: ndarray - The corresponding degree values",
+    "code": "Implemented as x * 180 / pi"
+  },
+  {
+    "name": "numpy.radians",
+    "description": "Convert angles from degrees to radians",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.radians.html",
+    "doc": "Convert angles from degrees to radians.\n\nSignature: numpy.radians(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - Input array in degrees\n\nReturns:\n  y: ndarray - The corresponding radian values",
+    "code": "Implemented as x * pi / 180"
+  },
+  {
+    "name": "numpy.unwrap",
+    "description": "Unwrap by changing deltas between values to 2*pi complement",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.unwrap.html",
+    "doc": "Unwrap by changing deltas between values to 2*pi complement.\n\nUnwraps radian phase p by changing absolute jumps greater than discont to their 2*pi complement along the given axis.",
+    "code": "Implemented in Python in numpy/lib/function_base.py"
+  },
+  {
+    "name": "numpy.deg2rad",
+    "description": "Convert angles from degrees to radians",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.deg2rad.html",
+    "doc": "Convert angles from degrees to radians.\n\nEquivalent to numpy.radians.",
+    "code": "Alias for numpy.radians"
+  },
+  {
+    "name": "numpy.rad2deg",
+    "description": "Convert angles from radians to degrees",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.rad2deg.html",
+    "doc": "Convert angles from radians to degrees.\n\nEquivalent to numpy.degrees.",
+    "code": "Alias for numpy.degrees"
+  },
+  {
+    "name": "numpy.sinh",
+    "description": "Hyperbolic sine, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.sinh.html",
+    "doc": "Hyperbolic sine, element-wise.\n\nEquivalent to 1/2 * (np.exp(x) - np.exp(-x)) or -1j * np.sin(1j*x).",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's sinh function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef sinh(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Hyperbolic sine, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply sinh function element-wise\n    # In practice, this calls the C math library's sinh()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.sinh, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.cosh",
+    "description": "Hyperbolic cosine, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.cosh.html",
+    "doc": "Hyperbolic cosine, element-wise.\n\nEquivalent to 1/2 * (np.exp(x) + np.exp(-x)) and np.cos(1j*x).",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's cosh function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef cosh(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Hyperbolic cosine, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply cosh function element-wise\n    # In practice, this calls the C math library's cosh()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.cosh, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.tanh",
+    "description": "Compute hyperbolic tangent element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.tanh.html",
+    "doc": "Compute hyperbolic tangent element-wise.\n\nEquivalent to np.sinh(x)/np.cosh(x) or -1j * np.tan(1j*x).",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's tanh function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef tanh(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Compute hyperbolic tangent element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply tanh function element-wise\n    # In practice, this calls the C math library's tanh()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.tanh, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.arcsinh",
+    "description": "Inverse hyperbolic sine element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.arcsinh.html",
+    "doc": "Inverse hyperbolic sine element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's asinh function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef arcsinh(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Inverse hyperbolic sine element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply arcsinh function element-wise\n    # In practice, this calls the C math library's asinh()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.asinh, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.arccosh",
+    "description": "Inverse hyperbolic cosine, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.arccosh.html",
+    "doc": "Inverse hyperbolic cosine, element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's acosh function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef arccosh(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Inverse hyperbolic cosine, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply arccosh function element-wise\n    # In practice, this calls the C math library's acosh()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.acosh, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.arctanh",
+    "description": "Inverse hyperbolic tangent element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.arctanh.html",
+    "doc": "Inverse hyperbolic tangent element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's atanh function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef arctanh(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Inverse hyperbolic tangent element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply arctanh function element-wise\n    # In practice, this calls the C math library's atanh()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.atanh, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.round",
+    "description": "Evenly round to the given number of decimals",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.round.html",
+    "doc": "Evenly round to the given number of decimals.\n\nSignature: numpy.round(a, decimals=0, out=None)\n\nParameters:\n  a: array_like - Input data\n  decimals: int, optional - Number of decimal places to round to (default: 0)\n  out: ndarray, optional - Alternative output array\n\nReturns:\n  rounded_array: ndarray - An array of the same type as a, containing the rounded values",
+    "code": "# Universal function (ufunc) implemented in C\n# Rounds to the given number of decimals\ndef round(a, decimals=0, out=None):\n    '''Round an array to the given number of decimals'''\n    # Convert to array\n    a = np.asanyarray(a)\n    \n    # Apply rounding with specified decimals\n    # Uses banker's rounding (round half to even)\n    if decimals >= 0:\n        # Round to decimals places\n        factor = 10**decimals\n        return np.rint(a * factor) / factor\n    else:\n        # Round to nearest 10^(-decimals)\n        factor = 10**(-decimals)\n        return np.rint(a / factor) * factor"
+  },
+  {
+    "name": "numpy.around",
+    "description": "Evenly round to the given number of decimals",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.around.html",
+    "doc": "Evenly round to the given number of decimals.\n\nAlias for numpy.round.",
+    "code": "Alias for numpy.round"
+  },
+  {
+    "name": "numpy.rint",
+    "description": "Round elements of the array to the nearest integer",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.rint.html",
+    "doc": "Round elements of the array to the nearest integer.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's rint function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef rint(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Round elements of the array to the nearest integer'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply rint function element-wise\n    # In practice, this calls the C math library's rint()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.rint, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.fix",
+    "description": "Round to nearest integer towards zero",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fix.html",
+    "doc": "Round to nearest integer towards zero.\n\nRounds an array of floats element-wise to nearest integer towards zero.",
+    "code": "Implemented using numpy.where with floor and ceil"
+  },
+  {
+    "name": "numpy.floor",
+    "description": "Return the floor of the input, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.floor.html",
+    "doc": "Return the floor of the input, element-wise.\n\nThe floor of the scalar x is the largest integer i, such that i <= x.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's floor function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef floor(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the floor of the input, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply floor function element-wise\n    # In practice, this calls the C math library's floor()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.floor, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.ceil",
+    "description": "Return the ceiling of the input, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.ceil.html",
+    "doc": "Return the ceiling of the input, element-wise.\n\nThe ceiling of the scalar x is the smallest integer i, such that i >= x.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's ceil function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef ceil(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the ceiling of the input, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply ceil function element-wise\n    # In practice, this calls the C math library's ceil()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.ceil, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.trunc",
+    "description": "Return the truncated value of the input, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.trunc.html",
+    "doc": "Return the truncated value of the input, element-wise.\n\nThe truncated value of the scalar x is the nearest integer i which is closer to zero than x is.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's trunc function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef trunc(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the truncated value of the input, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply trunc function element-wise\n    # In practice, this calls the C math library's trunc()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.trunc, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.prod",
+    "description": "Return the product of array elements over a given axis",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.prod.html",
+    "doc": "Return the product of array elements over a given axis.",
+    "code": "Implemented in numpy/core/fromnumeric.py"
+  },
+  {
+    "name": "numpy.sum",
+    "description": "Sum of array elements over a given axis",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.sum.html",
+    "doc": "Sum of array elements over a given axis.\n\nSignature: numpy.sum(a, axis=None, dtype=None, out=None, keepdims=<no value>, initial=<no value>, where=<no value>)\n\nParameters:\n  a: array_like - Elements to sum\n  axis: None or int or tuple of ints, optional - Axis or axes along which a sum is performed\n  dtype: dtype, optional - The type of the returned array and of the accumulator\n  out: ndarray, optional - Alternative output array\n  keepdims: bool, optional - If True, the axes which are reduced are left in the result\n  initial: scalar, optional - Starting value for the sum\n  where: array_like of bool, optional - Elements to include in the sum\n\nReturns:\n  sum_along_axis: ndarray - An array with the same shape as a, with the specified axis removed",
+    "code": "Implemented in numpy/core/fromnumeric.py"
+  },
+  {
+    "name": "numpy.nanprod",
+    "description": "Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.nanprod.html",
+    "doc": "Return the product of array elements over a given axis treating Not a Numbers (NaNs) as ones.",
+    "code": "Implemented in numpy/lib/nanfunctions.py"
+  },
+  {
+    "name": "numpy.nansum",
+    "description": "Return the sum of array elements over a given axis treating Not a Numbers (NaNs) as zero",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.nansum.html",
+    "doc": "Return the sum of array elements over a given axis treating Not a Numbers (NaNs) as zero.",
+    "code": "Implemented in numpy/lib/nanfunctions.py"
+  },
+  {
+    "name": "numpy.cumprod",
+    "description": "Return the cumulative product of elements along a given axis",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.cumprod.html",
+    "doc": "Return the cumulative product of elements along a given axis.",
+    "code": "Implemented in numpy/core/fromnumeric.py"
+  },
+  {
+    "name": "numpy.cumsum",
+    "description": "Return the cumulative sum of the elements along a given axis",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html",
+    "doc": "Return the cumulative sum of the elements along a given axis.",
+    "code": "Implemented in numpy/core/fromnumeric.py"
+  },
+  {
+    "name": "numpy.nancumprod",
+    "description": "Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.nancumprod.html",
+    "doc": "Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.",
+    "code": "Implemented in numpy/lib/nanfunctions.py"
+  },
+  {
+    "name": "numpy.nancumsum",
+    "description": "Return the cumulative sum of array elements over a given axis treating Not a Numbers (NaNs) as zero",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.nancumsum.html",
+    "doc": "Return the cumulative sum of array elements over a given axis treating Not a Numbers (NaNs) as zero.",
+    "code": "Implemented in numpy/lib/nanfunctions.py"
+  },
+  {
+    "name": "numpy.diff",
+    "description": "Calculate the n-th discrete difference along the given axis",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.diff.html",
+    "doc": "Calculate the n-th discrete difference along the given axis.\n\nThe first difference is given by out[i] = a[i+1] - a[i] along the given axis.",
+    "code": "Implemented in numpy/lib/function_base.py"
+  },
+  {
+    "name": "numpy.ediff1d",
+    "description": "The differences between consecutive elements of an array",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.ediff1d.html",
+    "doc": "The differences between consecutive elements of an array.",
+    "code": "Implemented in numpy/lib/arraysetops.py"
+  },
+  {
+    "name": "numpy.gradient",
+    "description": "Return the gradient of an N-dimensional array",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.gradient.html",
+    "doc": "Return the gradient of an N-dimensional array.\n\nThe gradient is computed using second order accurate central differences in the interior points and either first or second order accurate one-sides (forward or backwards) differences at the boundaries.",
+    "code": "Implemented in numpy/lib/function_base.py"
+  },
+  {
+    "name": "numpy.cross",
+    "description": "Return the cross product of two (arrays of) vectors",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.cross.html",
+    "doc": "Return the cross product of two (arrays of) vectors.\n\nThe cross product of a and b in R^3 is a vector perpendicular to both a and b.",
+    "code": "Implemented in numpy/core/numeric.py"
+  },
+  {
+    "name": "numpy.trapezoid",
+    "description": "Integrate along the given axis using the composite trapezoidal rule",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.trapezoid.html",
+    "doc": "Integrate along the given axis using the composite trapezoidal rule.\n\nSignature: numpy.trapezoid(y, x=None, dx=1.0, axis=-1)\n\nParameters:\n  y: array_like - Input array to integrate\n  x: array_like, optional - The sample points corresponding to the y values\n  dx: scalar, optional - The spacing between sample points when x is None\n  axis: int, optional - The axis along which to integrate\n\nReturns:\n  trapezoid: float or ndarray - Definite integral of y approximated by trapezoidal rule",
+    "code": "Implemented in numpy/lib/function_base.py"
+  },
+  {
+    "name": "numpy.exp",
+    "description": "Calculate the exponential of all elements in the input array",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.exp.html",
+    "doc": "Calculate the exponential of all elements in the input array.\n\nSignature: numpy.exp(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - Input values\n  out: ndarray, None, or tuple of ndarray and None, optional - A location into which the result is stored\n\nReturns:\n  out: ndarray or scalar - Output array, element-wise exponential of x",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's exp function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef exp(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Calculate the exponential of all elements in the input array'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply exp function element-wise\n    # In practice, this calls the C math library's exp()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.exp, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.expm1",
+    "description": "Calculate exp(x) - 1 for all elements in the array",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.expm1.html",
+    "doc": "Calculate exp(x) - 1 for all elements in the array.\n\nThis function provides greater precision than exp(x) - 1 for small values of x.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's expm1 function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef expm1(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Calculate exp(x) - 1 for all elements in the array'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply expm1 function element-wise\n    # In practice, this calls the C math library's expm1()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.expm1, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.exp2",
+    "description": "Calculate 2**p for all p in the input array",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.exp2.html",
+    "doc": "Calculate 2**p for all p in the input array.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's exp2 function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef exp2(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Calculate 2**p for all p in the input array'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply exp2 function element-wise\n    # In practice, this calls the C math library's exp2()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.exp2, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.log",
+    "description": "Natural logarithm, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.log.html",
+    "doc": "Natural logarithm, element-wise.\n\nSignature: numpy.log(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - Input value\n  out: ndarray, None, or tuple of ndarray and None, optional - A location into which the result is stored\n\nReturns:\n  y: ndarray - Natural logarithm of x, element-wise",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's log function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef log(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Natural logarithm, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply log function element-wise\n    # In practice, this calls the C math library's log()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.log, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.log10",
+    "description": "Return the base 10 logarithm of the input array, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.log10.html",
+    "doc": "Return the base 10 logarithm of the input array, element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's log10 function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef log10(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the base 10 logarithm of the input array, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply log10 function element-wise\n    # In practice, this calls the C math library's log10()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.log10, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.log2",
+    "description": "Base-2 logarithm of x",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.log2.html",
+    "doc": "Base-2 logarithm of x.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's log2 function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef log2(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Base-2 logarithm of x'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply log2 function element-wise\n    # In practice, this calls the C math library's log2()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.log2, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.log1p",
+    "description": "Return the natural logarithm of one plus the input array, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.log1p.html",
+    "doc": "Return the natural logarithm of one plus the input array, element-wise.\n\nCalculates log(1 + x). This function provides greater precision than log(1 + x) for small values of x.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's log1p function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef log1p(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the natural logarithm of one plus the input array, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply log1p function element-wise\n    # In practice, this calls the C math library's log1p()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.log1p, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.logaddexp",
+    "description": "Logarithm of the sum of exponentiations of the inputs",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.logaddexp.html",
+    "doc": "Logarithm of the sum of exponentiations of the inputs.\n\nCalculates log(exp(x1) + exp(x2)). This function is useful in statistics where the calculated probabilities of events may be so small as to exceed the range of normal floating point numbers.",
+    "code": "# Universal function (ufunc) implemented in C\n# Logarithm of the sum of exponentiations of the inputs\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.logaddexp2",
+    "description": "Logarithm of the sum of exponentiations of the inputs in base-2",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.logaddexp2.html",
+    "doc": "Logarithm of the sum of exponentiations of the inputs in base-2.\n\nCalculates log2(2**x1 + 2**x2).",
+    "code": "# Universal function (ufunc) implemented in C\n# Logarithm of the sum of exponentiations of the inputs in base-2\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.i0",
+    "description": "Modified Bessel function of the first kind, order 0",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.i0.html",
+    "doc": "Modified Bessel function of the first kind, order 0.\n\nDefinition: i0(x) = sum((x/2)**2k / (k!)**2, k=0..inf)",
+    "code": "Implemented in numpy/lib/polynomial.py"
+  },
+  {
+    "name": "numpy.sinc",
+    "description": "Return the normalized sinc function",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.sinc.html",
+    "doc": "Return the normalized sinc function.\n\nThe sinc function is sin(\u03c0*x)/(\u03c0*x) for x != 0, and 1 for x = 0.",
+    "code": "Implemented in numpy/lib/function_base.py"
+  },
+  {
+    "name": "numpy.signbit",
+    "description": "Returns element-wise True where signbit is set (less than zero)",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.signbit.html",
+    "doc": "Returns element-wise True where signbit is set (less than zero).",
+    "code": "# Universal function (ufunc) implemented in C\n# Returns element-wise True where signbit is set (less than zero)\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.copysign",
+    "description": "Change the sign of x1 to that of x2, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.copysign.html",
+    "doc": "Change the sign of x1 to that of x2, element-wise.\n\nIf x2 is a scalar, its sign will be copied to all elements of x1.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's copysign function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef copysign(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Change the sign of x1 to that of x2, element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply copysign function element-wise\n    # In practice, this calls the C math library's copysign()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.copysign, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.frexp",
+    "description": "Decompose the elements of x into mantissa and twos exponent",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.frexp.html",
+    "doc": "Decompose the elements of x into mantissa and twos exponent.\n\nReturns (mantissa, exponent), where x = mantissa * 2**exponent.",
+    "code": "# Universal function (ufunc) implemented in C\n# Decompose the elements of x into mantissa and twos exponent\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.ldexp",
+    "description": "Returns x1 * 2**x2, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.ldexp.html",
+    "doc": "Returns x1 * 2**x2, element-wise.\n\nThe mantissas x1 and twos exponents x2 are used to construct floating point numbers x1 * 2**x2.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's ldexp function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef ldexp(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Returns x1 * 2**x2, element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply ldexp function element-wise\n    # In practice, this calls the C math library's ldexp()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.ldexp, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.nextafter",
+    "description": "Return the next floating-point value after x1 towards x2, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.nextafter.html",
+    "doc": "Return the next floating-point value after x1 towards x2, element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's nextafter function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef nextafter(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the next floating-point value after x1 towards x2, element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply nextafter function element-wise\n    # In practice, this calls the C math library's nextafter()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.nextafter, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.spacing",
+    "description": "Return the distance between x and the nearest adjacent number",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.spacing.html",
+    "doc": "Return the distance between x and the nearest adjacent number.",
+    "code": "# Universal function (ufunc) implemented in C\n# Return the distance between x and the nearest adjacent number\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.lcm",
+    "description": "Returns the lowest common multiple of |x1| and |x2|",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.lcm.html",
+    "doc": "Returns the lowest common multiple of |x1| and |x2|.",
+    "code": "# Universal function (ufunc) implemented in C\n# Returns the lowest common multiple of |x1| and |x2|\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.gcd",
+    "description": "Returns the greatest common divisor of |x1| and |x2|",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.gcd.html",
+    "doc": "Returns the greatest common divisor of |x1| and |x2|.",
+    "code": "# Universal function (ufunc) implemented in C\n# Returns the greatest common divisor of |x1| and |x2|\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.add",
+    "description": "Add arguments element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.add.html",
+    "doc": "Add arguments element-wise.\n\nSignature: numpy.add(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x1, x2: array_like - The arrays to be added\n  out: ndarray, None, or tuple of ndarray and None, optional - A location into which the result is stored\n\nReturns:\n  add: ndarray or scalar - The sum of x1 and x2, element-wise",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: +\ndef add(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Add arguments element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a + b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.reciprocal",
+    "description": "Return the reciprocal of the argument, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.reciprocal.html",
+    "doc": "Return the reciprocal of the argument, element-wise.\n\nCalculates 1/x.",
+    "code": "# Universal function (ufunc) implemented in C\n# Return the reciprocal of the argument, element-wise\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.positive",
+    "description": "Numerical positive, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.positive.html",
+    "doc": "Numerical positive, element-wise.\n\nEquivalent to x.copy(), but only defined for types that support arithmetic.",
+    "code": "# Universal function (ufunc) implemented in C\n# Numerical positive, element-wise\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.negative",
+    "description": "Numerical negative, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.negative.html",
+    "doc": "Numerical negative, element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# Numerical negative, element-wise\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.multiply",
+    "description": "Multiply arguments element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.multiply.html",
+    "doc": "Multiply arguments element-wise.\n\nSignature: numpy.multiply(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x1, x2: array_like - Input arrays to be multiplied\n  out: ndarray, None, or tuple of ndarray and None, optional - A location into which the result is stored\n\nReturns:\n  y: ndarray - The product of x1 and x2, element-wise",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: *\ndef multiply(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Multiply arguments element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a * b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.divide",
+    "description": "Divide arguments element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.divide.html",
+    "doc": "Divide arguments element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: /\ndef divide(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Divide arguments element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a / b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.power",
+    "description": "First array elements raised to powers from second array, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.power.html",
+    "doc": "First array elements raised to powers from second array, element-wise.\n\nRaise each base in x1 to the positionally-corresponding power in x2.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: **\ndef power(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''First array elements raised to powers from second array, element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a ** b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.subtract",
+    "description": "Subtract arguments, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.subtract.html",
+    "doc": "Subtract arguments, element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: -\ndef subtract(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Subtract arguments, element-wise'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a - b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.true_divide",
+    "description": "Divide arguments element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.true_divide.html",
+    "doc": "Divide arguments element-wise.\n\nAlias of numpy.divide.",
+    "code": "Alias for numpy.divide"
+  },
+  {
+    "name": "numpy.floor_divide",
+    "description": "Return the largest integer smaller or equal to the division of the inputs",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.floor_divide.html",
+    "doc": "Return the largest integer smaller or equal to the division of the inputs.\n\nIt is equivalent to the Python // operator and pairs with the Python % (remainder), function so that a = a % b + b * (a // b) up to roundoff.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: //\ndef floor_divide(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the largest integer smaller or equal to the division of the inputs'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a // b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.float_power",
+    "description": "First array elements raised to powers from second array, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.float_power.html",
+    "doc": "First array elements raised to powers from second array, element-wise.\n\nRaise each base in x1 to the positionally-corresponding power in x2. This differs from the power function in that integers, float16, and float32 are promoted to floats with a minimum precision of float64.",
+    "code": "# Universal function (ufunc) implemented in C\n# First array elements raised to powers from second array, element-wise\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.fmod",
+    "description": "Returns the element-wise remainder of division",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fmod.html",
+    "doc": "Returns the element-wise remainder of division.\n\nThis is the NumPy implementation of the C library function fmod, the remainder has the same sign as the dividend x1.",
+    "code": "# Universal function (ufunc) implemented in C\n# Returns the element-wise remainder of division\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.mod",
+    "description": "Returns the element-wise remainder of division",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.mod.html",
+    "doc": "Returns the element-wise remainder of division.\n\nComputes the remainder complementary to the floor_divide function.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: %\ndef mod(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Returns the element-wise remainder of division'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a % b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.modf",
+    "description": "Return the fractional and integral parts of an array, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.modf.html",
+    "doc": "Return the fractional and integral parts of an array, element-wise.\n\nThe fractional and integral parts are negative if the given number is negative.",
+    "code": "# Universal function (ufunc) implemented in C\n# Return the fractional and integral parts of an array, element-wise\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.remainder",
+    "description": "Returns the element-wise remainder of division",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.remainder.html",
+    "doc": "Returns the element-wise remainder of division.\n\nComputes the remainder complementary to the floor_divide function.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: %\ndef remainder(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Returns the element-wise remainder of division'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a % b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.divmod",
+    "description": "Return element-wise quotient and remainder simultaneously",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.divmod.html",
+    "doc": "Return element-wise quotient and remainder simultaneously.\n\nnp.divmod(x, y) is equivalent to (x // y, x % y), but faster because it avoids redundant work.",
+    "code": "# Universal function (ufunc) implemented in C\n# Return element-wise quotient and remainder simultaneously\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.convolve",
+    "description": "Returns the discrete, linear convolution of two one-dimensional arrays",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.convolve.html",
+    "doc": "Returns the discrete, linear convolution of two one-dimensional arrays.\n\nThe discrete convolution operation is defined as (a * v)[n] = sum(a[m] * v[n - m], m = -\u221e to \u221e)",
+    "code": "Implemented in numpy/core/numeric.py"
+  },
+  {
+    "name": "numpy.clip",
+    "description": "Clip (limit) the values in an array",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.clip.html",
+    "doc": "Clip (limit) the values in an array.\n\nGiven an interval, values outside the interval are clipped to the interval edges.",
+    "code": "Implemented in numpy/core/fromnumeric.py"
+  },
+  {
+    "name": "numpy.sqrt",
+    "description": "Return the non-negative square-root of an array, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.sqrt.html",
+    "doc": "Return the non-negative square-root of an array, element-wise.\n\nSignature: numpy.sqrt(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - The values whose square-roots are required\n  out: ndarray, None, or tuple of ndarray and None, optional - A location into which the result is stored\n\nReturns:\n  y: ndarray - An array of the same shape as x, containing the positive square-root of each element in x",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's sqrt function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef sqrt(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the non-negative square-root of an array, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply sqrt function element-wise\n    # In practice, this calls the C math library's sqrt()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.sqrt, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.cbrt",
+    "description": "Return the cube-root of an array, element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.cbrt.html",
+    "doc": "Return the cube-root of an array, element-wise.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's cbrt function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef cbrt(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the cube-root of an array, element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply cbrt function element-wise\n    # In practice, this calls the C math library's cbrt()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.cbrt, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.square",
+    "description": "Return the element-wise square of the input",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.square.html",
+    "doc": "Return the element-wise square of the input.",
+    "code": "# Universal function (ufunc) implemented in C\n# Computes x^2 element-wise\ndef square(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Return the element-wise square of the input'''\n    # Handle array conversion\n    x = np.asanyarray(x)\n    \n    # Optimized implementation of x * x\n    # More efficient than np.power(x, 2)\n    return _apply_ufunc(lambda a: a * a, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.absolute",
+    "description": "Calculate the absolute value element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.absolute.html",
+    "doc": "Calculate the absolute value element-wise.\n\nSignature: numpy.absolute(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True)\n\nParameters:\n  x: array_like - Input array\n  out: ndarray, None, or tuple of ndarray and None, optional - A location into which the result is stored\n\nReturns:\n  absolute: ndarray - An ndarray containing the absolute value of each element in x",
+    "code": "# Universal function (ufunc) implemented in C\n# Computes absolute value element-wise\ndef absolute(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Calculate the absolute value element-wise'''\n    # Handle array conversion\n    x = np.asanyarray(x)\n    \n    # For real numbers: |x|\n    # For complex numbers: sqrt(real^2 + imag^2)\n    # In practice, uses optimized C implementation\n    return _apply_ufunc(_absolute_impl, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.fabs",
+    "description": "Compute the absolute values element-wise",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fabs.html",
+    "doc": "Compute the absolute values element-wise.\n\nThis function returns the absolute values (positive magnitude) of the data in x. Complex values are not handled, use absolute to find the absolute values of complex data.",
+    "code": "# Universal function (ufunc) implemented in C\n# This is a wrapper around the C math library's fabs function\n# The ufunc infrastructure handles:\n# - Broadcasting across arrays\n# - Type casting and promotion\n# - Output array allocation\n# - Vectorization for performance\n#\n# Conceptual Python equivalent:\ndef fabs(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Compute the absolute values element-wise'''\n    # Handle array conversion and broadcasting\n    x = np.asanyarray(x)\n    \n    # Apply fabs function element-wise\n    # In practice, this calls the C math library's fabs()\n    # with optimized loops for different data types\n    return _apply_ufunc(math.fabs, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.sign",
+    "description": "Returns an element-wise indication of the sign of a number",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.sign.html",
+    "doc": "Returns an element-wise indication of the sign of a number.\n\nThe sign function returns -1 if x < 0, 0 if x==0, 1 if x > 0. nan is returned for nan inputs.",
+    "code": "# Universal function (ufunc) implemented in C\n# Returns element-wise indication of sign\ndef sign(x, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Returns element-wise indication of the sign of a number'''\n    # Handle array conversion\n    x = np.asanyarray(x)\n    \n    # Returns: -1 if x < 0, 0 if x == 0, 1 if x > 0\n    # For complex numbers: sign(x) = x / |x| (except 0 -> 0)\n    # NaN inputs return NaN\n    return _apply_ufunc(_sign_impl, x, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.heaviside",
+    "description": "Compute the Heaviside step function",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.heaviside.html",
+    "doc": "Compute the Heaviside step function.\n\nThe Heaviside step function is defined as:\n  0 if x1 < 0\n  x2 if x1 == 0\n  1 if x1 > 0",
+    "code": "# Universal function (ufunc) implemented in C\n# Compute the Heaviside step function\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.maximum",
+    "description": "Element-wise maximum of array elements",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.maximum.html",
+    "doc": "Element-wise maximum of array elements.\n\nCompare two arrays and returns a new array containing the element-wise maxima.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: max\ndef maximum(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Element-wise maximum of array elements'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a max b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.minimum",
+    "description": "Element-wise minimum of array elements",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.minimum.html",
+    "doc": "Element-wise minimum of array elements.\n\nCompare two arrays and returns a new array containing the element-wise minima.",
+    "code": "# Universal function (ufunc) implemented in C\n# Binary operation: min\ndef minimum(x1, x2, /, out=None, *, where=True, casting='same_kind', order='K', dtype=None, subok=True):\n    '''Element-wise minimum of array elements'''\n    # Handle array conversion and broadcasting\n    x1 = np.asanyarray(x1)\n    x2 = np.asanyarray(x2)\n    \n    # Apply operation element-wise with broadcasting\n    # Uses optimized C loops for different data types\n    return _apply_ufunc(lambda a, b: a min b, x1, x2, out=out, where=where,\n                       casting=casting, order=order, dtype=dtype, subok=subok)"
+  },
+  {
+    "name": "numpy.fmax",
+    "description": "Element-wise maximum of array elements",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fmax.html",
+    "doc": "Element-wise maximum of array elements.\n\nCompare two arrays and returns a new array containing the element-wise maxima. If one of the elements being compared is a NaN, then the non-nan element is returned.",
+    "code": "# Universal function (ufunc) implemented in C\n# Element-wise maximum of array elements\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.fmin",
+    "description": "Element-wise minimum of array elements",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fmin.html",
+    "doc": "Element-wise minimum of array elements.\n\nCompare two arrays and returns a new array containing the element-wise minima. If one of the elements being compared is a NaN, then the non-nan element is returned.",
+    "code": "# Universal function (ufunc) implemented in C\n# Element-wise minimum of array elements\n# This function is implemented as a compiled ufunc in NumPy's C extension modules.\n# It provides optimized element-wise operations with support for:\n# - Broadcasting\n# - Type casting and promotion  \n# - Output array allocation\n# - Where parameter for conditional operation\n# - Vectorized execution using SIMD instructions where available"
+  },
+  {
+    "name": "numpy.nan_to_num",
+    "description": "Replace NaN with zero and infinity with large finite numbers",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.nan_to_num.html",
+    "doc": "Replace NaN with zero and infinity with large finite numbers (default behaviour) or with the numbers defined by the user using the nan, posinf and/or neginf keywords.",
+    "code": "Implemented in numpy/lib/type_check.py"
+  },
+  {
+    "name": "numpy.real_if_close",
+    "description": "If input is complex with all imaginary parts close to zero, return real parts",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.real_if_close.html",
+    "doc": "If input is complex with all imaginary parts close to zero, return real parts.\n\n\"Close to zero\" is defined as tol * (machine epsilon of the type for a).",
+    "code": "Implemented in numpy/lib/type_check.py"
+  },
+  {
+    "name": "numpy.interp",
+    "description": "One-dimensional linear interpolation for monotonically increasing sample points",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.interp.html",
+    "doc": "One-dimensional linear interpolation for monotonically increasing sample points.\n\nReturns the one-dimensional piecewise linear interpolant to a function with given discrete data points (xp, fp), evaluated at x.",
+    "code": "Implemented in numpy/lib/function_base.py"
+  }
+]
