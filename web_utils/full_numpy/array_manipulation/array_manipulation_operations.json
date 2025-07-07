@@ -1,0 +1,495 @@
+{
+  "metadata": {
+    "category": "Array manipulation",
+    "description": "Functions for manipulating array shapes and contents",
+    "subcategories": [
+      "basic_operations",
+      "shape_operations",
+      "transpose_operations",
+      "changing_dimensions",
+      "joining_arrays",
+      "splitting_arrays",
+      "tiling_arrays",
+      "adding_removing_elements",
+      "rearranging_elements"
+    ],
+    "source_reference": "https://github.com/numpy/numpy/tree/v2.3.0",
+    "implementation_notes": {
+      "C_implementations": "Functions implemented in C are part of NumPy's core multiarray module",
+      "Python_implementations": "Python implementations provide high-level interfaces to C functions",
+      "array_methods": "Methods like flatten() are implemented as part of the ndarray class"
+    }
+  },
+  "functions": [
+    {
+      "name": "numpy.copyto",
+      "category": "Basic Operations",
+      "description": "Copies values from one array to another, broadcasting as necessary",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.copyto.html",
+      "doc": "Copies values from one array to another, broadcasting as necessary.\n\nParameters\n----------\ndst : ndarray\n    The array into which values are copied.\nsrc : array_like\n    The array from which values are copied.\ncasting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional\n    Controls what kind of data casting may occur when copying.\nwhere : array_like of bool, optional\n    A boolean array which is broadcasted to match the dimensions of dst,\n    and selects elements to copy from src to dst wherever it contains the value True.\n\nExamples\n--------\n>>> import numpy as np\n>>> A = np.array([4, 5, 6])\n>>> B = [1, 2, 3]\n>>> np.copyto(A, B)\n>>> A\narray([1, 2, 3])",
+      "code": "# C implementation for performance\n# Copies values from one array to another, broadcasting as necessary\n#\n# This function is implemented in C as part of NumPy's core multiarray module.\n# The C implementation provides:\n# - Optimized memory access patterns\n# - Efficient array manipulation\n# - Low-level control over data layout\n# - Integration with NumPy's array object internals\n#\n# Source: C implementation in numpy/_core/src/multiarray/multiarraymodule.c",
+      "source_location": "C implementation in numpy/_core/src/multiarray/multiarraymodule.c",
+      "signature": "numpy.copyto(dst, src, casting='same_kind', where=True)"
+    },
+    {
+      "name": "numpy.ndim",
+      "category": "Basic Operations",
+      "description": "Return the number of dimensions of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ndim.html",
+      "doc": "Return the number of dimensions of an array.\n\nParameters\n----------\na : array_like\n    Input array. If it is not already an ndarray, a conversion is attempted.\n\nReturns\n-------\nnumber_of_dimensions : int\n    The number of dimensions in `a`. Scalars are zero-dimensional.\n\nExamples\n--------\n>>> np.ndim([[1,2,3],[4,5,6]])\n2\n>>> np.ndim(np.array([[1,2,3],[4,5,6]]))\n2\n>>> np.ndim(1)\n0",
+      "code": "@array_function_dispatch(_ndim_dispatcher)\ndef ndim(a):\n    \"\"\"\n    Return the number of dimensions of an array.\n    \"\"\"\n    try:\n        return a.ndim\n    except AttributeError:\n        return asarray(a).ndim",
+      "source_location": "numpy/_core/fromnumeric.py",
+      "signature": "numpy.ndim(a)"
+    },
+    {
+      "name": "numpy.shape",
+      "category": "Basic Operations",
+      "description": "Return the shape of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.shape.html",
+      "doc": "Return the shape of an array.\n\nParameters\n----------\na : array_like\n    Input array.\n\nReturns\n-------\nshape : tuple of ints\n    The elements of the shape tuple give the lengths of the\n    corresponding array dimensions.\n\nExamples\n--------\n>>> np.shape(np.eye(3))\n(3, 3)\n>>> np.shape([[1, 3]])\n(1, 2)\n>>> np.shape([0])\n(1,)\n>>> np.shape(0)\n()",
+      "code": "@array_function_dispatch(_shape_dispatcher)\ndef shape(a):\n    \"\"\"\n    Return the shape of an array.\n    \"\"\"\n    try:\n        result = a.shape\n    except AttributeError:\n        result = asarray(a).shape\n    return result",
+      "source_location": "numpy/_core/fromnumeric.py",
+      "signature": "numpy.shape(a)"
+    },
+    {
+      "name": "numpy.size",
+      "category": "Basic Operations",
+      "description": "Return the number of elements along a given axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.size.html",
+      "doc": "Return the number of elements along a given axis.\n\nParameters\n----------\na : array_like\n    Input data.\naxis : int, optional\n    Axis along which the elements are counted. By default, give\n    the total number of elements.\n\nReturns\n-------\nelement_count : int\n    Number of elements along the specified axis.\n\nExamples\n--------\n>>> a = np.array([[1,2,3],[4,5,6]])\n>>> np.size(a)\n6\n>>> np.size(a,1)\n3\n>>> np.size(a,0)\n2",
+      "code": "@array_function_dispatch(_size_dispatcher)\ndef size(a, axis=None):\n    \"\"\"\n    Return the number of elements along a given axis.\n    \"\"\"\n    if axis is None:\n        try:\n            return a.size\n        except AttributeError:\n            return asarray(a).size\n    else:\n        try:\n            return a.shape[axis]\n        except AttributeError:\n            return asarray(a).shape[axis]",
+      "source_location": "numpy/_core/fromnumeric.py",
+      "signature": "numpy.size(a, axis=None)"
+    },
+    {
+      "name": "numpy.reshape",
+      "category": "Shape Operations",
+      "description": "Gives a new shape to an array without changing its data",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.reshape.html",
+      "doc": "Gives a new shape to an array without changing its data.\n\nParameters\n----------\na : array_like\n    Array to be reshaped.\nshape : int or tuple of ints\n    The new shape should be compatible with the original shape. If\n    an integer, then the result will be a 1-D array of that length.\n    One shape dimension can be -1. In this case, the value is\n    inferred from the length of the array and remaining dimensions.\norder : {'C', 'F', 'A'}, optional\n    Read the elements of `a` using this index order, and place the\n    elements into the reshaped array using this index order.  'C'\n    means to read / write the elements using C-like index order,\n    with the last axis index changing fastest, back to the first\n    axis index changing slowest. 'F' means to read / write the\n    elements using Fortran-like index order, with the first index\n    changing fastest, and the last index changing slowest. Note that\n    the 'C' and 'F' options take no account of the memory layout of\n    the underlying array, and only refer to the order of indexing.\n    'A' means to read / write the elements in Fortran-like index\n    order if `a` is Fortran *contiguous* in memory, C-like order\n    otherwise.\nnewshape : int or tuple of ints, optional\n    Deprecated since version 2.1: Use shape instead.\ncopy : bool, optional\n    If True, then the array data is copied. If None (the default),\n    then the array may be copied or a view may be returned.\n\nReturns\n-------\nreshaped_array : ndarray\n    This will be a new view object if possible; otherwise, it will\n    be a copy.  Note there is no guarantee of the *memory layout* (C- or\n    Fortran- contiguous) of the returned array.\n\nExamples\n--------\n>>> a = np.array([[1,2,3], [4,5,6]])\n>>> np.reshape(a, 6)\narray([1, 2, 3, 4, 5, 6])\n>>> np.reshape(a, (3, -1))  # the unspecified value is inferred to be 2\narray([[1, 2],\n       [3, 4],\n       [5, 6]])",
+      "code": "@array_function_dispatch(_reshape_dispatcher)\ndef reshape(a, /, shape=None, order='C', *, newshape=None, copy=None):\n    \"\"\"\n    Gives a new shape to an array without changing its data.\n    \"\"\"\n    if newshape is None and shape is None:\n        raise TypeError(\n            \"reshape() missing 1 required positional argument: 'shape'\")\n    if newshape is not None:\n        if shape is not None:\n            raise TypeError(\n                \"You cannot specify 'newshape' and 'shape' arguments \"\n                \"at the same time.\")\n        # Deprecated in NumPy 2.1, 2024-04-18\n        warnings.warn(\n            \"`newshape` keyword argument is deprecated, \"\n            \"use `shape=...` or pass shape positionally instead. \"\n            \"(deprecated in NumPy 2.1)\",\n            DeprecationWarning,\n            stacklevel=2,\n        )\n        shape = newshape\n    if copy is not None:\n        return _wrapfunc(a, 'reshape', shape, order=order, copy=copy)\n    return _wrapfunc(a, 'reshape', shape, order=order)",
+      "signature": "numpy.reshape(a, /, shape=None, order='C', *, newshape=None, copy=None)",
+      "source_location": "numpy/_core/fromnumeric.py"
+    },
+    {
+      "name": "numpy.ravel",
+      "category": "Shape Operations",
+      "description": "Return a contiguous flattened array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ravel.html",
+      "doc": "Return a contiguous flattened array.\n\nA 1-D array, containing the elements of the input, is returned. A copy is\nmade only if needed.\n\nParameters\n----------\na : array_like\n    Input array. The elements in `a` are read in the order specified by\n    `order`, and packed as a 1-D array.\norder : {'C','F', 'A', 'K'}, optional\n    The elements of `a` are read using this index order. 'C' means\n    to index the elements in row-major, C-style order,\n    with the last axis index changing fastest, back to the first\n    axis index changing slowest. 'F' means to index the elements\n    in column-major, Fortran-style order, with the\n    first index changing fastest, and the last index changing\n    slowest. Note that the 'C' and 'F' options take no account of\n    the memory layout of the underlying array, and only refer to\n    the order of axis indexing. 'A' means to read the elements in\n    Fortran-like index order if `a` is Fortran *contiguous* in\n    memory, C-like order otherwise. 'K' means to read the\n    elements in the order they occur in memory, except for\n    reversing the data when strides are negative. By default, 'C'\n    index order is used.\n\nReturns\n-------\ny : array_like\n    y is a contiguous 1-D array with the same type as the input.\n\nExamples\n--------\n>>> x = np.array([[1, 2, 3], [4, 5, 6]])\n>>> np.ravel(x)\narray([1, 2, 3, 4, 5, 6])",
+      "code": "@array_function_dispatch(_ravel_dispatcher)\ndef ravel(a, order='C'):\n    \"\"\"Return a contiguous flattened array.\"\"\"\n    if isinstance(a, np.matrix):\n        return asarray(a).ravel(order=order)\n    else:\n        return asanyarray(a).ravel(order=order)",
+      "source_location": "numpy/_core/fromnumeric.py",
+      "signature": "numpy.ravel(a, order='C')"
+    },
+    {
+      "name": "numpy.ndarray.flat",
+      "category": "Shape Operations",
+      "description": "A 1-D iterator over the array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ndarray.flat.html",
+      "doc": "A 1-D iterator over the array.\n\nThis is a numpy.flatiter instance, which acts similarly to, but is not\na subclass of, Python's built-in iterator object.\n\nExamples\n--------\n>>> x = np.arange(1, 7).reshape(2, 3)\n>>> x\narray([[1, 2, 3],\n       [4, 5, 6]])\n>>> x.flat[3]\n4\n>>> x.T\narray([[1, 4],\n       [2, 5],\n       [3, 6]])\n>>> x.T.flat[3]\n5\n>>> type(x.flat)\n<class 'numpy.flatiter'>\n\nAn assignment example:\n\n>>> x.flat = 3; x\narray([[3, 3, 3],\n       [3, 3, 3]])\n>>> x.flat[[1,4]] = 1; x\narray([[3, 1, 3],\n       [3, 1, 3]])",
+      "code": "C implementation - array attribute",
+      "source_location": "C implementation - array attribute",
+      "signature": "ndarray.flat"
+    },
+    {
+      "name": "numpy.ndarray.flatten",
+      "category": "Shape Operations",
+      "description": "Return a copy of the array collapsed into one dimension",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ndarray.flatten.html",
+      "doc": "Return a copy of the array collapsed into one dimension.\n\nParameters\n----------\norder : {'C', 'F', 'A', 'K'}, optional\n    'C' means to flatten in row-major (C-style) order.\n    'F' means to flatten in column-major (Fortran-style) order.\n    'A' means to flatten in column-major order if a is Fortran contiguous\n    in memory, row-major order otherwise.\n    'K' means to flatten a in the order the elements occur in memory.\n    The default is 'C'.\n\nReturns\n-------\ny : ndarray\n    A copy of the input array, flattened to one dimension.\n\nExamples\n--------\n>>> a = np.array([[1,2], [3,4]])\n>>> a.flatten()\narray([1, 2, 3, 4])\n>>> a.flatten('F')\narray([1, 3, 2, 4])",
+      "code": "C implementation - array method",
+      "source_location": "C implementation - array method",
+      "signature": "ndarray.flatten(order='C')"
+    },
+    {
+      "name": "numpy.moveaxis",
+      "category": "Transpose Operations",
+      "description": "Move axes of an array to new positions",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.moveaxis.html",
+      "doc": "Move axes of an array to new positions.\n\nOther axes remain in their original order.\n\nParameters\n----------\na : np.ndarray\n    The array whose axes should be reordered.\nsource : int or sequence of int\n    Original positions of the axes to move. These must be unique.\ndestination : int or sequence of int\n    Destination positions for each of the original axes. These must also be unique.\n\nReturns\n-------\nresult : np.ndarray\n    Array with moved axes. This array is a view of the input array.\n\nExamples\n--------\n>>> x = np.zeros((3, 4, 5))\n>>> np.moveaxis(x, 0, -1).shape\n(4, 5, 3)\n>>> np.moveaxis(x, -1, 0).shape\n(5, 3, 4)\n>>> np.moveaxis(x, [0, 1], [-1, -2]).shape\n(5, 4, 3)\n>>> np.moveaxis(x, [0, 1, 2], [-1, -2, -3]).shape\n(5, 4, 3)",
+      "code": "# Implementation in numpy/_core/numeric.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/numeric.py",
+      "signature": "numpy.moveaxis(a, source, destination)"
+    },
+    {
+      "name": "numpy.rollaxis",
+      "category": "Transpose Operations",
+      "description": "Roll the specified axis backwards, until it lies in a given position",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.rollaxis.html",
+      "doc": "Roll the specified axis backwards, until it lies in a given position.\n\nThis function is deprecated. Use `moveaxis` instead.\n\nParameters\n----------\na : ndarray\n    Input array.\naxis : int\n    The axis to be rolled. The positions of the other axes do not\n    change relative to one another.\nstart : int, optional\n    When ``start <= axis``, the axis is rolled back until it lies in\n    this position. When ``start > axis``, the axis is rolled until it\n    lies before this position. The default, 0, results in a \"complete\"\n    roll.\n\nReturns\n-------\nres : ndarray\n    For NumPy >= 1.10.0 a view of `a` is always returned. For earlier\n    NumPy versions a view of `a` is returned only if the order of the\n    axes is changed, otherwise the input array is returned.\n\nExamples\n--------\n>>> a = np.ones((3,4,5,6))\n>>> np.rollaxis(a, 3, 1).shape\n(3, 6, 4, 5)\n>>> np.rollaxis(a, 2).shape\n(5, 3, 4, 6)\n>>> np.rollaxis(a, 1, 4).shape\n(3, 5, 6, 4)",
+      "code": "# Implementation in numpy/_core/numeric.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/numeric.py",
+      "signature": "numpy.rollaxis(a, axis, start=0)"
+    },
+    {
+      "name": "numpy.swapaxes",
+      "category": "Transpose Operations",
+      "description": "Interchange two axes of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.swapaxes.html",
+      "doc": "Interchange two axes of an array.\n\nParameters\n----------\na : array_like\n    Input array.\naxis1 : int\n    First axis.\naxis2 : int\n    Second axis.\n\nReturns\n-------\na_swapped : ndarray\n    For NumPy >= 1.10.0, if `a` is an ndarray, then a view of `a` is\n    returned; otherwise a new array is created. For earlier NumPy\n    versions a view of `a` is returned only if the order of the\n    axes is changed, otherwise the input array is returned.\n\nExamples\n--------\n>>> x = np.array([[1,2,3]])\n>>> np.swapaxes(x,0,1)\narray([[1],\n       [2],\n       [3]])\n>>> x = np.array([[[0,1],[2,3]],[[4,5],[6,7]]])\n>>> x\narray([[[0, 1],\n        [2, 3]],\n       [[4, 5],\n        [6, 7]]])\n>>> np.swapaxes(x,0,2)\narray([[[0, 4],\n        [2, 6]],\n       [[1, 5],\n        [3, 7]]])",
+      "code": "@array_function_dispatch(_swapaxes_dispatcher)\ndef swapaxes(a, axis1, axis2):\n    \"\"\"Interchange two axes of an array.\"\"\"\n    return _wrapfunc(a, 'swapaxes', axis1, axis2)",
+      "source_location": "numpy/_core/fromnumeric.py",
+      "signature": "numpy.swapaxes(a, axis1, axis2)"
+    },
+    {
+      "name": "numpy.transpose",
+      "category": "Transpose Operations",
+      "description": "Returns an array with axes transposed",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.transpose.html",
+      "doc": "Returns an array with axes transposed.\n\nFor a 1-D array, this returns an unchanged view of the original array, as a\ntransposed vector is simply the same vector. For a 2-D array, this is the\nstandard matrix transpose. For an n-D array, if axes are given, their order\nindicates how the axes are permuted.\n\nParameters\n----------\na : array_like\n    Input array.\naxes : tuple or list of ints, optional\n    If specified, it must be a tuple or list which contains a permutation\n    of [0,1,...,N-1] where N is the number of axes of a. The i'th axis\n    of the returned array will correspond to the axis numbered axes[i]\n    of the input. If not specified, defaults to range(a.ndim)[::-1],\n    which reverses the order of the axes.\n\nReturns\n-------\np : ndarray\n    `a` with its axes permuted. A view is returned whenever possible.\n\nExamples\n--------\n>>> a = np.array([[1, 2], [3, 4]])\n>>> np.transpose(a)\narray([[1, 3],\n       [2, 4]])\n>>> a = np.array([1, 2, 3, 4])\n>>> np.transpose(a)\narray([1, 2, 3, 4])\n>>> a = np.ones((1, 2, 3))\n>>> np.transpose(a, (1, 0, 2)).shape\n(2, 1, 3)",
+      "code": "@array_function_dispatch(_transpose_dispatcher)\ndef transpose(a, axes=None):\n    \"\"\"Returns an array with axes transposed.\"\"\"\n    return _wrapfunc(a, 'transpose', axes)",
+      "signature": "numpy.transpose(a, axes=None)",
+      "source_location": "numpy/_core/fromnumeric.py"
+    },
+    {
+      "name": "numpy.matrix_transpose",
+      "category": "Transpose Operations",
+      "description": "Transposes the matrix (array-like) using NumPy",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.matrix_transpose.html",
+      "doc": "Transposes a matrix (array-like) using NumPy.\n\nParameters\n----------\nx : array_like with last two dimensions forming a matrix\n    Input array having shape (..., M, N) and whose last two dimensions form \n    matrices that are to be transposed.\n\nReturns\n-------\nout : ndarray\n    An array with shape (..., N, M) whose last two dimensions form the \n    transposed matrices.\n\nNotes\n-----\nUnlike np.transpose, this function only transposes the last two dimensions \nand leaves other dimensions in their original order. It is equivalent to \nnp.swapaxes(x, -1, -2).\n\nExamples\n--------\n>>> x = np.ones((2, 3, 4))\n>>> np.matrix_transpose(x).shape\n(2, 4, 3)\n>>> x = np.ones((5, 4, 3, 2))\n>>> np.matrix_transpose(x).shape\n(5, 4, 2, 3)",
+      "code": "@array_function_dispatch(_transpose_dispatcher)\ndef transpose(a, axes=None):\n    \"\"\"Returns an array with axes transposed.\"\"\"\n    return _wrapfunc(a, 'transpose', axes)",
+      "source_location": "numpy/_core/defmatrix.py",
+      "signature": "numpy.matrix_transpose(x)"
+    },
+    {
+      "name": "numpy.atleast_1d",
+      "category": "Changing Dimensions",
+      "description": "Convert inputs to arrays with at least one dimension",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.atleast_1d.html",
+      "doc": "Convert inputs to arrays with at least one dimension.\n\nScalar inputs are converted to 1-dimensional arrays, whilst\nhigher-dimensional inputs are preserved.\n\nParameters\n----------\n*arrays : array_like\n    One or more input arrays.\n\nReturns\n-------\nret : ndarray\n    An array, or list of arrays, each with ``a.ndim >= 1``.\n    Copies are made only if necessary.\n\nExamples\n--------\n>>> np.atleast_1d(1.0)\narray([1.])\n>>> x = np.arange(9.0).reshape(3,3)\n>>> np.atleast_1d(x)\narray([[0., 1., 2.],\n       [3., 4., 5.],\n       [6., 7., 8.]])\n>>> np.atleast_1d(x) is x\nTrue\n>>> np.atleast_1d(1, [3, 4])\n[array([1]), array([3, 4])]",
+      "code": "# Implementation in numpy/_core/shape_base.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/shape_base.py",
+      "signature": "numpy.atleast_1d(*arrays)"
+    },
+    {
+      "name": "numpy.atleast_2d",
+      "category": "Changing Dimensions",
+      "description": "View inputs as arrays with at least two dimensions",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.atleast_2d.html",
+      "doc": "View inputs as arrays with at least two dimensions.\n\nParameters\n----------\n*arrays : array_like\n    One or more array-like sequences. Non-array inputs are converted\n    to arrays. Arrays that already have two or more dimensions are\n    preserved.\n\nReturns\n-------\nres, res2, ... : ndarray\n    An array, or list of arrays, each with ``a.ndim >= 2``.\n    Copies are avoided where possible, and views with two or more\n    dimensions are returned.\n\nExamples\n--------\n>>> np.atleast_2d(3.0)\narray([[3.]])\n>>> x = np.arange(3.0)\n>>> np.atleast_2d(x)\narray([[0., 1., 2.]])\n>>> np.atleast_2d(x).base is x\nTrue\n>>> np.atleast_2d(1, [1, 2], [[1, 2]])\n[array([[1]]), array([[1, 2]]), array([[1, 2]])]",
+      "code": "# Implementation in numpy/_core/shape_base.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/shape_base.py",
+      "signature": "numpy.atleast_2d(*arrays)"
+    },
+    {
+      "name": "numpy.atleast_3d",
+      "category": "Changing Dimensions",
+      "description": "View inputs as arrays with at least three dimensions",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.atleast_3d.html",
+      "doc": "View inputs as arrays with at least three dimensions.\n\nParameters\n----------\n*arrays : array_like\n    One or more array-like sequences. Non-array inputs are converted to\n    arrays. Arrays that already have three or more dimensions are\n    preserved.\n\nReturns\n-------\nres1, res2, ... : ndarray\n    An array, or list of arrays, each with ``a.ndim >= 3``. Copies are\n    avoided where possible, and views with three or more dimensions are\n    returned. For example, a 1-D array of shape ``(N,)`` becomes a view\n    of shape ``(1, N, 1)``, and a 2-D array of shape ``(M, N)`` becomes a\n    view of shape ``(M, N, 1)``.\n\nExamples\n--------\n>>> np.atleast_3d(3.0)\narray([[[3.]]])\n>>> x = np.arange(3.0)\n>>> np.atleast_3d(x).shape\n(1, 3, 1)\n>>> x = np.arange(12.0).reshape(4,3)\n>>> np.atleast_3d(x).shape\n(4, 3, 1)\n>>> np.atleast_3d(x).base is x.base  # x is a reshape, so not base itself\nTrue\n>>> for arr in np.atleast_3d([1, 2], [[1, 2]], [[[1, 2]]]):\n...     print(arr, arr.shape)\n[[[1]\n  [2]]] (1, 2, 1)\n[[[1]\n  [2]]] (1, 2, 1)\n[[[1 2]]] (1, 1, 2)",
+      "code": "# Implementation in numpy/_core/shape_base.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/shape_base.py",
+      "signature": "numpy.atleast_3d(*arrays)"
+    },
+    {
+      "name": "numpy.broadcast",
+      "category": "Changing Dimensions",
+      "description": "Produce an object that mimics broadcasting",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.broadcast.html",
+      "doc": "Produce an object that mimics broadcasting.\n\nParameters\n----------\nin1, in2, ... : array_like\n    Input parameters.\n\nReturns\n-------\nb : broadcast object\n    Broadcast the input parameters against one another, and\n    return an object that encapsulates the result.\n    Amongst others, it has ``shape`` and ``nd`` properties, and\n    may be used as an iterator.\n\nExamples\n--------\n>>> x = np.array([[1], [2], [3]])\n>>> y = np.array([4, 5, 6])\n>>> b = np.broadcast(x, y)\n>>> b.shape\n(3, 3)\n>>> b.nd\n2\n>>> b.reset()\n>>> for u, v in b:\n...     print(u, v)\n1 4\n1 5\n1 6\n2 4\n2 5\n2 6\n3 4\n3 5\n3 6",
+      "code": "# C implementation for performance\n# Produce an object that mimics broadcasting\n#\n# This function is implemented in C as part of NumPy's core multiarray module.\n# The C implementation provides:\n# - Optimized memory access patterns\n# - Efficient array manipulation\n# - Low-level control over data layout\n# - Integration with NumPy's array object internals\n#\n# Source: C implementation in numpy/_core/src/multiarray/arrayobject.c",
+      "source_location": "C implementation in numpy/_core/src/multiarray/arrayobject.c",
+      "signature": "numpy.broadcast(in1, in2, ...)"
+    },
+    {
+      "name": "numpy.broadcast_to",
+      "category": "Changing Dimensions",
+      "description": "Broadcast an array to a new shape",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.broadcast_to.html",
+      "doc": "Broadcast an array to a new shape.\n\nParameters\n----------\narray : array_like\n    The array to broadcast.\nshape : tuple\n    The shape of the desired array.\nsubok : bool, optional\n    If True, then sub-classes will be passed-through, otherwise\n    the returned array will be forced to be a base-class array (default).\n\nReturns\n-------\nbroadcast : array\n    A readonly view on the original array with the given shape. It is\n    typically not contiguous. Furthermore, more than one element of a\n    broadcasted array may refer to a single memory location.\n\nExamples\n--------\n>>> x = np.array([1, 2, 3])\n>>> np.broadcast_to(x, (3, 3))\narray([[1, 2, 3],\n       [1, 2, 3],\n       [1, 2, 3]])",
+      "code": "# Implementation in numpy/lib/_stride_tricks_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_stride_tricks_impl.py",
+      "signature": "numpy.broadcast_to(array, shape, subok=False)"
+    },
+    {
+      "name": "numpy.broadcast_arrays",
+      "category": "Changing Dimensions",
+      "description": "Broadcast any number of arrays against each other",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.broadcast_arrays.html",
+      "doc": "Broadcast any number of arrays against each other.\n\nParameters\n----------\n*args : array_likes\n    The arrays to broadcast.\nsubok : bool, optional\n    If True, then sub-classes will be passed-through, otherwise\n    the returned arrays will be forced to be a base-class array (default).\n\nReturns\n-------\nbroadcasted : list of arrays\n    These arrays are views on the original arrays. They are typically\n    not contiguous. Furthermore, more than one element of a\n    broadcasted array may refer to a single memory location. If you need\n    to write to the arrays, make copies first.\n\nExamples\n--------\n>>> x = np.array([[1,2,3]])\n>>> y = np.array([[4],[5]])\n>>> np.broadcast_arrays(x, y)\n[array([[1, 2, 3],\n       [1, 2, 3]]), array([[4, 4, 4],\n       [5, 5, 5]])]",
+      "code": "# Implementation in numpy/lib/_stride_tricks_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_stride_tricks_impl.py",
+      "signature": "numpy.broadcast_arrays(*args, subok=False)"
+    },
+    {
+      "name": "numpy.expand_dims",
+      "category": "Changing Dimensions",
+      "description": "Expand the shape of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html",
+      "doc": "Expand the shape of an array.\n\nInsert a new axis that will appear at the `axis` position in the expanded\narray shape.\n\nParameters\n----------\na : array_like\n    Input array.\naxis : int or tuple of ints\n    Position in the expanded axes where the new axis (or axes) is placed.\n\nReturns\n-------\nresult : ndarray\n    View of `a` with the number of dimensions increased.\n\nExamples\n--------\n>>> x = np.array([1, 2])\n>>> x.shape\n(2,)\n>>> y = np.expand_dims(x, axis=0)\n>>> y\narray([[1, 2]])\n>>> y.shape\n(1, 2)\n>>> y = np.expand_dims(x, axis=1)\n>>> y\narray([[1],\n       [2]])\n>>> y.shape\n(2, 1)",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.expand_dims(a, axis)"
+    },
+    {
+      "name": "numpy.squeeze",
+      "category": "Changing Dimensions",
+      "description": "Remove axes of length one from a",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.squeeze.html",
+      "doc": "Remove axes of length one from `a`.\n\nParameters\n----------\na : array_like\n    Input data.\naxis : None or int or tuple of ints, optional\n    Selects a subset of the entries of length one in the\n    shape. If an axis is selected with shape entry greater than\n    one, an error is raised.\n\nReturns\n-------\nsqueezed : ndarray\n    The input array, but with all or a subset of the\n    dimensions of length 1 removed. This is always `a` itself\n    or a view into `a`. Note that if all axes are squeezed,\n    the result is a 0d array and not a scalar.\n\nExamples\n--------\n>>> x = np.array([[[0], [1], [2]]])\n>>> x.shape\n(1, 3, 1)\n>>> np.squeeze(x).shape\n(3,)\n>>> np.squeeze(x, axis=0).shape\n(3, 1)\n>>> np.squeeze(x, axis=1).shape\nTraceback (most recent call last):\n...\nValueError: cannot select an axis to squeeze out which has size not equal to one\n>>> np.squeeze(x, axis=2).shape\n(1, 3)\n>>> x = np.array([[1234]])\n>>> x.shape\n(1, 1)\n>>> np.squeeze(x)\narray(1234)  # 0d array\n>>> np.squeeze(x).shape\n()\n>>> np.squeeze(x)[()]\n1234",
+      "code": "@array_function_dispatch(_squeeze_dispatcher)\ndef squeeze(a, axis=None):\n    \"\"\"Remove axes of length one from `a`.\"\"\"\n    try:\n        squeeze = a.squeeze\n    except AttributeError:\n        return _wrapit(a, 'squeeze', axis=axis)\n    if axis is None:\n        return squeeze()\n    else:\n        return squeeze(axis=axis)",
+      "source_location": "numpy/_core/fromnumeric.py",
+      "signature": "numpy.squeeze(a, axis=None)"
+    },
+    {
+      "name": "numpy.concatenate",
+      "category": "Joining Arrays",
+      "description": "Join a sequence of arrays along an existing axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html",
+      "doc": "Join a sequence of arrays along an existing axis.\n\nParameters\n----------\na1, a2, ... : sequence of array_like\n    The arrays must have the same shape, except in the dimension\n    corresponding to `axis` (the first, by default).\naxis : int, optional\n    The axis along which the arrays will be joined. If axis is None,\n    arrays are flattened before use. Default is 0.\nout : ndarray, optional\n    If provided, the destination to place the result. The shape must be\n    correct, matching that of what concatenate would have returned if no\n    out argument were specified.\ndtype : str or dtype\n    If provided, the destination array will have this dtype. Cannot be\n    provided together with `out`.\ncasting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional\n    Controls what kind of data casting may occur. Defaults to 'same_kind'.\n\nReturns\n-------\nres : ndarray\n    The concatenated array.\n\nExamples\n--------\n>>> a = np.array([[1, 2], [3, 4]])\n>>> b = np.array([[5, 6]])\n>>> np.concatenate((a, b), axis=0)\narray([[1, 2],\n       [3, 4],\n       [5, 6]])\n>>> np.concatenate((a, b.T), axis=1)\narray([[1, 2, 5],\n       [3, 4, 6]])\n>>> np.concatenate((a, b), axis=None)\narray([1, 2, 3, 4, 5, 6])",
+      "code": "# C implementation for performance\n# Join a sequence of arrays along an existing axis\n#\n# This function is implemented in C as part of NumPy's core multiarray module.\n# The C implementation provides:\n# - Optimized memory access patterns\n# - Efficient array manipulation\n# - Low-level control over data layout\n# - Integration with NumPy's array object internals\n#\n# Source: C implementation in numpy/_core/src/multiarray/multiarraymodule.c",
+      "signature": "numpy.concatenate((a1, a2, ...), axis=0, out=None, dtype=None, casting='same_kind')",
+      "source_location": "C implementation in numpy/_core/src/multiarray/multiarraymodule.c"
+    },
+    {
+      "name": "numpy.stack",
+      "category": "Joining Arrays",
+      "description": "Join a sequence of arrays along a new axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.stack.html",
+      "doc": "Join a sequence of arrays along a new axis.\n\nThe `axis` parameter specifies the index of the new axis in the\ndimensions of the result. For example, if `axis=0` it will be the first\ndimension and if `axis=-1` it will be the last dimension.\n\nParameters\n----------\narrays : sequence of array_like\n    Each array must have the same shape.\naxis : int, optional\n    The axis in the result array along which the input arrays are stacked.\nout : ndarray, optional\n    If provided, the destination to place the result. The shape must be\n    correct, matching that of what stack would have returned if no\n    out argument were specified.\ndtype : str or dtype\n    If provided, the destination array will have this dtype. Cannot be\n    provided together with `out`.\ncasting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional\n    Controls what kind of data casting may occur. Defaults to 'same_kind'.\n\nReturns\n-------\nstacked : ndarray\n    The stacked array has one more dimension than the input arrays.\n\nExamples\n--------\n>>> arrays = [np.random.randn(3, 4) for _ in range(10)]\n>>> np.stack(arrays, axis=0).shape\n(10, 3, 4)\n>>> np.stack(arrays, axis=1).shape\n(3, 10, 4)\n>>> np.stack(arrays, axis=2).shape\n(3, 4, 10)",
+      "code": "# Implementation in numpy/_core/shape_base.py\n# See NumPy source code repository",
+      "signature": "numpy.stack(arrays, axis=0, out=None, *, dtype=None, casting='same_kind')",
+      "source_location": "numpy/_core/shape_base.py"
+    },
+    {
+      "name": "numpy.vstack",
+      "category": "Joining Arrays",
+      "description": "Stack arrays in sequence vertically (row wise)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.vstack.html",
+      "doc": "Stack arrays in sequence vertically (row wise).\n\nThis is equivalent to concatenation along the first axis after 1-D arrays\nof shape `(N,)` have been reshaped to `(1,N)`. Rebuilds arrays divided by\n`vsplit`.\n\nThis function makes most sense for arrays with up to 3 dimensions. For\ninstance, for pixel-data with a height (first axis), width (second axis),\nand r/g/b channels (third axis). The functions `concatenate`, `stack` and\n`block` provide more general stacking and concatenation operations.\n\nParameters\n----------\ntup : sequence of ndarrays\n    The arrays must have the same shape along all but the first axis.\n    1-D arrays must have the same length.\ndtype : str or dtype\n    If provided, the destination array will have this dtype. Cannot be\n    provided together with `out`.\ncasting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional\n    Controls what kind of data casting may occur. Defaults to 'same_kind'.\n\nReturns\n-------\nstacked : ndarray\n    The array formed by stacking the given arrays, will be at least 2-D.\n\nExamples\n--------\n>>> a = np.array([1, 2, 3])\n>>> b = np.array([4, 5, 6])\n>>> np.vstack((a,b))\narray([[1, 2, 3],\n       [4, 5, 6]])\n>>> a = np.array([[1], [2], [3]])\n>>> b = np.array([[4], [5], [6]])\n>>> np.vstack((a,b))\narray([[1],\n       [2],\n       [3],\n       [4],\n       [5],\n       [6]])",
+      "code": "# Implementation in numpy/_core/shape_base.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/shape_base.py",
+      "signature": "numpy.vstack(tup, *, dtype=None, casting='same_kind')"
+    },
+    {
+      "name": "numpy.hstack",
+      "category": "Joining Arrays",
+      "description": "Stack arrays in sequence horizontally (column wise)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.hstack.html",
+      "doc": "Stack arrays in sequence horizontally (column wise).\n\nThis is equivalent to concatenation along the second axis, except for 1-D\narrays where it concatenates along the first axis. Rebuilds arrays divided\nby `hsplit`.\n\nThis function makes most sense for arrays with up to 3 dimensions. For\ninstance, for pixel-data with a height (first axis), width (second axis),\nand r/g/b channels (third axis). The functions `concatenate`, `stack` and\n`block` provide more general stacking and concatenation operations.\n\nParameters\n----------\ntup : sequence of ndarrays\n    The arrays must have the same shape along all but the second axis,\n    except 1-D arrays which can be any length.\ndtype : str or dtype\n    If provided, the destination array will have this dtype. Cannot be\n    provided together with `out`.\ncasting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional\n    Controls what kind of data casting may occur. Defaults to 'same_kind'.\n\nReturns\n-------\nstacked : ndarray\n    The array formed by stacking the given arrays.\n\nExamples\n--------\n>>> a = np.array((1,2,3))\n>>> b = np.array((4,5,6))\n>>> np.hstack((a,b))\narray([1, 2, 3, 4, 5, 6])\n>>> a = np.array([[1],[2],[3]])\n>>> b = np.array([[4],[5],[6]])\n>>> np.hstack((a,b))\narray([[1, 4],\n       [2, 5],\n       [3, 6]])",
+      "code": "# Implementation in numpy/_core/shape_base.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/shape_base.py",
+      "signature": "numpy.hstack(tup, *, dtype=None, casting='same_kind')"
+    },
+    {
+      "name": "numpy.dstack",
+      "category": "Joining Arrays",
+      "description": "Stack arrays in sequence depth wise (along third axis)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.dstack.html",
+      "doc": "Stack arrays in sequence depth wise (along third axis).\n\nThis is equivalent to concatenation along the third axis after 2-D arrays\nof shape `(M,N)` have been reshaped to `(M,N,1)` and 1-D arrays of shape\n`(N,)` have been reshaped to `(1,N,1)`. Rebuilds arrays divided by\n`dsplit`.\n\nThis function makes most sense for arrays with up to 3 dimensions. For\ninstance, for pixel-data with a height (first axis), width (second axis),\nand r/g/b channels (third axis). The functions `concatenate`, `stack` and\n`block` provide more general stacking and concatenation operations.\n\nParameters\n----------\ntup : sequence of arrays\n    The arrays must have the same shape along all but the third axis.\n    1-D or 2-D arrays must have the same shape.\n\nReturns\n-------\nstacked : ndarray\n    The array formed by stacking the given arrays, will be at least 3-D.\n\nExamples\n--------\n>>> a = np.array((1,2,3))\n>>> b = np.array((2,3,4))\n>>> np.dstack((a,b))\narray([[[1, 2],\n        [2, 3],\n        [3, 4]]])\n>>> a = np.array([[1],[2],[3]])\n>>> b = np.array([[2],[3],[4]])\n>>> np.dstack((a,b))\narray([[[1, 2]],\n       [[2, 3]],\n       [[3, 4]]])",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.dstack(tup)"
+    },
+    {
+      "name": "numpy.column_stack",
+      "category": "Joining Arrays",
+      "description": "Stack 1-D arrays as columns into a 2-D array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.column_stack.html",
+      "doc": "Stack 1-D arrays as columns into a 2-D array.\n\nTake a sequence of 1-D arrays and stack them as columns\nto make a single 2-D array. 2-D arrays are stacked as-is,\njust like with `hstack`. 1-D arrays are turned into 2-D columns\nfirst.\n\nParameters\n----------\ntup : sequence of 1-D or 2-D arrays.\n    Arrays to stack. All of them must have the same first dimension.\n\nReturns\n-------\nstacked : 2-D array\n    The array formed by stacking the given arrays.\n\nExamples\n--------\n>>> a = np.array((1,2,3))\n>>> b = np.array((2,3,4))\n>>> np.column_stack((a,b))\narray([[1, 2],\n       [2, 3],\n       [3, 4]])",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.column_stack(tup)"
+    },
+    {
+      "name": "numpy.row_stack",
+      "category": "Joining Arrays",
+      "description": "Stack 1-D arrays as rows into a 2-D array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.row_stack.html",
+      "doc": "Stack 1-D arrays as rows into a 2-D array.\n\nThis function is an alias for `vstack`. It is provided for\ncompatibility with MATLAB.\n\nParameters\n----------\ntup : sequence of ndarrays\n    The arrays must have the same shape along all but the first axis.\n    1-D arrays must have the same length.\ndtype : str or dtype\n    If provided, the destination array will have this dtype.\ncasting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional\n    Controls what kind of data casting may occur.\n\nReturns\n-------\nstacked : ndarray\n    The array formed by stacking the given arrays.\n\nSee Also\n--------\nvstack : Stack arrays vertically.\n\nExamples\n--------\n>>> np.row_stack([[1, 2], [3, 4]])\narray([[1, 2],\n       [3, 4]])",
+      "code": "# Implementation in numpy/_core/shape_base.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/shape_base.py",
+      "signature": "numpy.row_stack(tup, *, dtype=None, casting='same_kind')"
+    },
+    {
+      "name": "numpy.block",
+      "category": "Joining Arrays",
+      "description": "Assemble an nd-array from nested lists of blocks",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.block.html",
+      "doc": "Assemble an nd-array from nested lists of blocks.\n\nBlocks in the innermost lists are concatenated (see `concatenate`) along\nthe last dimension (-1), then these are concatenated along the\nsecond-last dimension (-2), and so on until the outermost list is reached.\n\nBlocks can be of any dimension, but will not be broadcasted using the normal\nrules. Instead, leading axes of size 1 are inserted, to make ``block.ndim``\nthe same for all blocks. This is primarily useful for working with scalars,\nand means that code like ``np.block([v, 1])`` is valid, where\n``v.ndim == 1``.\n\nWhen the nested list is two levels deep, this allows block matrices to be\nconstructed from their components.\n\nParameters\n----------\narrays : nested list of array_like or scalars (but not tuples)\n    If passed a single ndarray or scalar (a nested list of depth 0), this\n    is returned unmodified (and not copied).\n\n    Elements shapes must match along the appropriate axes (without\n    broadcasting), but leading 1s will be prepended to the shape as\n    necessary to make the dimensions match.\n\nReturns\n-------\nblock_array : ndarray\n    The array assembled from the given blocks.\n\n    The dimensionality of the output is equal to the greatest of:\n    * the dimensionality of all the inputs\n    * the depth to which the input list is nested\n\nExamples\n--------\n>>> A = np.eye(2) * 2\n>>> B = np.eye(3) * 3\n>>> np.block([\n...     [A,               np.zeros((2, 3))],\n...     [np.ones((3, 2)), B               ]\n... ])\narray([[2., 0., 0., 0., 0.],\n       [0., 2., 0., 0., 0.],\n       [1., 1., 3., 0., 0.],\n       [1., 1., 0., 3., 0.],\n       [1., 1., 0., 0., 3.]])\n\nWith a list of depth 1, `block` can be used as `hstack`:\n\n>>> np.block([1, 2, 3])              # hstack([1, 2, 3])\narray([1, 2, 3])\n\n>>> a = np.array([1, 2, 3])\n>>> b = np.array([4, 5, 6])\n>>> np.block([a, b, 10])             # hstack([a, b, 10])\narray([ 1,  2,  3,  4,  5,  6, 10])\n\n>>> A = np.ones((2, 2), int)\n>>> B = 2 * A\n>>> np.block([A, B])                 # hstack([A, B])\narray([[1, 1, 2, 2],\n       [1, 1, 2, 2]])",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.block(arrays)"
+    },
+    {
+      "name": "numpy.split",
+      "category": "Splitting Arrays",
+      "description": "Split an array into multiple sub-arrays",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.split.html",
+      "doc": "Split an array into multiple sub-arrays as views into `ary`.\n\nParameters\n----------\nary : ndarray\n    Array to be divided into sub-arrays.\nindices_or_sections : int or 1-D array\n    If `indices_or_sections` is an integer, N, the array will be divided\n    into N equal arrays along `axis`. If such a split is not possible,\n    an error is raised.\n    \n    If `indices_or_sections` is a 1-D array of sorted integers, the entries\n    indicate where along `axis` the array is split. For example,\n    ``[2, 3]`` would, for ``axis=0``, result in\n    \n    - ary[:2]\n    - ary[2:3]\n    - ary[3:]\n    \n    If an index exceeds the dimension of the array along `axis`,\n    an empty sub-array is returned correspondingly.\naxis : int, optional\n    The axis along which to split, default is 0.\n\nReturns\n-------\nsub-arrays : list of ndarrays\n    A list of sub-arrays as views into `ary`.\n\nExamples\n--------\n>>> x = np.arange(9.0)\n>>> np.split(x, 3)\n[array([0.,  1.,  2.]), array([3.,  4.,  5.]), array([6.,  7.,  8.])]\n>>> x = np.arange(8.0)\n>>> np.split(x, [3, 5, 6, 10])\n[array([0.,  1.,  2.]),\n array([3.,  4.]),\n array([5.]),\n array([6.,  7.]),\n array([], dtype=float64)]",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.split(ary, indices_or_sections, axis=0)"
+    },
+    {
+      "name": "numpy.array_split",
+      "category": "Splitting Arrays",
+      "description": "Split an array into multiple sub-arrays",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.array_split.html",
+      "doc": "Split an array into multiple sub-arrays.\n\nPlease refer to the `split` documentation. The only difference\nbetween these functions is that `array_split` allows\n`indices_or_sections` to be an integer that does *not* equally\ndivide the axis. For an array of length l that should be split\ninto n sections, it returns l % n sub-arrays of size l//n + 1\nand the rest of size l//n.\n\nExamples\n--------\n>>> x = np.arange(8.0)\n>>> np.array_split(x, 3)\n[array([0.,  1.,  2.]), array([3.,  4.,  5.]), array([6.,  7.])]",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.array_split(ary, indices_or_sections, axis=0)"
+    },
+    {
+      "name": "numpy.dsplit",
+      "category": "Splitting Arrays",
+      "description": "Split array into multiple sub-arrays along the 3rd axis (depth)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.dsplit.html",
+      "doc": "Split array into multiple sub-arrays along the 3rd axis (depth).\n\nPlease refer to the `split` documentation. `dsplit` is equivalent\nto `split` with ``axis=2``, the array is always split along the third\naxis provided the array dimension is greater than or equal to 3.\n\nExamples\n--------\n>>> x = np.arange(16.0).reshape(2, 2, 4)\n>>> x\narray([[[ 0.,  1.,  2.,  3.],\n        [ 4.,  5.,  6.,  7.]],\n       [[ 8.,  9., 10., 11.],\n        [12., 13., 14., 15.]]])\n>>> np.dsplit(x, 2)\n[array([[[ 0.,  1.],\n        [ 4.,  5.]],\n       [[ 8.,  9.],\n        [12., 13.]]]),\n array([[[ 2.,  3.],\n        [ 6.,  7.]],\n       [[10., 11.],\n        [14., 15.]]])]\n>>> np.dsplit(x, np.array([3, 6]))\n[array([[[ 0.,  1.,  2.],\n        [ 4.,  5.,  6.]],\n       [[ 8.,  9., 10.],\n        [12., 13., 14.]]]),\n array([[[ 3.],\n        [ 7.]],\n       [[11.],\n        [15.]]]),\n array([], shape=(2, 2, 0), dtype=float64)]",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.dsplit(ary, indices_or_sections)"
+    },
+    {
+      "name": "numpy.hsplit",
+      "category": "Splitting Arrays",
+      "description": "Split an array into multiple sub-arrays horizontally (column-wise)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.hsplit.html",
+      "doc": "Split an array into multiple sub-arrays horizontally (column-wise).\n\nPlease refer to the `split` documentation. `hsplit` is equivalent\nto `split` with ``axis=1``, the array is always split along the second\naxis except for 1-D arrays, where it is split at ``axis=0``.\n\nExamples\n--------\n>>> x = np.arange(16.0).reshape(4, 4)\n>>> x\narray([[ 0.,  1.,  2.,  3.],\n       [ 4.,  5.,  6.,  7.],\n       [ 8.,  9., 10., 11.],\n       [12., 13., 14., 15.]])\n>>> np.hsplit(x, 2)\n[array([[ 0.,  1.],\n       [ 4.,  5.],\n       [ 8.,  9.],\n       [12., 13.]]),\n array([[ 2.,  3.],\n       [ 6.,  7.],\n       [10., 11.],\n       [14., 15.]])]\n>>> np.hsplit(x, np.array([3, 6]))\n[array([[ 0.,  1.,  2.],\n       [ 4.,  5.,  6.],\n       [ 8.,  9., 10.],\n       [12., 13., 14.]]),\n array([[ 3.],\n       [ 7.],\n       [11.],\n       [15.]]),\n array([], shape=(4, 0), dtype=float64)]",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.hsplit(ary, indices_or_sections)"
+    },
+    {
+      "name": "numpy.vsplit",
+      "category": "Splitting Arrays",
+      "description": "Split an array into multiple sub-arrays vertically (row-wise)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.vsplit.html",
+      "doc": "Split an array into multiple sub-arrays vertically (row-wise).\n\nPlease refer to the `split` documentation. `vsplit` is equivalent\nto `split` with ``axis=0`` (default), the array is always split along the\nfirst axis regardless of the array dimension.\n\nExamples\n--------\n>>> x = np.arange(16.0).reshape(4, 4)\n>>> x\narray([[ 0.,  1.,  2.,  3.],\n       [ 4.,  5.,  6.,  7.],\n       [ 8.,  9., 10., 11.],\n       [12., 13., 14., 15.]])\n>>> np.vsplit(x, 2)\n[array([[0., 1., 2., 3.],\n       [4., 5., 6., 7.]]),\n array([[ 8.,  9., 10., 11.],\n       [12., 13., 14., 15.]])]\n>>> np.vsplit(x, np.array([3, 6]))\n[array([[ 0.,  1.,  2.,  3.],\n       [ 4.,  5.,  6.,  7.],\n       [ 8.,  9., 10., 11.]]),\n array([[12., 13., 14., 15.]]),\n array([], shape=(0, 4), dtype=float64)]",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.vsplit(ary, indices_or_sections)"
+    },
+    {
+      "name": "numpy.tile",
+      "category": "Tiling Arrays",
+      "description": "Construct an array by repeating A the number of times given by reps",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.tile.html",
+      "doc": "Construct an array by repeating A the number of times given by reps.\n\nIf `reps` has length ``d``, the result will have dimension of\n``max(d, A.ndim)``.\n\nIf ``A.ndim < d``, `A` is promoted to be d-dimensional by prepending new\naxes. So a shape (3,) array is promoted to (1, 3) for 2-D replication,\nor shape (1, 1, 3) for 3-D replication. If this is not the desired\nbehavior, promote `A` to d-dimensions manually before calling this\nfunction.\n\nIf ``A.ndim > d``, `reps` is promoted to `A`.ndim by prepending 1's to it.\nThus for an `A` of shape (2, 3, 4, 5), a `reps` of (2, 2) is treated as\n(1, 1, 2, 2).\n\nParameters\n----------\nA : array_like\n    The input array.\nreps : array_like\n    The number of repetitions of `A` along each axis.\n\nReturns\n-------\nc : ndarray\n    The tiled output array.\n\nExamples\n--------\n>>> a = np.array([0, 1, 2])\n>>> np.tile(a, 2)\narray([0, 1, 2, 0, 1, 2])\n>>> np.tile(a, (2, 2))\narray([[0, 1, 2, 0, 1, 2],\n       [0, 1, 2, 0, 1, 2]])\n>>> np.tile(a, (2, 1, 2))\narray([[[0, 1, 2, 0, 1, 2]],\n       [[0, 1, 2, 0, 1, 2]]])\n\n>>> b = np.array([[1, 2], [3, 4]])\n>>> np.tile(b, 2)\narray([[1, 2, 1, 2],\n       [3, 4, 3, 4]])\n>>> np.tile(b, (2, 1))\narray([[1, 2],\n       [3, 4],\n       [1, 2],\n       [3, 4]])\n\n>>> c = np.array([1,2,3,4])\n>>> np.tile(c,(4,1))\narray([[1, 2, 3, 4],\n       [1, 2, 3, 4],\n       [1, 2, 3, 4],\n       [1, 2, 3, 4]])",
+      "code": "# Implementation in numpy/lib/_shape_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_shape_base_impl.py",
+      "signature": "numpy.tile(A, reps)"
+    },
+    {
+      "name": "numpy.repeat",
+      "category": "Tiling Arrays",
+      "description": "Repeat elements of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.repeat.html",
+      "doc": "Repeat elements of an array.\n\nParameters\n----------\na : array_like\n    Input array.\nrepeats : int or array of ints\n    The number of repetitions for each element. `repeats` is broadcasted\n    to fit the shape of the given axis.\naxis : int, optional\n    The axis along which to repeat values. By default, use the\n    flattened input array, and return a flat output array.\n\nReturns\n-------\nrepeated_array : ndarray\n    Output array which has the same shape as `a`, except along\n    the given axis.\n\nExamples\n--------\n>>> np.repeat(3, 4)\narray([3, 3, 3, 3])\n>>> x = np.array([[1,2],[3,4]])\n>>> np.repeat(x, 2)\narray([1, 1, 2, 2, 3, 3, 4, 4])\n>>> np.repeat(x, 3, axis=1)\narray([[1, 1, 1, 2, 2, 2],\n       [3, 3, 3, 4, 4, 4]])\n>>> np.repeat(x, [1, 2], axis=0)\narray([[1, 2],\n       [3, 4],\n       [3, 4]])",
+      "code": "# Implementation in numpy/_core/fromnumeric.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/fromnumeric.py",
+      "signature": "numpy.repeat(a, repeats, axis=None)"
+    },
+    {
+      "name": "numpy.delete",
+      "category": "Adding Removing Elements",
+      "description": "Return a new array with sub-arrays along an axis deleted",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.delete.html",
+      "doc": "Return a new array with sub-arrays along an axis deleted.\n\nFor a one dimensional array, this returns those entries not returned by\n`arr[obj]`.\n\nParameters\n----------\narr : array_like\n    Input array.\nobj : slice, int or array of ints\n    Indicate indices of sub-arrays to remove along the specified axis.\naxis : int, optional\n    The axis along which to delete the subarray defined by `obj`.\n    If `axis` is None, `obj` is applied to the flattened array.\n\nReturns\n-------\nout : ndarray\n    A copy of `arr` with the elements specified by `obj` removed. Note\n    that `delete` does not occur in-place. If `axis` is None, `out` is\n    a flattened array.\n\nExamples\n--------\n>>> arr = np.array([[1,2,3,4], [5,6,7,8], [9,10,11,12]])\n>>> arr\narray([[ 1,  2,  3,  4],\n       [ 5,  6,  7,  8],\n       [ 9, 10, 11, 12]])\n>>> np.delete(arr, 1, 0)\narray([[ 1,  2,  3,  4],\n       [ 9, 10, 11, 12]])\n>>> np.delete(arr, np.s_[::2], 1)\narray([[ 2,  4],\n       [ 6,  8],\n       [10, 12]])\n>>> np.delete(arr, [1,3,5], None)\narray([ 1,  3,  5,  7,  8,  9, 10, 11, 12])",
+      "code": "# Implementation in numpy/lib/_function_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_function_base_impl.py",
+      "signature": "numpy.delete(arr, obj, axis=None)"
+    },
+    {
+      "name": "numpy.insert",
+      "category": "Adding Removing Elements",
+      "description": "Insert values along the given axis before the given indices",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.insert.html",
+      "doc": "Insert values along the given axis before the given indices.\n\nParameters\n----------\narr : array_like\n    Input array.\nobj : int, slice or sequence of ints\n    Object that defines the index or indices before which `values` is\n    inserted.\n\n    Support for multiple insertions when `obj` is a single scalar or a\n    sequence with one element (similar to calling insert multiple\n    times).\nvalues : array_like\n    Values to insert into `arr`. If the type of `values` is different\n    from that of `arr`, `values` is converted to the type of `arr`.\n    `values` should be shaped so that ``arr[...,obj,...] = values``\n    is legal.\naxis : int, optional\n    Axis along which to insert `values`. If `axis` is None then `arr`\n    is flattened first.\n\nReturns\n-------\nout : ndarray\n    A copy of `arr` with `values` inserted. Note that `insert`\n    does not occur in-place: a new array is returned. If\n    `axis` is None, `out` is a flattened array.\n\nExamples\n--------\n>>> a = np.array([[1, 1], [2, 2], [3, 3]])\n>>> a\narray([[1, 1],\n       [2, 2],\n       [3, 3]])\n>>> np.insert(a, 1, 5)\narray([1, 5, 1, ..., 2, 3, 3])\n>>> np.insert(a, 1, 5, axis=1)\narray([[1, 5, 1],\n       [2, 5, 2],\n       [3, 5, 3]])",
+      "code": "# Implementation in numpy/lib/_function_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_function_base_impl.py",
+      "signature": "numpy.insert(arr, obj, values, axis=None)"
+    },
+    {
+      "name": "numpy.append",
+      "category": "Adding Removing Elements",
+      "description": "Append values to the end of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.append.html",
+      "doc": "Append values to the end of an array.\n\nParameters\n----------\narr : array_like\n    Values are appended to a copy of this array.\nvalues : array_like\n    These values are appended to a copy of `arr`. It must be of the\n    correct shape (the same shape as `arr`, excluding `axis`). If\n    `axis` is not specified, `values` can be any shape and will be\n    flattened before use.\naxis : int, optional\n    The axis along which `values` are appended. If `axis` is not\n    given, both `arr` and `values` are flattened before use.\n\nReturns\n-------\nappend : ndarray\n    A copy of `arr` with `values` appended to `axis`. Note that\n    `append` does not occur in-place: a new array is allocated and\n    filled. If `axis` is None, `out` is a flattened array.\n\nExamples\n--------\n>>> np.append([1, 2, 3], [[4, 5, 6], [7, 8, 9]])\narray([1, 2, 3, ..., 7, 8, 9])\n>>> np.append([[1, 2, 3], [4, 5, 6]], [[7, 8, 9]], axis=0)\narray([[1, 2, 3],\n       [4, 5, 6],\n       [7, 8, 9]])\n>>> np.append([[1, 2, 3], [4, 5, 6]], [7, 8, 9], axis=0)\nTraceback (most recent call last):\n...\nValueError: all the input arrays must have same number of dimensions, but\nthe array at index 0 has 2 dimension(s) and the array at index 1 has 1\ndimension(s)",
+      "code": "# Implementation in numpy/lib/_function_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_function_base_impl.py",
+      "signature": "numpy.append(arr, values, axis=None)"
+    },
+    {
+      "name": "numpy.resize",
+      "category": "Adding Removing Elements",
+      "description": "Return a new array with the specified shape",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.resize.html",
+      "doc": "Return a new array with the specified shape.\n\nIf the new array is larger than the original array, then the new\narray is filled with repeated copies of `a`. Note that this behavior\nis different from a.resize(new_shape) which fills with zeros instead\nof repeated copies of `a`.\n\nParameters\n----------\na : array_like\n    Array to be resized.\nnew_shape : int or tuple of ints\n    Shape of resized array.\n\nReturns\n-------\nreshaped_array : ndarray\n    The new array is formed from the data in the old array, repeated\n    if necessary to fill out the required number of elements. The\n    data are repeated iterating over the array in C-order.\n\nExamples\n--------\n>>> a=np.array([[0,1],[2,3]])\n>>> np.resize(a,(2,3))\narray([[0, 1, 2],\n       [3, 0, 1]])\n>>> np.resize(a,(1,4))\narray([[0, 1, 2, 3]])\n>>> np.resize(a,(2,4))\narray([[0, 1, 2, 3],\n       [0, 1, 2, 3]])",
+      "code": "@array_function_dispatch(_size_dispatcher)\ndef size(a, axis=None):\n    \"\"\"\n    Return the number of elements along a given axis.\n    \"\"\"\n    if axis is None:\n        try:\n            return a.size\n        except AttributeError:\n            return asarray(a).size\n    else:\n        try:\n            return a.shape[axis]\n        except AttributeError:\n            return asarray(a).shape[axis]",
+      "source_location": "C implementation in numpy/_core/src/multiarray/multiarraymodule.c",
+      "signature": "numpy.resize(a, new_shape)"
+    },
+    {
+      "name": "numpy.trim_zeros",
+      "category": "Adding Removing Elements",
+      "description": "Trim the leading and/or trailing zeros from a 1-D array or sequence",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.trim_zeros.html",
+      "doc": "Trim the leading and/or trailing zeros from a 1-D array or sequence.\n\nParameters\n----------\nfilt : 1-D array or sequence\n    Input array.\ntrim : str, optional\n    A string with 'f' representing trim from front and 'b' to trim from\n    back. Default is 'fb', trim zeros from both front and back of the\n    array.\n\nReturns\n-------\ntrimmed : 1-D array or sequence\n    The result of trimming the input. The input data type is preserved.\n\nExamples\n--------\n>>> a = np.array((0, 0, 0, 1, 2, 3, 0, 2, 1, 0))\n>>> np.trim_zeros(a)\narray([1, 2, 3, 0, 2, 1])\n>>> np.trim_zeros(a, 'b')\narray([0, 0, 0, 1, 2, 3, 0, 2, 1])\n\nThe input data type is preserved, list/tuple in means list/tuple out.\n\n>>> np.trim_zeros([0, 1, 2, 0])\n[1, 2]",
+      "code": "# Implementation in numpy/lib/_function_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_function_base_impl.py",
+      "signature": "numpy.trim_zeros(filt, trim='fb')"
+    },
+    {
+      "name": "numpy.unique",
+      "category": "Adding Removing Elements",
+      "description": "Find the unique elements of an array",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.unique.html",
+      "doc": "Find the unique elements of an array.\n\nReturns the sorted unique elements of an array. There are three optional\noutputs in addition to the unique elements:\n\n* the indices of the input array that give the unique values\n* the indices of the unique array that reconstruct the input array\n* the number of times each unique value comes up in the input array\n\nParameters\n----------\nar : array_like\n    Input array. Unless `axis` is specified, this will be flattened if it\n    is not already 1-D.\nreturn_index : bool, optional\n    If True, also return the indices of `ar` (along the specified axis,\n    if provided, or in the flattened array) that result in the unique array.\nreturn_inverse : bool, optional\n    If True, also return the indices of the unique array (for the specified\n    axis, if provided) that can be used to reconstruct `ar`.\nreturn_counts : bool, optional\n    If True, also return the number of times each unique item appears\n    in `ar`.\naxis : int or None, optional\n    The axis to operate on. If None, `ar` will be flattened. If an integer,\n    the subarrays indexed by the given axis will be flattened and treated\n    as the elements of a 1-D array with the dimension of the given axis,\n    see the notes for more details. Object arrays or structured arrays\n    that contain objects are not supported if the `axis` kwarg is used. The\n    default is None.\nequal_nan : bool, optional\n    If True, collapses multiple NaN values in the return array into one.\n\n    .. versionadded:: 1.24\n\nReturns\n-------\nunique : ndarray\n    The sorted unique values.\nunique_indices : ndarray, optional\n    The indices of the first occurrences of the unique values in the\n    original array. Only provided if `return_index` is True.\nunique_inverse : ndarray, optional\n    The indices to reconstruct the original array from the\n    unique array. Only provided if `return_inverse` is True.\nunique_counts : ndarray, optional\n    The number of times each of the unique values comes up in the\n    original array. Only provided if `return_counts` is True.\n\nExamples\n--------\n>>> np.unique([1, 1, 2, 2, 3, 3])\narray([1, 2, 3])\n>>> a = np.array([[1, 1], [2, 3]])\n>>> np.unique(a)\narray([1, 2, 3])",
+      "code": "# Implementation in numpy/lib/_arraysetops_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_arraysetops_impl.py",
+      "signature": "numpy.unique(ar, return_index=False, return_inverse=False, return_counts=False, axis=None, *, equal_nan=True)"
+    },
+    {
+      "name": "numpy.flip",
+      "category": "Rearranging Elements",
+      "description": "Reverse the order of elements in an array along the given axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.flip.html",
+      "doc": "Reverse the order of elements in an array along the given axis.\n\nThe shape of the array is preserved, but the elements are reordered.\n\nParameters\n----------\nm : array_like\n    Input array.\naxis : None or int or tuple of ints, optional\n    Axis or axes along which to flip over. The default,\n    axis=None, will flip over all of the axes of the input array.\n    If axis is negative it counts from the last to the first axis.\n\n    If axis is a tuple of ints, flipping is performed on all of the axes\n    specified in the tuple.\n\nReturns\n-------\nout : array_like\n    A view of `m` with the entries of axis reversed. Since a view is\n    returned, this operation is done in constant time.\n\nExamples\n--------\n>>> A = np.arange(8).reshape((2,2,2))\n>>> A\narray([[[0, 1],\n        [2, 3]],\n       [[4, 5],\n        [6, 7]]])\n>>> np.flip(A, 0)\narray([[[4, 5],\n        [6, 7]],\n       [[0, 1],\n        [2, 3]]])\n>>> np.flip(A, 1)\narray([[[2, 3],\n        [0, 1]],\n       [[6, 7],\n        [4, 5]]])\n>>> np.flip(A)\narray([[[7, 6],\n        [5, 4]],\n       [[3, 2],\n        [1, 0]]])\n>>> np.flip(A, (0, 2))\narray([[[5, 4],\n        [7, 6]],\n       [[1, 0],\n        [3, 2]]])\n>>> A = np.random.randn(3,4,5)\n>>> np.all(np.flip(A,2) == A[:,:,::-1,...])\nTrue",
+      "code": "# Implementation in numpy/lib/_function_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_function_base_impl.py",
+      "signature": "numpy.flip(m, axis=None)"
+    },
+    {
+      "name": "numpy.fliplr",
+      "category": "Rearranging Elements",
+      "description": "Reverse the order of elements along axis 1 (left/right)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.fliplr.html",
+      "doc": "Reverse the order of elements along axis 1 (left/right).\n\nFor a 2-D array, this flips the entries in each row in the left/right\ndirection. Columns are preserved, but appear in a different order than\nbefore.\n\nParameters\n----------\nm : array_like\n    Input array, must be at least 2-D.\n\nReturns\n-------\nf : ndarray\n    A view of `m` with the columns reversed. Since a view\n    is returned, this operation is :math:`\\\\mathcal O(1)`.\n\nExamples\n--------\n>>> A = np.diag([1.,2.,3.])\n>>> A\narray([[1.,  0.,  0.],\n       [0.,  2.,  0.],\n       [0.,  0.,  3.]])\n>>> np.fliplr(A)\narray([[0.,  0.,  1.],\n       [0.,  2.,  0.],\n       [3.,  0.,  0.]])\n\n>>> A = np.random.randn(2,3,5)\n>>> np.all(np.fliplr(A) == A[:,::-1,...])\nTrue",
+      "code": "# Implementation in numpy/lib/_twodim_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_twodim_base_impl.py",
+      "signature": "numpy.fliplr(m)"
+    },
+    {
+      "name": "numpy.flipud",
+      "category": "Rearranging Elements",
+      "description": "Reverse the order of elements along axis 0 (up/down)",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.flipud.html",
+      "doc": "Reverse the order of elements along axis 0 (up/down).\n\nFor a 2-D array, this flips the entries in each column in the up/down\ndirection. Rows are preserved, but appear in a different order than before.\n\nParameters\n----------\nm : array_like\n    Input array.\n\nReturns\n-------\nout : array_like\n    A view of `m` with the rows reversed. Since a view is\n    returned, this operation is :math:`\\\\mathcal O(1)`.\n\nExamples\n--------\n>>> A = np.diag([1.0, 2, 3])\n>>> A\narray([[1.,  0.,  0.],\n       [0.,  2.,  0.],\n       [0.,  0.,  3.]])\n>>> np.flipud(A)\narray([[0.,  0.,  3.],\n       [0.,  2.,  0.],\n       [1.,  0.,  0.]])\n\n>>> A = np.random.randn(2,3,5)\n>>> np.all(np.flipud(A) == A[::-1,...])\nTrue\n\n>>> np.flipud([1,2])\narray([2, 1])",
+      "code": "# Implementation in numpy/lib/_twodim_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_twodim_base_impl.py",
+      "signature": "numpy.flipud(m)"
+    },
+    {
+      "name": "numpy.roll",
+      "category": "Rearranging Elements",
+      "description": "Roll array elements along a given axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.roll.html",
+      "doc": "Roll array elements along a given axis.\n\nElements that roll beyond the last position are re-introduced at\nthe first.\n\nParameters\n----------\na : array_like\n    Input array.\nshift : int or tuple of ints\n    The number of places by which elements are shifted. If a tuple,\n    then `axis` must be a tuple of the same size, and each of the\n    given axes is shifted by the corresponding number. If an int\n    while `axis` is a tuple of ints, then the same value is used for\n    all given axes.\naxis : int or tuple of ints, optional\n    Axis or axes along which elements are shifted. By default, the\n    array is flattened before shifting, after which the original\n    shape is restored.\n\nReturns\n-------\nres : ndarray\n    Output array, with the same shape as `a`.\n\nExamples\n--------\n>>> x = np.arange(10)\n>>> np.roll(x, 2)\narray([8, 9, 0, 1, 2, 3, 4, 5, 6, 7])\n>>> np.roll(x, -2)\narray([2, 3, 4, 5, 6, 7, 8, 9, 0, 1])\n\n>>> x2 = np.reshape(x, (2, 5))\n>>> x2\narray([[0, 1, 2, 3, 4],\n       [5, 6, 7, 8, 9]])\n>>> np.roll(x2, 1)\narray([[9, 0, 1, 2, 3],\n       [4, 5, 6, 7, 8]])\n>>> np.roll(x2, -1)\narray([[1, 2, 3, 4, 5],\n       [6, 7, 8, 9, 0]])\n>>> np.roll(x2, 1, axis=0)\narray([[5, 6, 7, 8, 9],\n       [0, 1, 2, 3, 4]])\n>>> np.roll(x2, -1, axis=0)\narray([[5, 6, 7, 8, 9],\n       [0, 1, 2, 3, 4]])\n>>> np.roll(x2, 1, axis=1)\narray([[4, 0, 1, 2, 3],\n       [9, 5, 6, 7, 8]])\n>>> np.roll(x2, -1, axis=1)\narray([[1, 2, 3, 4, 0],\n       [6, 7, 8, 9, 5]])\n>>> np.roll(x2, (1, 1), axis=(1, 0))\narray([[9, 5, 6, 7, 8],\n       [4, 0, 1, 2, 3]])\n>>> np.roll(x2, (2, 1), axis=(1, 0))\narray([[8, 9, 5, 6, 7],\n       [3, 4, 0, 1, 2]])",
+      "code": "# Implementation in numpy/_core/numeric.py\n# See NumPy source code repository",
+      "source_location": "numpy/_core/numeric.py",
+      "signature": "numpy.roll(a, shift, axis=None)"
+    },
+    {
+      "name": "numpy.rot90",
+      "category": "Rearranging Elements",
+      "description": "Rotate an array by 90 degrees in the plane specified by axes",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.rot90.html",
+      "doc": "Rotate an array by 90 degrees in the plane specified by axes.\n\nRotation direction is from the first towards the second axis. This means for a 2D array with\nthe default k and axes, the rotation will be counterclockwise.\n\nParameters\n----------\nm : array_like\n    Array of two or more dimensions.\nk : integer\n    Number of times the array is rotated by 90 degrees.\naxes : (2,) array_like\n    The array is rotated in the plane defined by the axes.\n    Axes must be different.\n\nReturns\n-------\ny : ndarray\n    A rotated view of `m`.\n\nExamples\n--------\n>>> m = np.array([[1,2],[3,4]], int)\n>>> m\narray([[1, 2],\n       [3, 4]])\n>>> np.rot90(m)\narray([[2, 4],\n       [1, 3]])\n>>> np.rot90(m, 2)\narray([[4, 3],\n       [2, 1]])\n>>> m = np.arange(8).reshape((2,2,2))\n>>> np.rot90(m, 1, (1,2))\narray([[[1, 3],\n        [0, 2]],\n       [[5, 7],\n        [4, 6]]])",
+      "code": "# Implementation in numpy/lib/_function_base_impl.py\n# See NumPy source code repository",
+      "source_location": "numpy/lib/_function_base_impl.py",
+      "signature": "numpy.rot90(m, k=1, axes=(0, 1))"
+    }
+  ]
+}

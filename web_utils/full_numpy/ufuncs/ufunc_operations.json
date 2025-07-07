@@ -1,0 +1,787 @@
+{
+  "metadata": {
+    "module": "numpy",
+    "description": "NumPy Universal Functions (ufuncs) - Functions that operate element-by-element on arrays, supporting broadcasting, type casting, and various reduction methods",
+    "key_features": [
+      "Element-wise operations on arrays",
+      "Broadcasting support",
+      "Type casting and promotion",
+      "Reduction operations",
+      "Accumulation operations",
+      "Outer product operations",
+      "In-place operations with 'at' method"
+    ],
+    "implementation_note": "Most ufuncs are implemented in C for performance, accessible through the _multiarray_umath extension module"
+  },
+  "ufunc_creation": [
+    {
+      "name": "numpy.frompyfunc",
+      "category": "Ufunc Creation",
+      "description": "Takes an arbitrary Python function and returns a NumPy ufunc",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.frompyfunc.html",
+      "signature": "numpy.frompyfunc(func, /, nin, nout, *, identity=None)",
+      "parameters": {
+        "func": "Python function object to be converted to a ufunc",
+        "nin": "Number of input arguments the function accepts",
+        "nout": "Number of objects returned by the function",
+        "identity": "Optional value to use for the ufunc's identity attribute"
+      },
+      "returns": "A NumPy universal function (ufunc) object",
+      "notes": [
+        "Always returns PyObject arrays",
+        "Useful for applying Python functions with broadcasting",
+        "Not optimized for performance like built-in ufuncs"
+      ],
+      "example": "import numpy as np\noct_array = np.frompyfunc(oct, 1, 1)\nresult = oct_array(np.array((10, 30, 100)))\n# Returns: array(['0o12', '0o36', '0o144'], dtype=object)"
+    },
+    {
+      "name": "numpy.vectorize",
+      "category": "Ufunc Creation",
+      "description": "Generalized function class that converts a Python function into a vectorized function",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.vectorize.html",
+      "signature": "numpy.vectorize(pyfunc=np.NoValue, otypes=None, doc=None, excluded=None, cache=False, signature=None)",
+      "parameters": {
+        "pyfunc": "Python function or method to vectorize",
+        "otypes": "Output data types (list of dtypes)",
+        "doc": "Docstring for the vectorized function",
+        "excluded": "Set of strings or integers representing arguments to exclude from vectorization",
+        "cache": "If True, cache the first function call to determine output types",
+        "signature": "Generalized universal function signature"
+      },
+      "notes": [
+        "Primarily for convenience, not performance",
+        "Essentially implements a for-loop",
+        "Supports decorator syntax",
+        "Can exclude specific arguments from vectorization"
+      ],
+      "example": "def myfunc(a, b):\n    return a - b if a > b else a + b\n\nvfunc = np.vectorize(myfunc)\nresult = vfunc([1, 2, 3, 4], 2)  # Returns [3, 4, 1, 2]"
+    }
+  ],
+  "ufunc_methods": [
+    {
+      "name": "ufunc.__call__",
+      "category": "Core Method",
+      "description": "Call the ufunc on the given arguments",
+      "signature": "ufunc.__call__(*args, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True, signature=None, extobj=None)",
+      "parameters": {
+        "args": "Input arrays",
+        "out": "Location(s) for the result",
+        "where": "Condition to select where the operation should occur",
+        "casting": "Controls what kind of data casting may occur",
+        "order": "Memory layout order",
+        "dtype": "Output data type",
+        "subok": "If True, subclasses will be passed through",
+        "signature": "Generalized ufunc signature",
+        "extobj": "Buffer size, error mode, and error callback function"
+      }
+    },
+    {
+      "name": "ufunc.reduce",
+      "category": "Reduction Method",
+      "description": "Reduces array's dimension by applying ufunc along specified axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ufunc.reduce.html",
+      "signature": "ufunc.reduce(array, axis=0, dtype=None, out=None, keepdims=False, initial=<no value>, where=True)",
+      "parameters": {
+        "array": "Array to be reduced",
+        "axis": "Axis or axes along which to reduce",
+        "dtype": "Data type for intermediate computations",
+        "out": "Location for the result",
+        "keepdims": "If True, axes which are reduced are left as dimensions with size one",
+        "initial": "Starting value for the reduction",
+        "where": "Boolean array for selective reduction"
+      },
+      "example": "np.multiply.reduce([2,3,5])  # Returns 30\nnp.add.reduce([[1,2],[3,4]], axis=0)  # Returns [4, 6]",
+      "notes": [
+        "For add.reduce, equivalent to sum()",
+        "For multiply.reduce, equivalent to prod()",
+        "Supports multi-axis reduction"
+      ]
+    },
+    {
+      "name": "ufunc.accumulate",
+      "category": "Accumulation Method",
+      "description": "Accumulate the result of applying operator to all elements",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ufunc.accumulate.html",
+      "signature": "ufunc.accumulate(array, axis=0, dtype=None, out=None)",
+      "parameters": {
+        "array": "Input array",
+        "axis": "Axis along which to accumulate",
+        "dtype": "Data type for intermediate results",
+        "out": "Location for the result"
+      },
+      "example": "np.add.accumulate([2, 3, 5])  # Returns [2, 5, 10]\nnp.multiply.accumulate([2, 3, 5])  # Returns [2, 6, 30]",
+      "notes": [
+        "Returns array of same shape with intermediate results",
+        "For add.accumulate, equivalent to cumsum()",
+        "For multiply.accumulate, equivalent to cumprod()"
+      ]
+    },
+    {
+      "name": "ufunc.reduceat",
+      "category": "Reduction Method",
+      "description": "Performs a (local) reduce with specified slices over a single axis",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ufunc.reduceat.html",
+      "signature": "ufunc.reduceat(array, indices, axis=0, dtype=None, out=None)",
+      "parameters": {
+        "array": "Input array",
+        "indices": "Indices specifying slice boundaries",
+        "axis": "Axis along which to apply reduceat",
+        "dtype": "Data type for intermediate computations",
+        "out": "Location for the result"
+      },
+      "notes": [
+        "Applies reduction to specified slices of the array",
+        "Useful for segmented reductions"
+      ]
+    },
+    {
+      "name": "ufunc.outer",
+      "category": "Outer Product Method",
+      "description": "Apply ufunc to all pairs (a, b) with a in A and b in B",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ufunc.outer.html",
+      "signature": "ufunc.outer(A, B, /, **kwargs)",
+      "parameters": {
+        "A": "First input array",
+        "B": "Second input array",
+        "**kwargs": "Additional keyword arguments passed to the ufunc"
+      },
+      "example": "np.multiply.outer([1, 2, 3], [4, 5, 6])\n# Returns:\n# array([[ 4,  5,  6],\n#        [ 8, 10, 12],\n#        [12, 15, 18]])",
+      "notes": [
+        "Result has dimension A.ndim + B.ndim",
+        "More general than numpy.outer which only works on 1-D arrays"
+      ]
+    },
+    {
+      "name": "ufunc.at",
+      "category": "In-place Method",
+      "description": "Performs operation in-place at specified array indices",
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.ufunc.at.html",
+      "signature": "ufunc.at(a, indices, b=None, /)",
+      "parameters": {
+        "a": "Array to perform in-place operation on",
+        "indices": "Indices where operation is applied",
+        "b": "Second operand for binary ufuncs"
+      },
+      "example": "a = np.array([1, 2, 3, 4])\nnp.add.at(a, [0, 1, 2, 2], 1)\n# a becomes [2, 3, 5, 4]",
+      "notes": [
+        "Performs unbuffered in-place operation",
+        "Useful for updating specific array elements"
+      ]
+    }
+  ],
+  "ufunc_attributes": [
+    {
+      "name": "identity",
+      "description": "The identity value for the ufunc",
+      "details": "Value such that func(x, identity) == x for all x",
+      "examples": {
+        "add.identity": "0",
+        "multiply.identity": "1",
+        "logical_and.identity": "True",
+        "logical_or.identity": "False"
+      }
+    },
+    {
+      "name": "nargs",
+      "description": "The number of arguments the ufunc accepts",
+      "details": "Equal to nin + nout"
+    },
+    {
+      "name": "nin",
+      "description": "The number of input arguments",
+      "examples": {
+        "add.nin": "2",
+        "sin.nin": "1",
+        "modf.nin": "1"
+      }
+    },
+    {
+      "name": "nout",
+      "description": "The number of output arguments",
+      "examples": {
+        "add.nout": "1",
+        "modf.nout": "2",
+        "divmod.nout": "2"
+      }
+    },
+    {
+      "name": "ntypes",
+      "description": "The number of supported input/output type combinations"
+    },
+    {
+      "name": "signature",
+      "description": "Core signature for generalized ufuncs",
+      "details": "Defines core dimensionality of inputs and outputs",
+      "example": "matmul.signature: '(n,k),(k,m)->(n,m)'"
+    },
+    {
+      "name": "types",
+      "description": "List of supported data type signatures",
+      "details": "Shows input->output type mappings",
+      "example": "add.types: ['??->?', 'bb->b', 'BB->B', 'hh->h', ...]"
+    }
+  ],
+  "ufunc_categories": {
+    "math_operations": [
+      {
+        "name": "add",
+        "description": "Add arguments element-wise",
+        "signature": "x1 + x2",
+        "identity": "0"
+      },
+      {
+        "name": "subtract",
+        "description": "Subtract arguments element-wise",
+        "signature": "x1 - x2"
+      },
+      {
+        "name": "multiply",
+        "description": "Multiply arguments element-wise",
+        "signature": "x1 * x2",
+        "identity": "1"
+      },
+      {
+        "name": "divide",
+        "description": "Returns a true division of the inputs, element-wise",
+        "signature": "x1 / x2"
+      },
+      {
+        "name": "true_divide",
+        "description": "Returns a true division of the inputs, element-wise",
+        "signature": "x1 / x2"
+      },
+      {
+        "name": "floor_divide",
+        "description": "Return the largest integer smaller or equal to the division of the inputs",
+        "signature": "x1 // x2"
+      },
+      {
+        "name": "negative",
+        "description": "Numerical negative, element-wise",
+        "signature": "-x"
+      },
+      {
+        "name": "positive",
+        "description": "Numerical positive, element-wise",
+        "signature": "+x"
+      },
+      {
+        "name": "power",
+        "description": "First array elements raised to powers from second array, element-wise",
+        "signature": "x1 ** x2"
+      },
+      {
+        "name": "remainder",
+        "description": "Return element-wise remainder of division",
+        "signature": "x1 % x2"
+      },
+      {
+        "name": "mod",
+        "description": "Return element-wise remainder of division",
+        "signature": "x1 % x2"
+      },
+      {
+        "name": "fmod",
+        "description": "Return the element-wise remainder of division",
+        "signature": "fmod(x1, x2)"
+      },
+      {
+        "name": "divmod",
+        "description": "Return element-wise quotient and remainder simultaneously",
+        "nout": "2"
+      },
+      {
+        "name": "absolute",
+        "description": "Calculate the absolute value element-wise",
+        "signature": "|x|"
+      },
+      {
+        "name": "fabs",
+        "description": "Compute the absolute values element-wise",
+        "note": "For floating-point numbers only"
+      },
+      {
+        "name": "rint",
+        "description": "Round elements to the nearest integer"
+      },
+      {
+        "name": "sign",
+        "description": "Returns element-wise indication of the sign of a number"
+      },
+      {
+        "name": "heaviside",
+        "description": "Compute the Heaviside step function"
+      },
+      {
+        "name": "conj",
+        "description": "Return the complex conjugate, element-wise"
+      },
+      {
+        "name": "conjugate",
+        "description": "Return the complex conjugate, element-wise"
+      },
+      {
+        "name": "exp",
+        "description": "Calculate the exponential of all elements in the input array"
+      },
+      {
+        "name": "exp2",
+        "description": "Calculate 2**p for all p in the input array"
+      },
+      {
+        "name": "log",
+        "description": "Natural logarithm, element-wise"
+      },
+      {
+        "name": "log2",
+        "description": "Base-2 logarithm of x"
+      },
+      {
+        "name": "log10",
+        "description": "Return the base 10 logarithm of the input array, element-wise"
+      },
+      {
+        "name": "expm1",
+        "description": "Calculate exp(x) - 1 for all elements in the array"
+      },
+      {
+        "name": "log1p",
+        "description": "Return the natural logarithm of one plus the input array, element-wise"
+      },
+      {
+        "name": "sqrt",
+        "description": "Return the non-negative square-root of an array, element-wise"
+      },
+      {
+        "name": "square",
+        "description": "Return the element-wise square of the input"
+      },
+      {
+        "name": "cbrt",
+        "description": "Return the cube-root of an array, element-wise"
+      },
+      {
+        "name": "reciprocal",
+        "description": "Return the reciprocal of the argument, element-wise"
+      },
+      {
+        "name": "gcd",
+        "description": "Returns the greatest common divisor of |x1| and |x2|"
+      },
+      {
+        "name": "lcm",
+        "description": "Returns the lowest common multiple of |x1| and |x2|"
+      }
+    ],
+    "trigonometric_functions": [
+      {
+        "name": "sin",
+        "description": "Trigonometric sine, element-wise"
+      },
+      {
+        "name": "cos",
+        "description": "Cosine element-wise"
+      },
+      {
+        "name": "tan",
+        "description": "Compute tangent element-wise"
+      },
+      {
+        "name": "arcsin",
+        "description": "Inverse sine, element-wise"
+      },
+      {
+        "name": "arccos",
+        "description": "Trigonometric inverse cosine, element-wise"
+      },
+      {
+        "name": "arctan",
+        "description": "Trigonometric inverse tangent, element-wise"
+      },
+      {
+        "name": "arctan2",
+        "description": "Element-wise arc tangent of x1/x2 choosing the quadrant correctly"
+      },
+      {
+        "name": "hypot",
+        "description": "Given the 'legs' of a right triangle, return its hypotenuse"
+      },
+      {
+        "name": "sinh",
+        "description": "Hyperbolic sine, element-wise"
+      },
+      {
+        "name": "cosh",
+        "description": "Hyperbolic cosine, element-wise"
+      },
+      {
+        "name": "tanh",
+        "description": "Compute hyperbolic tangent element-wise"
+      },
+      {
+        "name": "arcsinh",
+        "description": "Inverse hyperbolic sine element-wise"
+      },
+      {
+        "name": "arccosh",
+        "description": "Inverse hyperbolic cosine, element-wise"
+      },
+      {
+        "name": "arctanh",
+        "description": "Inverse hyperbolic tangent element-wise"
+      },
+      {
+        "name": "degrees",
+        "description": "Convert angles from radians to degrees"
+      },
+      {
+        "name": "radians",
+        "description": "Convert angles from degrees to radians"
+      },
+      {
+        "name": "deg2rad",
+        "description": "Convert angles from degrees to radians"
+      },
+      {
+        "name": "rad2deg",
+        "description": "Convert angles from radians to degrees"
+      }
+    ],
+    "bit_twiddling_functions": [
+      {
+        "name": "bitwise_and",
+        "description": "Compute the bit-wise AND of two arrays element-wise",
+        "signature": "x1 & x2",
+        "identity": "-1"
+      },
+      {
+        "name": "bitwise_or",
+        "description": "Compute the bit-wise OR of two arrays element-wise",
+        "signature": "x1 | x2",
+        "identity": "0"
+      },
+      {
+        "name": "bitwise_xor",
+        "description": "Compute the bit-wise XOR of two arrays element-wise",
+        "signature": "x1 ^ x2",
+        "identity": "0"
+      },
+      {
+        "name": "invert",
+        "description": "Compute bit-wise inversion, or bit-wise NOT, element-wise",
+        "signature": "~x"
+      },
+      {
+        "name": "bitwise_not",
+        "description": "Compute bit-wise inversion, or bit-wise NOT, element-wise",
+        "signature": "~x"
+      },
+      {
+        "name": "left_shift",
+        "description": "Shift the bits of an integer to the left",
+        "signature": "x1 << x2"
+      },
+      {
+        "name": "right_shift",
+        "description": "Shift the bits of an integer to the right",
+        "signature": "x1 >> x2"
+      }
+    ],
+    "comparison_functions": [
+      {
+        "name": "greater",
+        "description": "Return the truth value of (x1 > x2) element-wise"
+      },
+      {
+        "name": "greater_equal",
+        "description": "Return the truth value of (x1 >= x2) element-wise"
+      },
+      {
+        "name": "less",
+        "description": "Return the truth value of (x1 < x2) element-wise"
+      },
+      {
+        "name": "less_equal",
+        "description": "Return the truth value of (x1 <= x2) element-wise"
+      },
+      {
+        "name": "not_equal",
+        "description": "Return (x1 != x2) element-wise"
+      },
+      {
+        "name": "equal",
+        "description": "Return (x1 == x2) element-wise"
+      },
+      {
+        "name": "logical_and",
+        "description": "Compute the truth value of x1 AND x2 element-wise",
+        "identity": "True"
+      },
+      {
+        "name": "logical_or",
+        "description": "Compute the truth value of x1 OR x2 element-wise",
+        "identity": "False"
+      },
+      {
+        "name": "logical_xor",
+        "description": "Compute the truth value of x1 XOR x2, element-wise",
+        "identity": "False"
+      },
+      {
+        "name": "logical_not",
+        "description": "Compute the truth value of NOT x element-wise"
+      },
+      {
+        "name": "maximum",
+        "description": "Element-wise maximum of array elements"
+      },
+      {
+        "name": "minimum",
+        "description": "Element-wise minimum of array elements"
+      },
+      {
+        "name": "fmax",
+        "description": "Element-wise maximum of array elements (ignores NaN)"
+      },
+      {
+        "name": "fmin",
+        "description": "Element-wise minimum of array elements (ignores NaN)"
+      }
+    ],
+    "floating_functions": [
+      {
+        "name": "isfinite",
+        "description": "Test element-wise for finiteness (not infinity or not Not a Number)"
+      },
+      {
+        "name": "isinf",
+        "description": "Test element-wise for positive or negative infinity"
+      },
+      {
+        "name": "isnan",
+        "description": "Test element-wise for NaN and return result as a boolean array"
+      },
+      {
+        "name": "isnat",
+        "description": "Test element-wise for NaT (not a time) and return result as a boolean array"
+      },
+      {
+        "name": "fabs",
+        "description": "Compute the absolute values element-wise"
+      },
+      {
+        "name": "signbit",
+        "description": "Returns element-wise True where signbit is set (less than zero)"
+      },
+      {
+        "name": "copysign",
+        "description": "Change the sign of x1 to that of x2, element-wise"
+      },
+      {
+        "name": "nextafter",
+        "description": "Return the next floating-point value after x1 towards x2, element-wise"
+      },
+      {
+        "name": "spacing",
+        "description": "Return the distance between x and the nearest adjacent number"
+      },
+      {
+        "name": "modf",
+        "description": "Return the fractional and integral parts of an array, element-wise",
+        "nout": "2"
+      },
+      {
+        "name": "ldexp",
+        "description": "Returns x1 * 2**x2, element-wise"
+      },
+      {
+        "name": "frexp",
+        "description": "Decompose the elements of x into mantissa and twos exponent",
+        "nout": "2"
+      },
+      {
+        "name": "fmod",
+        "description": "Return the element-wise remainder of division"
+      },
+      {
+        "name": "floor",
+        "description": "Return the floor of the input, element-wise"
+      },
+      {
+        "name": "ceil",
+        "description": "Return the ceiling of the input, element-wise"
+      },
+      {
+        "name": "trunc",
+        "description": "Return the truncated value of the input, element-wise"
+      }
+    ]
+  },
+  "broadcasting_rules": {
+    "description": "Broadcasting allows universal functions to deal with inputs that do not have exactly the same shape",
+    "rules": [
+      "All input arrays with ndim smaller than the input array of largest ndim, have 1's prepended to their shapes",
+      "The size in each dimension of the output shape is the maximum of all the input sizes in that dimension",
+      "An input can be used in calculation if its size in a particular dimension either matches the output size or is 1",
+      "If an input has a dimension size of 1, the first data entry in that dimension is used for all calculations along that dimension"
+    ],
+    "example": "a.shape = (3, 1)\nb.shape = (1, 4)\n(a + b).shape = (3, 4)"
+  },
+  "type_casting_rules": {
+    "description": "Rules for how NumPy ufuncs handle type promotion and casting",
+    "casting_modes": {
+      "no": "No casting allowed",
+      "equiv": "Only byte-order changes allowed",
+      "safe": "Only casts that preserve values allowed",
+      "same_kind": "Safe casts or casts within the same kind",
+      "unsafe": "Any cast allowed"
+    },
+    "promotion_rules": [
+      "Operations between different types follow a hierarchy",
+      "bool -> int -> float -> complex",
+      "Smaller dtypes promoted to larger dtypes of same kind",
+      "Mixed integer/float operations promote to float"
+    ]
+  },
+  "performance_notes": [
+    "Ufuncs are implemented in C for optimal performance",
+    "Broadcasting avoids unnecessary memory copies",
+    "Contiguous memory layout improves cache efficiency",
+    "Use dtype parameter to avoid unnecessary type conversions",
+    "The 'out' parameter avoids allocating new arrays",
+    "For custom functions, frompyfunc is faster than vectorize for simple operations"
+  ],
+  "common_patterns": {
+    "reduction_examples": {
+      "sum": "np.add.reduce(arr)",
+      "product": "np.multiply.reduce(arr)",
+      "cumulative_sum": "np.add.accumulate(arr)",
+      "cumulative_product": "np.multiply.accumulate(arr)"
+    },
+    "outer_product_examples": {
+      "multiplication_table": "np.multiply.outer(np.arange(1,10), np.arange(1,10))",
+      "cartesian_sum": "np.add.outer(arr1, arr2)"
+    },
+    "conditional_operations": {
+      "where_parameter": "np.add(a, b, where=mask)",
+      "at_method": "np.add.at(arr, indices, values)"
+    }
+  },
+  "implementation_details": {
+    "c_level_structure": {
+      "description": "Ufuncs are implemented as PyUFuncObject in C",
+      "key_components": [
+        "Core function metadata (nin, nout, ntypes)",
+        "Signature information for generalized ufuncs",
+        "Identity values for reductions",
+        "Type resolution and casting rules",
+        "Inner loop implementations for each supported dtype"
+      ],
+      "source_files": [
+        "numpy/_core/src/umath/ufunc_object.c - Main ufunc object implementation",
+        "numpy/_core/src/umath/ufunc_type_resolution.c - Type resolution logic",
+        "numpy/_core/src/umath/loops.c.src - Inner loop implementations",
+        "numpy/_core/include/numpy/ufuncobject.h - Ufunc object definitions"
+      ]
+    },
+    "type_resolution_process": {
+      "description": "Legacy type resolution mechanism (to be replaced)",
+      "steps": [
+        "Search through predefined type loops",
+        "Check if input types can be safely cast",
+        "Select first compatible loop",
+        "Validate output type casting"
+      ],
+      "special_cases": [
+        "Datetime and timedelta operations",
+        "User-defined types",
+        "Scalar and array type promotions"
+      ]
+    },
+    "generalized_ufuncs": {
+      "description": "Ufuncs that operate on sub-arrays rather than scalars",
+      "signature_format": "(i,j),(j,k)->(i,k)",
+      "examples": {
+        "matmul": "Matrix multiplication with signature (n,k),(k,m)->(n,m)",
+        "inner1d": "Inner product with signature (i),(i)->()",
+        "solve": "Linear equation solver with signature (m,m),(m,n)->(m,n)"
+      },
+      "key_functions": [
+        "_parse_signature() - Parses core dimension signatures",
+        "_get_coredim_sizes() - Validates dimension compatibility",
+        "PyUFunc_GeneralizedFunctionInternal() - Executes generalized ufunc"
+      ]
+    },
+    "loop_selection": {
+      "description": "How NumPy selects the appropriate inner loop",
+      "factors": [
+        "Input data types",
+        "Output data type requirements",
+        "Casting safety rules",
+        "Performance considerations"
+      ],
+      "optimization": "Specialized loops for common type combinations"
+    }
+  },
+  "example_implementations": {
+    "frompyfunc_usage": {
+      "description": "Creating a ufunc from a Python function",
+      "code": "import numpy as np\n\n# Convert Python's divmod to a ufunc\ndivmod_ufunc = np.frompyfunc(divmod, 2, 2)\n\n# Usage\na = np.array([10, 20, 30])\nb = np.array([3, 6, 7])\nquotient, remainder = divmod_ufunc(a, b)\nprint(quotient)  # array([3, 3, 4], dtype=object)\nprint(remainder)  # array([1, 2, 2], dtype=object)"
+    },
+    "vectorize_decorator": {
+      "description": "Using vectorize as a decorator",
+      "code": "@np.vectorize\ndef myfunc(a, b):\n    \"\"\"Return a-b if a>b, otherwise return a+b\"\"\"\n    if a > b:\n        return a - b\n    else:\n        return a + b\n\n# Usage\nresult = myfunc([1, 2, 3, 4], 2)\nprint(result)  # [3, 4, 1, 2]"
+    },
+    "custom_reduction": {
+      "description": "Implementing custom reductions with ufunc methods",
+      "code": "import numpy as np\n\n# Custom reduction using multiply.reduce\ndef factorial(n):\n    \"\"\"Compute factorial using ufunc reduction\"\"\"\n    return np.multiply.reduce(np.arange(1, n+1))\n\nprint(factorial(5))  # 120\n\n# Multi-axis reduction\narr = np.arange(24).reshape(2, 3, 4)\n# Reduce over first two axes\nresult = np.add.reduce(arr, axis=(0, 1))\nprint(result.shape)  # (4,)"
+    },
+    "generalized_ufunc_example": {
+      "description": "Using generalized ufuncs",
+      "code": "import numpy as np\n\n# Matrix multiplication as a generalized ufunc\nA = np.random.rand(5, 3, 4)  # 5 matrices of shape 3x4\nB = np.random.rand(5, 4, 2)  # 5 matrices of shape 4x2\n\n# matmul operates on the last two dimensions\nC = np.matmul(A, B)  # Result shape: (5, 3, 2)\n\n# Equivalent to:\n# for i in range(5):\n#     C[i] = np.dot(A[i], B[i])"
+    }
+  },
+  "advanced_topics": {
+    "custom_dtypes": {
+      "description": "Ufuncs can work with user-defined dtypes",
+      "requirements": [
+        "Define dtype with proper type descriptors",
+        "Register loops for the custom dtype",
+        "Implement type resolution rules"
+      ]
+    },
+    "subarray_iteration": {
+      "description": "How ufuncs iterate over subarrays",
+      "mechanisms": [
+        "Strided iteration for contiguous data",
+        "Buffering for non-contiguous arrays",
+        "Special handling for generalized ufuncs"
+      ]
+    },
+    "error_handling": {
+      "description": "Ufunc error handling mechanisms",
+      "modes": {
+        "ignore": "Ignore floating-point errors",
+        "warn": "Print warnings for errors",
+        "raise": "Raise exceptions on errors",
+        "call": "Call user-defined error handler",
+        "print": "Print errors to stdout",
+        "log": "Log errors"
+      },
+      "api": "np.seterr(), np.geterr(), np.errstate()"
+    }
+  },
+  "source_code_references": {
+    "note": "Most ufunc implementations are in C for performance. The C source code includes:",
+    "core_files": {
+      "ufunc_object.c": "Main ufunc object implementation and method definitions",
+      "loops.c.src": "Template file generating type-specific inner loops",
+      "ufunc_type_resolution.c": "Type promotion and resolution logic",
+      "override.c": "Support for __array_ufunc__ protocol"
+    },
+    "python_wrappers": {
+      "_multiarray_umath": "Extension module exposing ufuncs to Python",
+      "umath.py": "Python module importing and organizing ufuncs"
+    }
+  }
+}

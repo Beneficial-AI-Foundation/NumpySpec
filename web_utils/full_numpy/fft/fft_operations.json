@@ -1,0 +1,128 @@
+[
+  {
+    "name": "numpy.fft.fft",
+    "description": "Compute the one-dimensional discrete Fourier Transform",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html",
+    "doc": "numpy.fft.fft(a, n=None, axis=-1, norm=None, out=None)\n\nCompute the one-dimensional discrete Fourier Transform using the efficient Fast Fourier Transform (FFT) algorithm.\n\nParameters:\n- a: Input array (can be complex)\n- n: Optional length of transformed axis (default: input length)\n- axis: Axis to compute FFT (default: last axis)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- Complex ndarray transformed along specified axis\n\nNotes:\n- Most efficient when input size is a power of 2\n- FFT calculates Discrete Fourier Transform efficiently\n- Uses symmetries to optimize calculation\n- Supports real and complex inputs\n- Handles input cropping and zero-padding\n- Provides flexible normalization options\n\nExample:\nimport numpy as np\nnp.fft.fft(np.exp(2j * np.pi * np.arange(8) / 8))",
+    "code": "@array_function_dispatch(_fft_dispatcher)\ndef fft(a, n=None, axis=-1, norm=None, out=None):\n    \"\"\"\n    Compute the one-dimensional discrete Fourier Transform.\n    \"\"\"\n    a = asarray(a)\n    if n is None:\n        n = a.shape[axis]\n    output = _raw_fft(a, n, axis, False, True, norm, out)\n    return output"
+  },
+  {
+    "name": "numpy.fft.ifft",
+    "description": "Compute the one-dimensional inverse discrete Fourier Transform",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.ifft.html",
+    "doc": "numpy.fft.ifft(a, n=None, axis=-1, norm=None, out=None)\n\nCompute the one-dimensional inverse discrete Fourier Transform. It calculates the inverse of the one-dimensional n-point discrete Fourier transform, such that ifft(fft(a)) == a within numerical accuracy.\n\nParameters:\n- a: Input array (can be complex)\n- n: Optional length of transformed axis (default: input length)\n- axis: Axis to compute inverse DFT (default: last axis)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- Complex ndarray: Transformed input, truncated or zero-padded\n\nNotes:\n- Input should be ordered like FFT output\n- Padding zeros at the end is common but can produce surprising results\n- Zero frequency term is at a[0]\n\nExample:\nimport numpy as np\nnp.fft.ifft([0, 4, 0, 0])\n# Returns: array([ 1.+0.j,  0.+1.j, -1.+0.j,  0.-1.j])",
+    "code": "@array_function_dispatch(_fft_dispatcher)\ndef ifft(a, n=None, axis=-1, norm=None, out=None):\n    \"\"\"\n    Compute the one-dimensional inverse discrete Fourier Transform.\n    \"\"\"\n    a = asarray(a)\n    if n is None:\n        n = a.shape[axis]\n    output = _raw_fft(a, n, axis, False, False, norm, out=out)\n    return output"
+  },
+  {
+    "name": "numpy.fft.fft2",
+    "description": "Compute the 2-dimensional discrete Fourier Transform",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.fft2.html",
+    "doc": "numpy.fft.fft2(a, s=None, axes=(-2, -1), norm=None, out=None)\n\nCompute the 2-dimensional discrete Fourier Transform over specified axes of an M-dimensional array using the Fast Fourier Transform (FFT).\n\nParameters:\n- a: Input array (can be complex)\n- s: Optional sequence of integers specifying output shape\n- axes: Optional sequence of axes to transform (default: last two axes)\n- norm: Optional normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- Complex ndarray transformed along specified axes\n\nNotes:\n- Computes FFT by default over last two axes\n- Zero frequency term is in low-order corner\n- Positive and negative frequency terms are arranged in specific order\n\nExample:\nimport numpy as np\na = np.mgrid[:5, :5][0]\nnp.fft.fft2(a)",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef fft2(a, s=None, axes=(-2, -1), norm=None, out=None):\n    \"\"\"\n    Compute the 2-dimensional discrete Fourier Transform.\n    \"\"\"\n    return _raw_fftnd(a, s, axes, fft, norm, out=out)"
+  },
+  {
+    "name": "numpy.fft.ifft2",
+    "description": "Compute the 2-dimensional inverse discrete Fourier Transform",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.ifft2.html",
+    "doc": "numpy.fft.ifft2(a, s=None, axes=(-2, -1), norm=None, out=None)\n\nCompute the 2-dimensional inverse discrete Fourier Transform over specified axes using the Fast Fourier Transform (FFT). It essentially reverses the 2D FFT, such that ifft2(fft2(a)) == a within numerical accuracy.\n\nParameters:\n- a: Input array (can be complex)\n- s: Optional sequence of integers specifying output shape\n- axes: Axes over which to compute FFT (default: last two axes)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- Complex ndarray transformed along specified axes\n\nNotes:\n- Handles zero-padding by appending zeros to input\n- Computes inverse transform over last two axes by default\n- Preserves input array's frequency ordering\n\nExample:\nimport numpy as np\na = 4 * np.eye(4)\nnp.fft.ifft2(a)",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):\n    \"\"\"\n    Compute the 2-dimensional inverse discrete Fourier Transform.\n    \"\"\"\n    return _raw_fftnd(a, s, axes, ifft, norm, out=None)"
+  },
+  {
+    "name": "numpy.fft.fftn",
+    "description": "Compute the N-dimensional discrete Fourier Transform",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.fftn.html",
+    "doc": "numpy.fft.fftn(a, s=None, axes=None, norm=None, out=None)\n\nCompute the N-dimensional discrete Fourier Transform over any number of axes in an M-dimensional array by means of the Fast Fourier Transform (FFT).\n\nParameters:\n- a: Input array, can be complex\n- s: Optional sequence of ints specifying output shape for each transformed axis\n- axes: Optional sequence of ints specifying axes to transform\n- norm: Optional normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array for the result\n\nReturns:\n- The truncated or zero-padded input, transformed along the specified axes\n\nNotes:\n- Output contains zero frequency in low-order corner\n- Positive and negative frequency terms are arranged systematically\n- Supports multi-dimensional FFT transformations\n\nExample:\nimport numpy as np\na = np.mgrid[:3, :3, :3][0]\nnp.fft.fftn(a, axes=(1, 2))",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef fftn(a, s=None, axes=None, norm=None, out=None):\n    \"\"\"\n    Compute the N-dimensional discrete Fourier Transform.\n    \"\"\"\n    return _raw_fftnd(a, s, axes, fft, norm, out=out)"
+  },
+  {
+    "name": "numpy.fft.ifftn",
+    "description": "Compute the N-dimensional inverse discrete Fourier Transform",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.ifftn.html",
+    "doc": "numpy.fft.ifftn(a, s=None, axes=None, norm=None, out=None)\n\nCompute the N-dimensional inverse discrete Fourier Transform using the Fast Fourier Transform (FFT). It is the inverse of the N-dimensional FFT, such that ifftn(fftn(a)) == a within numerical accuracy.\n\nParameters:\n- a: Input array (can be complex)\n- s: Optional sequence of integers specifying output shape\n- axes: Optional sequence of axes to transform\n- norm: Optional normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- Complex ndarray transformed along specified axes, potentially truncated or zero-padded\n\nExample:\nimport numpy as np\na = np.eye(4)\nnp.fft.ifftn(np.fft.fftn(a, axes=(0,)), axes=(1,))",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef ifftn(a, s=None, axes=None, norm=None, out=None):\n    \"\"\"\n    Compute the N-dimensional inverse discrete Fourier Transform.\n    \"\"\"\n    return _raw_fftnd(a, s, axes, ifft, norm, out=out)"
+  },
+  {
+    "name": "numpy.fft.rfft",
+    "description": "Compute the one-dimensional discrete Fourier Transform for real input",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft.html",
+    "doc": "numpy.fft.rfft(a, n=None, axis=-1, norm=None, out=None)\n\nCompute the one-dimensional discrete Fourier Transform for real input using an efficient Fast Fourier Transform (FFT) algorithm.\n\nParameters:\n- a: Input array\n- n: Optional number of points along transformation axis (default: input length)\n- axis: Axis to compute FFT (default: last axis)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- A complex ndarray representing the transformed input. The length of the transformed axis is (n/2)+1 for even n, or (n+1)/2 for odd n.\n\nNotes:\n- Computes only non-negative frequency terms for real input\n- Exploits Hermitian symmetry of real input's Fourier transform\n- Silently discards any imaginary part of input\n\nExample:\nimport numpy as np\nnp.fft.rfft([0, 1, 0, 0])\n# Returns: array([ 1.+0.j,  0.-1.j, -1.+0.j])",
+    "code": "@array_function_dispatch(_fft_dispatcher)\ndef rfft(a, n=None, axis=-1, norm=None, out=None):\n    \"\"\"\n    Compute the one-dimensional discrete Fourier Transform for real input.\n    \"\"\"\n    a = asarray(a)\n    if n is None:\n        n = a.shape[axis]\n    output = _raw_fft(a, n, axis, True, True, norm, out=out)\n    return output"
+  },
+  {
+    "name": "numpy.fft.irfft",
+    "description": "Computes the inverse of rfft",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.irfft.html",
+    "doc": "numpy.fft.irfft(a, n=None, axis=-1, norm=None, out=None)\n\nComputes the inverse of rfft. It performs the inverse of the one-dimensional discrete Fourier Transform for real input, such that irfft(rfft(a), len(a)) == a within numerical accuracy.\n\nParameters:\n- a: Input array\n- n: Optional length of transformed axis (default calculates based on input)\n- axis: Axis to compute inverse FFT (default is last axis)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- Real-valued ndarray transformed along specified axis\n\nNotes:\n- Handles Hermitian-symmetric input from rfft\n- Requires specifying original data length to avoid information loss\n- Can resample a series via Fourier interpolation\n\nExample:\nnp.fft.irfft([1, -1j, -1])\n# Returns: array([0., 1., 0., 0.])",
+    "code": "@array_function_dispatch(_fft_dispatcher)\ndef irfft(a, n=None, axis=-1, norm=None, out=None):\n    \"\"\"\n    Computes the inverse of rfft.\n    \"\"\"\n    a = asarray(a)\n    if n is None:\n        n = (a.shape[axis] - 1) * 2\n    output = _raw_fft(a, n, axis, True, False, norm, out=out)\n    return output"
+  },
+  {
+    "name": "numpy.fft.rfft2",
+    "description": "Compute the 2-dimensional FFT of a real array",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft2.html",
+    "doc": "numpy.fft.rfft2(a, s=None, axes=(-2, -1), norm=None, out=None)\n\nCompute the 2-dimensional FFT of a real array.\n\nParameters:\n- a: Input array, taken to be real\n- s: Optional shape of the FFT (sequence of ints)\n- axes: Axes over which to compute the FFT (default: (-2, -1))\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array for the result\n\nReturns:\n- Complex ndarray representing the result of the real 2-D FFT\n\nNotes:\n- This is essentially rfftn with different default behavior\n- Introduced for computing Fourier transforms on real-valued 2D arrays\n\nExample:\nimport numpy as np\na = np.mgrid[:5, :5][0]\nnp.fft.rfft2(a)",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):\n    \"\"\"\n    Compute the 2-dimensional FFT of a real array.\n    \"\"\"\n    return rfftn(a, s, axes, norm, out)"
+  },
+  {
+    "name": "numpy.fft.irfft2",
+    "description": "Computes the inverse of rfft2",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.irfft2.html",
+    "doc": "numpy.fft.irfft2(a, s=None, axes=(-2, -1), norm=None, out=None)\n\nComputes the inverse of rfft2 - a function that performs an inverse real 2-dimensional Fast Fourier Transform.\n\nParameters:\n- a: Input array\n- s: Optional sequence of ints specifying the shape of the real output\n- axes: Sequence of ints over which to compute the inverse FFT (default: last two axes)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- An ndarray containing the result of the inverse real 2-D FFT\n\nNotes:\n- This is essentially irfftn with different default parameters\n- Useful for converting frequency domain representations back to spatial domain\n\nExample:\nimport numpy as np\na = np.mgrid[:5, :5][0]\nA = np.fft.rfft2(a)\nnp.fft.irfft2(A, s=a.shape)",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):\n    \"\"\"\n    Computes the inverse of rfft2.\n    \"\"\"\n    return irfftn(a, s, axes, norm, out)"
+  },
+  {
+    "name": "numpy.fft.rfftn",
+    "description": "Compute the N-dimensional discrete Fourier Transform for real input",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.rfftn.html",
+    "doc": "numpy.fft.rfftn(a, s=None, axes=None, norm=None, out=None)\n\nCompute the N-dimensional discrete Fourier Transform for real input using Fast Fourier Transform (FFT) over specified axes.\n\nParameters:\n- a: Input array (real)\n- s: Optional sequence of integers specifying transform shape\n- axes: Optional sequence of axes to transform\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- Complex ndarray transformed along specified axes, with last axis length s[-1]//2+1\n\nNotes:\n- Performs real transform over last axis\n- Remaining transforms are complex\n- Can transform over multiple or all axes\n\nExample:\nimport numpy as np\na = np.ones((2, 2, 2))\nnp.fft.rfftn(a)",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef rfftn(a, s=None, axes=None, norm=None, out=None):\n    \"\"\"\n    Compute the N-dimensional discrete Fourier Transform for real input.\n    \"\"\"\n    a = asarray(a)\n    s, axes = _cook_nd_args(a, s, axes)\n    a = rfft(a, s[-1], axes[-1], norm, out)\n    for ii in range(len(axes)-1):\n        a = fft(a, s[ii], axes[ii], norm)\n    return a"
+  },
+  {
+    "name": "numpy.fft.irfftn",
+    "description": "Computes the inverse of rfftn",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.irfftn.html",
+    "doc": "numpy.fft.irfftn(a, s=None, axes=None, norm=None, out=None)\n\nComputes the inverse of rfftn. This function performs the inverse N-dimensional discrete Fourier Transform for real input using the Fast Fourier Transform (FFT).\n\nParameters:\n- a: Input array\n- s: Optional sequence of ints specifying output shape\n- axes: Optional sequence of ints specifying axes to transform\n- norm: Optional normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- An ndarray transformed along specified axes, with length determined by s or input shape\n\nNotes:\n- Inverse transform assumes an even output length by default\n- Correct input shape is crucial to avoid losing information\n- Ensures that irfftn(rfftn(a), a.shape) == a within numerical accuracy\n\nExample:\nimport numpy as np\na = np.zeros((3, 2, 2))\na[0, 0, 0] = 3 * 2 * 2\nnp.fft.irfftn(a)",
+    "code": "@array_function_dispatch(_fftn_dispatcher)\ndef irfftn(a, s=None, axes=None, norm=None, out=None):\n    \"\"\"\n    Computes the inverse of rfftn.\n    \"\"\"\n    a = asarray(a)\n    s, axes = _cook_nd_args(a, s, axes, invreal=1)\n    for ii in range(len(axes)-1):\n        a = ifft(a, s[ii], axes[ii], norm)\n    a = irfft(a, s[-1], axes[-1], norm, out)\n    return a"
+  },
+  {
+    "name": "numpy.fft.hfft",
+    "description": "Compute the FFT of a signal that has Hermitian symmetry",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.hfft.html",
+    "doc": "numpy.fft.hfft(a, n=None, axis=-1, norm=None, out=None)\n\nCompute the FFT of a signal that has Hermitian symmetry, i.e., a real spectrum.\n\nParameters:\n- a: Input array\n- n: Optional length of transformed axis (default calculates based on input)\n- axis: Axis to compute FFT (default is last axis)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- An ndarray with the Fourier transform, with length determined by n\n\nNotes:\n- Designed for signals with Hermitian symmetry in time domain\n- Useful for converting half-complex spectrum to full real spectrum\n- Supports even and odd length signals\n\nExample:\nsignal = np.array([1, 2, 3, 4, 3, 2])\nnp.fft.hfft(signal[:4])  # Transform first half of signal\nnp.fft.hfft(signal, 6)   # Transform entire signal",
+    "code": "@array_function_dispatch(_fft_dispatcher)\ndef hfft(a, n=None, axis=-1, norm=None, out=None):\n    \"\"\"\n    Compute the FFT of a signal that has Hermitian symmetry.\n    \"\"\"\n    a = asarray(a)\n    if n is None:\n        n = (a.shape[axis] - 1) * 2\n    new_norm = _swap_direction(norm)\n    output = irfft(conjugate(a), n, axis, new_norm, out)\n    return output"
+  },
+  {
+    "name": "numpy.fft.ihfft",
+    "description": "Compute the inverse FFT of a signal that has Hermitian symmetry",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.ihfft.html",
+    "doc": "numpy.fft.ihfft(a, n=None, axis=-1, norm=None, out=None)\n\nCompute the inverse FFT of a signal that has Hermitian symmetry.\n\nParameters:\n- a: Input array\n- n: Optional length of inverse FFT (default: length of input along specified axis)\n- axis: Axis to compute inverse FFT (default: last axis)\n- norm: Normalization mode (\"backward\", \"ortho\", \"forward\")\n- out: Optional output array\n\nReturns:\n- The truncated or zero-padded input, transformed along the axis indicated by axis, or the last one if axis is not specified. The length of the transformed axis is n//2 + 1.\n\nNotes:\n- Analogous to rfft/irfft, but for signals with Hermitian symmetry\n- Works with even and odd length inputs\n\nExample:\nimport numpy as np\nspectrum = np.array([15, -4, 0, -1, 0, -4])\nnp.fft.ihfft(spectrum)\n# Returns: array([1.-0.j, 2.-0.j, 3.-0.j, 4.-0.j])",
+    "code": "@array_function_dispatch(_fft_dispatcher)\ndef ihfft(a, n=None, axis=-1, norm=None, out=None):\n    \"\"\"\n    Compute the inverse FFT of a signal that has Hermitian symmetry.\n    \"\"\"\n    a = asarray(a)\n    if n is None:\n        n = a.shape[axis]\n    new_norm = _swap_direction(norm)\n    output = conjugate(rfft(a, n, axis, new_norm, out))\n    # Note: rfft always overwrites output, so we can be sure that\n    # output.base is output or output.base is None\n    if out is not None and output.base is not out:\n        # If out has memory overlap with the input, then the conjugate above\n        # made a copy so it is safe to simply copy to out.\n        copyto(out, output)\n    return output"
+  },
+  {
+    "name": "numpy.fft.fftfreq",
+    "description": "Return the Discrete Fourier Transform sample frequencies",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html",
+    "doc": "numpy.fft.fftfreq(n, d=1.0, device=None)\n\nReturn the Discrete Fourier Transform sample frequencies with frequency bin centers in cycles per unit of sample spacing.\n\nParameters:\n- n (int): Window length\n- d (scalar, optional): Sample spacing, defaults to 1.0\n- device (str, optional): Device for created array, default is None\n\nReturns:\n- f (ndarray): Array of length n containing sample frequencies\n\nFrequency Calculation:\n- For even n: f = [0, 1, ..., n/2-1, -n/2, ..., -1] / (d*n)\n- For odd n: f = [0, 1, ..., (n-1)/2, -(n-1)/2, ..., -1] / (d*n)\n\nExample:\nimport numpy as np\nsignal = np.array([-2, 8, 6, 4, 1, 0, 3, 5], dtype=float)\nfourier = np.fft.fft(signal)\nn = signal.size\ntimestep = 0.1\nfreq = np.fft.fftfreq(n, d=timestep)",
+    "code": "@set_module('numpy.fft')\ndef fftfreq(n, d=1.0, device=None):\n    \"\"\"\n    Return the Discrete Fourier Transform sample frequencies.\n    \"\"\"\n    if not isinstance(n, integer_types):\n        raise ValueError(\"n should be an integer\")\n    val = 1.0 / (n * d)\n    results = empty(n, int, device=device)\n    N = (n - 1) // 2 + 1\n    p1 = arange(0, N, dtype=int, device=device)\n    results[:N] = p1\n    p2 = arange(-(n // 2), 0, dtype=int, device=device)\n    results[N:] = p2\n    return results * val"
+  },
+  {
+    "name": "numpy.fft.rfftfreq",
+    "description": "Return the Discrete Fourier Transform sample frequencies for rfft",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.rfftfreq.html",
+    "doc": "numpy.fft.rfftfreq(n, d=1.0, device=None)\n\nReturn the Discrete Fourier Transform sample frequencies (for usage with rfft, irfft). The function generates frequency bin centers in cycles per unit of sample spacing, with zero at the start.\n\nParameters:\n- n (int): Window length\n- d (scalar, optional): Sample spacing, defaults to 1.0\n- device (str, optional): Device for array placement, default is None\n\nReturns:\n- f (ndarray): Array of length n//2 + 1 containing sample frequencies\n\nFrequency Calculation:\n- For even n: f = [0, 1, ..., n/2-1, n/2] / (d*n)\n- For odd n: f = [0, 1, ..., (n-1)/2-1, (n-1)/2] / (d*n)\n\nExample:\nsignal = np.array([-2, 8, 6, 4, 1, 0, 3, 5, -3, 4], dtype=float)\nfourier = np.fft.rfft(signal)\nn = signal.size\nsample_rate = 100\nfreq = np.fft.rfftfreq(n, d=1./sample_rate)\n# freq will be [0., 10., 20., 30., 40., 50.]",
+    "code": "@set_module('numpy.fft')\ndef rfftfreq(n, d=1.0, device=None):\n    \"\"\"\n    Return the Discrete Fourier Transform sample frequencies for rfft output.\n    \"\"\"\n    if not isinstance(n, integer_types):\n        raise ValueError(\"n should be an integer\")\n    val = 1.0 / (n * d)\n    N = n // 2 + 1\n    results = arange(0, N, dtype=int, device=device)\n    return results * val"
+  },
+  {
+    "name": "numpy.fft.fftshift",
+    "description": "Shift the zero-frequency component to the center of the spectrum",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.fftshift.html",
+    "doc": "numpy.fft.fftshift(x, axes=None)\n\nShift the zero-frequency component to the center of the spectrum.\n\nParameters:\n- x: Input array\n- axes: Optional int or shape tuple specifying axes over which to shift (default is None, which shifts all axes)\n\nReturns:\n- y: ndarray, the shifted array\n\nKey Details:\n- Swaps half-spaces for specified axes\n- y[0] is the Nyquist component only if len(x) is even\n\nExamples:\nimport numpy as np\nfreqs = np.fft.fftfreq(10, 0.1)\n# freqs: [ 0.,  1.,  2., ..., -3., -2., -1.]\nnp.fft.fftshift(freqs)\n# Result: [-5., -4., -3., -2., -1.,  0.,  1.,  2.,  3.,  4.]\n\n# Shift along specific axis\nfreqs = np.fft.fftfreq(9, d=1./9).reshape(3, 3)\nnp.fft.fftshift(freqs, axes=(1,))\n\nSee also: numpy.fft.ifftshift (inverse of fftshift)",
+    "code": "@set_module('numpy.fft')\ndef fftshift(x, axes=None):\n    \"\"\"\n    Shift the zero-frequency component to the center of the spectrum.\n    \"\"\"\n    x = asarray(x)\n    if axes is None:\n        axes = tuple(range(x.ndim))\n        shift = [dim // 2 for dim in x.shape]\n    elif isinstance(axes, integer_types):\n        shift = x.shape[axes] // 2\n    else:\n        shift = [x.shape[ax] // 2 for ax in axes]\n\n    return roll(x, shift, axes)"
+  },
+  {
+    "name": "numpy.fft.ifftshift",
+    "description": "The inverse of fftshift",
+    "url": "https://numpy.org/doc/stable/reference/generated/numpy.fft.ifftshift.html",
+    "doc": "numpy.fft.ifftshift(x, axes=None)\n\nThe inverse of fftshift. Although identical for even-length x, the functions differ by one sample for odd-length x.\n\nParameters:\n- x (array_like): Input array\n- axes (int or shape tuple, optional): Axes over which to calculate. Defaults to None, which shifts all axes.\n\nReturns:\n- y (ndarray): The shifted array\n\nExample:\nimport numpy as np\nfreqs = np.fft.fftfreq(9, d=1./9).reshape(3, 3)\nfreqs\n# Output: array([[ 0.,  1.,  2.],\n#                [ 3.,  4., -4.],\n#                [-3., -2., -1.]])\nnp.fft.ifftshift(np.fft.fftshift(freqs))\n# Output: same as original freqs array\n\nSee also: numpy.fft.fftshift",
+    "code": "@set_module('numpy.fft')\ndef ifftshift(x, axes=None):\n    \"\"\"\n    The inverse of fftshift.\n    \"\"\"\n    x = asarray(x)\n    if axes is None:\n        axes = tuple(range(x.ndim))\n        shift = [-(dim // 2) for dim in x.shape]\n    elif isinstance(axes, integer_types):\n        shift = -(x.shape[axes] // 2)\n    else:\n        shift = [-(x.shape[ax] // 2) for ax in axes]\n\n    return roll(x, shift, axes)"
+  }
+]

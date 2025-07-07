@@ -1,0 +1,758 @@
+{
+  "generator_methods": {
+    "simple_random_data": [
+      {
+        "name": "numpy.random.Generator.random",
+        "description": "Return random floats in the half-open interval [0.0, 1.0)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.random.html",
+        "doc": "random(size=None, dtype=np.float64, out=None)\n\nReturn random floats in the half-open interval [0.0, 1.0).\n\nResults are from the \"continuous uniform\" distribution over the stated interval.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape. If None (default), a single value is returned.\n- dtype : dtype, optional\n    Desired dtype of the result, only float64 and float32 are supported.\n- out : ndarray, optional\n    Alternative output array in which to place the result.\n\nReturns:\n- out : ndarray or scalar\n    Drawn samples from the parameterized uniform distribution.",
+        "code": "# Random number generator method implemented in C\n# Return random floats in the half-open interval [0.0, 1.0)\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.integers",
+        "description": "Return random integers from low (inclusive) to high (exclusive)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.integers.html",
+        "doc": "integers(low, high=None, size=None, dtype=np.int64, endpoint=False)\n\nReturn random integers from low (inclusive) to high (exclusive), or if endpoint=True, low (inclusive) to high (inclusive).\n\nParameters:\n- low : int or array-like of ints\n    Lowest integers to be drawn from the distribution\n- high : int or array-like of ints, optional\n    If provided, largest integer to be drawn from the distribution\n- size : int or tuple of ints, optional\n    Output shape\n- dtype : dtype, optional\n    Desired dtype of the result\n- endpoint : bool, optional\n    If true, sample from the interval [low, high] instead of [low, high)",
+        "code": "# Random number generator method implemented in C\n# Return random integers from low (inclusive) to high (exclusive)\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.choice",
+        "description": "Generates a random sample from a given array",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.choice.html",
+        "doc": "choice(a, size=None, replace=True, p=None, axis=0, shuffle=True)\n\nGenerates a random sample from a given array.\n\nParameters:\n- a : array_like\n    If an ndarray, a random sample is generated from its elements\n- size : int or tuple of ints, optional\n    Output shape\n- replace : bool, optional\n    Whether the sample is with or without replacement\n- p : array_like, optional\n    The probabilities associated with each entry in a\n- axis : int, optional\n    The axis along which the selection is performed\n- shuffle : bool, optional\n    Whether to shuffle the sample",
+        "code": "# Random number generator method implemented in C\n# Generates a random sample from a given array\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.bytes",
+        "description": "Return random bytes",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.bytes.html",
+        "doc": "bytes(length)\n\nReturn random bytes.\n\nParameters:\n- length : int\n    Number of random bytes\n\nReturns:\n- out : bytes\n    String of length random bytes",
+        "code": "# Random number generator method implemented in C\n# Return random bytes\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      }
+    ],
+    "permutations": [
+      {
+        "name": "numpy.random.Generator.shuffle",
+        "description": "Modify an array or sequence in-place by shuffling its contents",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.shuffle.html",
+        "doc": "shuffle(x, axis=0)\n\nModify an array or sequence in-place by shuffling its contents.\n\nParameters:\n- x : array_like\n    The array, list or mutable sequence to be shuffled\n- axis : int, optional\n    The axis which x is shuffled along. Default is 0",
+        "code": "# Random number generator method implemented in C\n# Modify an array or sequence in-place by shuffling its contents\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.permutation",
+        "description": "Randomly permute a sequence, or return a permuted range",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.permutation.html",
+        "doc": "permutation(x, axis=0)\n\nRandomly permute a sequence, or return a permuted range.\n\nParameters:\n- x : int or array_like\n    If x is an integer, randomly permute np.arange(x)\n- axis : int, optional\n    The axis which x is permuted along\n\nReturns:\n- out : ndarray\n    Permuted sequence or array range",
+        "code": "# Random number generator method implemented in C\n# Randomly permute a sequence, or return a permuted range\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.permuted",
+        "description": "Randomly permute x along axis",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.permuted.html",
+        "doc": "permuted(x, axis=None, out=None)\n\nRandomly permute x along axis.\n\nUnlike shuffle, each slice along the given axis is shuffled independently.\n\nParameters:\n- x : array_like\n    Array to be shuffled\n- axis : int or tuple of ints, optional\n    The axis or axes along which x is shuffled\n- out : ndarray, optional\n    Output array",
+        "code": "# Random number generator method implemented in C\n# Randomly permute x along axis\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      }
+    ],
+    "distributions_continuous": [
+      {
+        "name": "numpy.random.Generator.beta",
+        "description": "Draw samples from a Beta distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.beta.html",
+        "doc": "beta(a, b, size=None)\n\nDraw samples from a Beta distribution.\n\nThe Beta distribution is a special case of the Dirichlet distribution.\n\nParameters:\n- a : float or array_like of floats\n    Alpha, positive (>0)\n- b : float or array_like of floats\n    Beta, positive (>0)\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Beta distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.exponential",
+        "description": "Draw samples from an exponential distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.exponential.html",
+        "doc": "exponential(scale=1.0, size=None)\n\nDraw samples from an exponential distribution.\n\nParameters:\n- scale : float or array_like of floats\n    The scale parameter, \u03b2 = 1/\u03bb. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from an exponential distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.gamma",
+        "description": "Draw samples from a Gamma distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.gamma.html",
+        "doc": "gamma(shape, scale=1.0, size=None)\n\nDraw samples from a Gamma distribution.\n\nParameters:\n- shape : float or array_like of floats\n    The shape of the gamma distribution. Must be non-negative\n- scale : float or array_like of floats, optional\n    The scale of the gamma distribution. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Gamma distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.normal",
+        "description": "Draw random samples from a normal (Gaussian) distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.normal.html",
+        "doc": "normal(loc=0.0, scale=1.0, size=None)\n\nDraw random samples from a normal (Gaussian) distribution.\n\nParameters:\n- loc : float or array_like of floats\n    Mean of the distribution\n- scale : float or array_like of floats\n    Standard deviation of the distribution. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw random samples from a normal (Gaussian) distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.standard_normal",
+        "description": "Draw samples from a standard Normal distribution (mean=0, stdev=1)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.standard_normal.html",
+        "doc": "standard_normal(size=None, dtype=np.float64, out=None)\n\nDraw samples from a standard Normal distribution (mean=0, stdev=1).\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape\n- dtype : dtype, optional\n    Desired dtype of the result\n- out : ndarray, optional\n    Alternative output array",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a standard Normal distribution (mean=0, stdev=1)\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.uniform",
+        "description": "Draw samples from a uniform distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.uniform.html",
+        "doc": "uniform(low=0.0, high=1.0, size=None)\n\nDraw samples from a uniform distribution.\n\nSamples are uniformly distributed over the half-open interval [low, high).\n\nParameters:\n- low : float or array_like of floats, optional\n    Lower boundary of the output interval\n- high : float or array_like of floats\n    Upper boundary of the output interval\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a uniform distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.chisquare",
+        "description": "Draw samples from a chi-square distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.chisquare.html",
+        "doc": "chisquare(df, size=None)\n\nDraw samples from a chi-square distribution.\n\nParameters:\n- df : float or array_like of floats\n    Number of degrees of freedom, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a chi-square distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.dirichlet",
+        "description": "Draw samples from the Dirichlet distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.dirichlet.html",
+        "doc": "dirichlet(alpha, size=None)\n\nDraw samples from the Dirichlet distribution.\n\nParameters:\n- alpha : sequence of floats, length k\n    Parameter of the distribution (length k for sample of length k)\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from the Dirichlet distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.f",
+        "description": "Draw samples from an F distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.f.html",
+        "doc": "f(dfnum, dfden, size=None)\n\nDraw samples from an F distribution.\n\nParameters:\n- dfnum : float or array_like of floats\n    Degrees of freedom in numerator, must be > 0\n- dfden : float or array_like of floats\n    Degrees of freedom in denominator, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from an F distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.gumbel",
+        "description": "Draw samples from a Gumbel distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.gumbel.html",
+        "doc": "gumbel(loc=0.0, scale=1.0, size=None)\n\nDraw samples from a Gumbel distribution.\n\nParameters:\n- loc : float or array_like of floats, optional\n    The location of the mode of the distribution\n- scale : float or array_like of floats, optional\n    The scale parameter of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Gumbel distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.laplace",
+        "description": "Draw samples from the Laplace or double exponential distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.laplace.html",
+        "doc": "laplace(loc=0.0, scale=1.0, size=None)\n\nDraw samples from the Laplace or double exponential distribution.\n\nParameters:\n- loc : float or array_like of floats, optional\n    The position, \u03bc, of the distribution peak\n- scale : float or array_like of floats, optional\n    \u03bb, the exponential decay\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from the Laplace or double exponential distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.logistic",
+        "description": "Draw samples from a logistic distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.logistic.html",
+        "doc": "logistic(loc=0.0, scale=1.0, size=None)\n\nDraw samples from a logistic distribution.\n\nParameters:\n- loc : float or array_like of floats, optional\n    Parameter of the distribution\n- scale : float or array_like of floats, optional\n    Parameter of the distribution. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a logistic distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.lognormal",
+        "description": "Draw samples from a log-normal distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.lognormal.html",
+        "doc": "lognormal(mean=0.0, sigma=1.0, size=None)\n\nDraw samples from a log-normal distribution.\n\nParameters:\n- mean : float or array_like of floats, optional\n    Mean value of the underlying normal distribution\n- sigma : float or array_like of floats, optional\n    Standard deviation of the underlying normal distribution. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a log-normal distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.noncentral_chisquare",
+        "description": "Draw samples from a noncentral chi-square distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.noncentral_chisquare.html",
+        "doc": "noncentral_chisquare(df, nonc, size=None)\n\nDraw samples from a noncentral chi-square distribution.\n\nParameters:\n- df : float or array_like of floats\n    Degrees of freedom, must be > 0\n- nonc : float or array_like of floats\n    Non-centrality, must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a noncentral chi-square distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.noncentral_f",
+        "description": "Draw samples from the noncentral F distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.noncentral_f.html",
+        "doc": "noncentral_f(dfnum, dfden, nonc, size=None)\n\nDraw samples from the noncentral F distribution.\n\nParameters:\n- dfnum : float or array_like of floats\n    Degrees of freedom in numerator, must be > 0\n- dfden : float or array_like of floats\n    Degrees of freedom in denominator, must be > 0\n- nonc : float or array_like of floats\n    Non-centrality parameter, the sum of the squares of the numerator means, must be >= 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from the noncentral F distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.pareto",
+        "description": "Draw samples from a Pareto II or Lomax distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.pareto.html",
+        "doc": "pareto(a, size=None)\n\nDraw samples from a Pareto II or Lomax distribution with specified shape.\n\nParameters:\n- a : float or array_like of floats\n    Shape of the distribution. Must be positive\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Pareto II or Lomax distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.power",
+        "description": "Draw samples in [0, 1] from a power distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.power.html",
+        "doc": "power(a, size=None)\n\nDraws samples in [0, 1] from a power distribution with positive exponent a - 1.\n\nParameters:\n- a : float or array_like of floats\n    Parameter of the distribution. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples in [0, 1] from a power distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.rayleigh",
+        "description": "Draw samples from a Rayleigh distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.rayleigh.html",
+        "doc": "rayleigh(scale=1.0, size=None)\n\nDraw samples from a Rayleigh distribution.\n\nParameters:\n- scale : float or array_like of floats, optional\n    Scale, also equals the mode. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Rayleigh distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.standard_cauchy",
+        "description": "Draw samples from a standard Cauchy distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.standard_cauchy.html",
+        "doc": "standard_cauchy(size=None)\n\nDraw samples from a standard Cauchy distribution with mode = 0.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a standard Cauchy distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.standard_exponential",
+        "description": "Draw samples from the standard exponential distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.standard_exponential.html",
+        "doc": "standard_exponential(size=None, dtype=np.float64, method='zig', out=None)\n\nDraw samples from the standard exponential distribution.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape\n- dtype : dtype, optional\n    Desired dtype of the result\n- method : str, optional\n    Either 'inv' or 'zig'\n- out : ndarray, optional\n    Alternative output array",
+        "code": "# Random number generator method implemented in C\n# Draw samples from the standard exponential distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.standard_gamma",
+        "description": "Draw samples from a standard Gamma distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.standard_gamma.html",
+        "doc": "standard_gamma(shape, size=None, dtype=np.float64, out=None)\n\nDraw samples from a standard Gamma distribution.\n\nParameters:\n- shape : float or array_like of floats\n    Parameter, must be non-negative\n- size : int or tuple of ints, optional\n    Output shape\n- dtype : dtype, optional\n    Desired dtype of the result\n- out : ndarray, optional\n    Alternative output array",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a standard Gamma distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.standard_t",
+        "description": "Draw samples from a standard Student's t distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.standard_t.html",
+        "doc": "standard_t(df, size=None)\n\nDraw samples from a standard Student's t distribution with df degrees of freedom.\n\nParameters:\n- df : float or array_like of floats\n    Degrees of freedom, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a standard Student's t distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.triangular",
+        "description": "Draw samples from the triangular distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.triangular.html",
+        "doc": "triangular(left, mode, right, size=None)\n\nDraw samples from the triangular distribution over the interval [left, right].\n\nParameters:\n- left : float or array_like of floats\n    Lower limit\n- mode : float or array_like of floats\n    The value where the peak of the distribution occurs\n- right : float or array_like of floats\n    Upper limit, must be larger than left\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from the triangular distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.vonmises",
+        "description": "Draw samples from a von Mises distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.vonmises.html",
+        "doc": "vonmises(mu, kappa, size=None)\n\nDraw samples from a von Mises distribution.\n\nParameters:\n- mu : float or array_like of floats\n    Mode (\"center\") of the distribution\n- kappa : float or array_like of floats\n    Dispersion of the distribution, has to be >=0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a von Mises distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.wald",
+        "description": "Draw samples from a Wald, or inverse Gaussian, distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.wald.html",
+        "doc": "wald(mean, scale, size=None)\n\nDraw samples from a Wald, or inverse Gaussian, distribution.\n\nParameters:\n- mean : float or array_like of floats\n    Distribution mean, must be > 0\n- scale : float or array_like of floats\n    Scale of the distribution, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Wald, or inverse Gaussian, distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.weibull",
+        "description": "Draw samples from a Weibull distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.weibull.html",
+        "doc": "weibull(a, size=None)\n\nDraw samples from a Weibull distribution.\n\nParameters:\n- a : float or array_like of floats\n    Shape parameter of the distribution. Must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Weibull distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.zipf",
+        "description": "Draw samples from a Zipf distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.zipf.html",
+        "doc": "zipf(a, size=None)\n\nDraw samples from a Zipf distribution.\n\nParameters:\n- a : float or array_like of floats\n    Distribution parameter. Must be greater than 1\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Zipf distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      }
+    ],
+    "distributions_discrete": [
+      {
+        "name": "numpy.random.Generator.binomial",
+        "description": "Draw samples from a binomial distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.binomial.html",
+        "doc": "binomial(n, p, size=None)\n\nDraw samples from a binomial distribution.\n\nParameters:\n- n : int or array_like of ints\n    Number of trials; must be >= 0\n- p : float or array_like of floats\n    Probability of success; must be in [0, 1]\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a binomial distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.geometric",
+        "description": "Draw samples from the geometric distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.geometric.html",
+        "doc": "geometric(p, size=None)\n\nDraw samples from the geometric distribution.\n\nParameters:\n- p : float or array_like of floats\n    The probability of success of an individual trial\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from the geometric distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.hypergeometric",
+        "description": "Draw samples from a Hypergeometric distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.hypergeometric.html",
+        "doc": "hypergeometric(ngood, nbad, nsample, size=None)\n\nDraw samples from a Hypergeometric distribution.\n\nParameters:\n- ngood : int or array_like of ints\n    Number of success states in the population\n- nbad : int or array_like of ints\n    Number of failure states in the population\n- nsample : int or array_like of ints\n    Number of samples drawn\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Hypergeometric distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.logseries",
+        "description": "Draw samples from a logarithmic series distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.logseries.html",
+        "doc": "logseries(p, size=None)\n\nDraw samples from a logarithmic series distribution.\n\nParameters:\n- p : float or array_like of floats\n    Shape parameter for the distribution. Must be in (0, 1)\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a logarithmic series distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.multinomial",
+        "description": "Draw samples from a multinomial distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.multinomial.html",
+        "doc": "multinomial(n, pvals, size=None)\n\nDraw samples from a multinomial distribution.\n\nParameters:\n- n : int or array_like of ints\n    Number of experiments\n- pvals : sequence of floats, length p\n    Probabilities of each of the p different outcomes\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a multinomial distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.multivariate_hypergeometric",
+        "description": "Generate variates from a multivariate hypergeometric distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.multivariate_hypergeometric.html",
+        "doc": "multivariate_hypergeometric(colors, nsample, size=None, method='marginals')\n\nGenerate variates from a multivariate hypergeometric distribution.\n\nParameters:\n- colors : sequence of integers\n    The number of each type of object in the collection\n- nsample : int\n    The number of objects drawn without replacement\n- size : int or tuple of ints, optional\n    Output shape\n- method : string, optional\n    Algorithm to use for the generation",
+        "code": "# Random number generator method implemented in C\n# Generate variates from a multivariate hypergeometric distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.negative_binomial",
+        "description": "Draw samples from a negative binomial distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.negative_binomial.html",
+        "doc": "negative_binomial(n, p, size=None)\n\nDraw samples from a negative binomial distribution.\n\nParameters:\n- n : float or array_like of floats\n    Number of successes, must be > 0\n- p : float or array_like of floats\n    Probability of success, must be in (0, 1]\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a negative binomial distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      },
+      {
+        "name": "numpy.random.Generator.poisson",
+        "description": "Draw samples from a Poisson distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.poisson.html",
+        "doc": "poisson(lam=1.0, size=None)\n\nDraw samples from a Poisson distribution.\n\nThe Poisson distribution is the limit of the binomial distribution for large N.\n\nParameters:\n- lam : float or array_like of floats\n    Expected number of events occurring in a fixed-time interval, must be >= 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "# Random number generator method implemented in C\n# Draw samples from a Poisson distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      }
+    ],
+    "multivariate": [
+      {
+        "name": "numpy.random.Generator.multivariate_normal",
+        "description": "Draw random samples from a multivariate normal distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.multivariate_normal.html",
+        "doc": "multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8, method='svd')\n\nDraw random samples from a multivariate normal distribution.\n\nParameters:\n- mean : 1-D array_like, of length N\n    Mean of the N-dimensional distribution\n- cov : 2-D array_like, of shape (N, N)\n    Covariance matrix of the distribution\n- size : int or tuple of ints, optional\n    Shape of samples\n- check_valid : { 'warn', 'raise', 'ignore' }, optional\n    Behavior when the covariance matrix is not positive semidefinite\n- tol : float, optional\n    Tolerance for checking positive-semidefinite\n- method : { 'svd', 'eigh', 'cholesky'}, optional\n    Method for computing factor",
+        "code": "# Random number generator method implemented in C\n# Draw random samples from a multivariate normal distribution\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      }
+    ],
+    "utilities": [
+      {
+        "name": "numpy.random.Generator.bit_generator",
+        "description": "Gets the bit generator instance used by the generator",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.bit_generator.html",
+        "doc": "bit_generator\n\nGets the bit generator instance used by the generator.\n\nReturns:\n- BitGenerator\n    The bit generator instance used by the generator",
+        "code": "Generator attribute"
+      },
+      {
+        "name": "numpy.random.Generator.spawn",
+        "description": "Create new independent child generators",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.Generator.spawn.html",
+        "doc": "spawn(n_children)\n\nCreate new independent child generators.\n\nParameters:\n- n_children : int\n    Number of child generators to spawn\n\nReturns:\n- child_generators : list of Generators\n    List of newly spawned generators",
+        "code": "# Random number generator method implemented in C\n# Create new independent child generators\n#\n# This is part of NumPy's random number generation infrastructure.\n# The implementation uses optimized C code for performance with:\n# - High-quality pseudo-random number generation algorithms\n# - Support for various probability distributions\n# - Vectorized generation for arrays\n# - Thread-safe operation with independent random states\n#\n# The actual implementation is in numpy/random/src/"
+      }
+    ]
+  },
+  "legacy_functions": {
+    "state_management": [
+      {
+        "name": "numpy.random.seed",
+        "description": "Seed the generator",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html",
+        "doc": "seed(seed=None)\n\nSeed the generator.\n\nThis method is called when RandomState is initialized. It can be called again to re-seed the generator.\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    Random seed used to initialize the pseudo-random number generator",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.get_state",
+        "description": "Return a tuple representing the internal state of the generator",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.get_state.html",
+        "doc": "get_state()\n\nReturn a tuple representing the internal state of the generator.\n\nFor more details, see set_state.\n\nReturns:\n- out : tuple(str, ndarray of 624 uints, int, int, float)\n    The returned tuple has the following items:\n    - the string 'MT19937'\n    - a 1-D array of 624 unsigned integers keys\n    - an integer pos\n    - an integer has_gauss\n    - a float cached_gaussian",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.set_state",
+        "description": "Set the internal state of the generator from a tuple",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.set_state.html",
+        "doc": "set_state(state)\n\nSet the internal state of the generator from a tuple.\n\nFor use if one has reason to manually (re-)set the internal state of the bit generator used by the RandomState instance.\n\nParameters:\n- state : tuple(str, ndarray of 624 uints, int, int, float)\n    The state tuple has the following items:\n    - the string 'MT19937'\n    - a 1-D array of 624 unsigned integer keys\n    - an integer pos\n    - an integer has_gauss\n    - a float cached_gaussian",
+        "code": "Legacy function using global RandomState"
+      }
+    ],
+    "simple_random_data": [
+      {
+        "name": "numpy.random.rand",
+        "description": "Random values in a given shape",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.rand.html",
+        "doc": "rand(d0, d1, ..., dn)\n\nRandom values in a given shape.\n\nCreate an array of the given shape and populate it with random samples from a uniform distribution over [0, 1).\n\nParameters:\n- d0, d1, ..., dn : int, optional\n    The dimensions of the returned array, must be non-negative\n\nReturns:\n- out : ndarray, shape (d0, d1, ..., dn)\n    Random values",
+        "code": "Legacy convenience function"
+      },
+      {
+        "name": "numpy.random.randn",
+        "description": "Return samples from the standard normal distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.randn.html",
+        "doc": "randn(d0, d1, ..., dn)\n\nReturn a sample (or samples) from the \"standard normal\" distribution.\n\nParameters:\n- d0, d1, ..., dn : int, optional\n    The dimensions of the returned array, must be non-negative\n\nReturns:\n- Z : ndarray or float\n    A (d0, d1, ..., dn)-shaped array of floating-point samples from the standard normal distribution",
+        "code": "Legacy convenience function"
+      },
+      {
+        "name": "numpy.random.randint",
+        "description": "Return random integers from low (inclusive) to high (exclusive)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.randint.html",
+        "doc": "randint(low, high=None, size=None, dtype=int)\n\nReturn random integers from low (inclusive) to high (exclusive).\n\nReturn random integers from the \"discrete uniform\" distribution of the specified dtype in the \"half-open\" interval [low, high).\n\nParameters:\n- low : int or array-like of ints\n    Lowest (signed) integers to be drawn from the distribution\n- high : int or array-like of ints, optional\n    If provided, one above the largest (signed) integer to be drawn\n- size : int or tuple of ints, optional\n    Output shape\n- dtype : dtype, optional\n    Desired dtype of the result",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.random_integers",
+        "description": "Random integers between low and high, inclusive",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.random_integers.html",
+        "doc": "random_integers(low, high=None, size=None)\n\nRandom integers of type np.int_ between low and high, inclusive.\n\nThis function has been deprecated. Use randint instead.\n\nParameters:\n- low : int\n    Lowest (signed) integer to be drawn from the distribution\n- high : int, optional\n    If provided, the largest (signed) integer to be drawn\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Deprecated - use randint instead"
+      },
+      {
+        "name": "numpy.random.random_sample",
+        "description": "Return random floats in the half-open interval [0.0, 1.0)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.random_sample.html",
+        "doc": "random_sample(size=None)\n\nReturn random floats in the half-open interval [0.0, 1.0).\n\nAlias for random.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape\n\nReturns:\n- out : float or ndarray of floats\n    Array of random floats",
+        "code": "Legacy function - alias for random"
+      },
+      {
+        "name": "numpy.random.random",
+        "description": "Return random floats in the half-open interval [0.0, 1.0)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.random.html",
+        "doc": "random(size=None)\n\nReturn random floats in the half-open interval [0.0, 1.0).\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape\n\nReturns:\n- out : float or ndarray of floats\n    Array of random floats",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.ranf",
+        "description": "Return random floats in the half-open interval [0.0, 1.0)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.ranf.html",
+        "doc": "ranf(size=None)\n\nReturn random floats in the half-open interval [0.0, 1.0).\n\nAlias for random.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function - alias for random"
+      },
+      {
+        "name": "numpy.random.sample",
+        "description": "Return random floats in the half-open interval [0.0, 1.0)",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.sample.html",
+        "doc": "sample(size=None)\n\nReturn random floats in the half-open interval [0.0, 1.0).\n\nAlias for random.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function - alias for random"
+      },
+      {
+        "name": "numpy.random.choice",
+        "description": "Generates a random sample from a given 1-D array",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.choice.html",
+        "doc": "choice(a, size=None, replace=True, p=None)\n\nGenerates a random sample from a given 1-D array.\n\nParameters:\n- a : 1-D array-like or int\n    If an ndarray, a random sample is generated from its elements\n- size : int or tuple of ints, optional\n    Output shape\n- replace : bool, optional\n    Whether the sample is with or without replacement\n- p : 1-D array-like, optional\n    The probabilities associated with each entry in a",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.bytes",
+        "description": "Return random bytes",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.bytes.html",
+        "doc": "bytes(length)\n\nReturn random bytes.\n\nParameters:\n- length : int\n    Number of random bytes\n\nReturns:\n- out : str\n    String of length random bytes",
+        "code": "Legacy function using global RandomState"
+      }
+    ],
+    "permutations": [
+      {
+        "name": "numpy.random.shuffle",
+        "description": "Modify a sequence in-place by shuffling its contents",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.shuffle.html",
+        "doc": "shuffle(x)\n\nModify a sequence in-place by shuffling its contents.\n\nThis function only shuffles the array along the first axis.\n\nParameters:\n- x : array_like\n    The array or list to be shuffled",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.permutation",
+        "description": "Randomly permute a sequence, or return a permuted range",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.permutation.html",
+        "doc": "permutation(x)\n\nRandomly permute a sequence, or return a permuted range.\n\nParameters:\n- x : int or array_like\n    If x is an integer, randomly permute np.arange(x)\n\nReturns:\n- out : ndarray\n    Permuted sequence or array range",
+        "code": "Legacy function using global RandomState"
+      }
+    ],
+    "distributions": [
+      {
+        "name": "numpy.random.beta",
+        "description": "Draw samples from a Beta distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.beta.html",
+        "doc": "beta(a, b, size=None)\n\nDraw samples from a Beta distribution.\n\nParameters:\n- a : float or array_like of floats\n    Alpha, positive (>0)\n- b : float or array_like of floats\n    Beta, positive (>0)\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.binomial",
+        "description": "Draw samples from a binomial distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.binomial.html",
+        "doc": "binomial(n, p, size=None)\n\nDraw samples from a binomial distribution.\n\nParameters:\n- n : int or array_like of ints\n    Parameter of the distribution, >= 0\n- p : float or array_like of floats\n    Parameter of the distribution, >= 0 and <=1\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.chisquare",
+        "description": "Draw samples from a chi-square distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.chisquare.html",
+        "doc": "chisquare(df, size=None)\n\nDraw samples from a chi-square distribution.\n\nParameters:\n- df : float or array_like of floats\n    Number of degrees of freedom, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.dirichlet",
+        "description": "Draw samples from the Dirichlet distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.dirichlet.html",
+        "doc": "dirichlet(alpha, size=None)\n\nDraw samples from the Dirichlet distribution.\n\nParameters:\n- alpha : sequence of floats, length k\n    Parameter of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.exponential",
+        "description": "Draw samples from an exponential distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.exponential.html",
+        "doc": "exponential(scale=1.0, size=None)\n\nDraw samples from an exponential distribution.\n\nParameters:\n- scale : float or array_like of floats\n    The scale parameter, \u03b2 = 1/\u03bb\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.f",
+        "description": "Draw samples from an F distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.f.html",
+        "doc": "f(dfnum, dfden, size=None)\n\nDraw samples from an F distribution.\n\nParameters:\n- dfnum : float or array_like of floats\n    Degrees of freedom in numerator, must be > 0\n- dfden : float or array_like of floats\n    Degrees of freedom in denominator, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.gamma",
+        "description": "Draw samples from a Gamma distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.gamma.html",
+        "doc": "gamma(shape, scale=1.0, size=None)\n\nDraw samples from a Gamma distribution.\n\nParameters:\n- shape : float or array_like of floats\n    The shape of the gamma distribution\n- scale : float or array_like of floats, optional\n    The scale of the gamma distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.geometric",
+        "description": "Draw samples from the geometric distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.geometric.html",
+        "doc": "geometric(p, size=None)\n\nDraw samples from the geometric distribution.\n\nParameters:\n- p : float or array_like of floats\n    The probability of success of an individual trial\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.gumbel",
+        "description": "Draw samples from a Gumbel distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.gumbel.html",
+        "doc": "gumbel(loc=0.0, scale=1.0, size=None)\n\nDraw samples from a Gumbel distribution.\n\nParameters:\n- loc : float or array_like of floats, optional\n    The location of the mode of the distribution\n- scale : float or array_like of floats, optional\n    The scale parameter of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.hypergeometric",
+        "description": "Draw samples from a Hypergeometric distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.hypergeometric.html",
+        "doc": "hypergeometric(ngood, nbad, nsample, size=None)\n\nDraw samples from a Hypergeometric distribution.\n\nParameters:\n- ngood : int or array_like of ints\n    Number of success states in the population\n- nbad : int or array_like of ints\n    Number of failure states in the population\n- nsample : int or array_like of ints\n    Number of samples drawn\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.laplace",
+        "description": "Draw samples from the Laplace or double exponential distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.laplace.html",
+        "doc": "laplace(loc=0.0, scale=1.0, size=None)\n\nDraw samples from the Laplace or double exponential distribution.\n\nParameters:\n- loc : float or array_like of floats, optional\n    The position, \u03bc, of the distribution peak\n- scale : float or array_like of floats, optional\n    \u03bb, the exponential decay\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.logistic",
+        "description": "Draw samples from a logistic distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.logistic.html",
+        "doc": "logistic(loc=0.0, scale=1.0, size=None)\n\nDraw samples from a logistic distribution.\n\nParameters:\n- loc : float or array_like of floats, optional\n    Parameter of the distribution\n- scale : float or array_like of floats, optional\n    Parameter of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.lognormal",
+        "description": "Draw samples from a log-normal distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.lognormal.html",
+        "doc": "lognormal(mean=0.0, sigma=1.0, size=None)\n\nDraw samples from a log-normal distribution.\n\nParameters:\n- mean : float or array_like of floats, optional\n    Mean value of the underlying normal distribution\n- sigma : float or array_like of floats, optional\n    Standard deviation of the underlying normal distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.logseries",
+        "description": "Draw samples from a logarithmic series distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.logseries.html",
+        "doc": "logseries(p, size=None)\n\nDraw samples from a logarithmic series distribution.\n\nParameters:\n- p : float or array_like of floats\n    Shape parameter for the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.multinomial",
+        "description": "Draw samples from a multinomial distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.multinomial.html",
+        "doc": "multinomial(n, pvals, size=None)\n\nDraw samples from a multinomial distribution.\n\nParameters:\n- n : int\n    Number of experiments\n- pvals : sequence of floats, length p\n    Probabilities of each of the p different outcomes\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.multivariate_normal",
+        "description": "Draw random samples from a multivariate normal distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.multivariate_normal.html",
+        "doc": "multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8)\n\nDraw random samples from a multivariate normal distribution.\n\nParameters:\n- mean : 1-D array_like, of length N\n    Mean of the N-dimensional distribution\n- cov : 2-D array_like, of shape (N, N)\n    Covariance matrix of the distribution\n- size : int or tuple of ints, optional\n    Given a shape of, for example, (m,n,k), m*n*k samples are generated\n- check_valid : { 'warn', 'raise', 'ignore' }, optional\n    Behavior when the covariance matrix is not positive semidefinite\n- tol : float, optional\n    Tolerance when checking the singular values in covariance matrix",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.negative_binomial",
+        "description": "Draw samples from a negative binomial distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.negative_binomial.html",
+        "doc": "negative_binomial(n, p, size=None)\n\nDraw samples from a negative binomial distribution.\n\nParameters:\n- n : float or array_like of floats\n    Parameter of the distribution, > 0\n- p : float or array_like of floats\n    Parameter of the distribution, >= 0 and <=1\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.noncentral_chisquare",
+        "description": "Draw samples from a noncentral chi-square distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.noncentral_chisquare.html",
+        "doc": "noncentral_chisquare(df, nonc, size=None)\n\nDraw samples from a noncentral chi-square distribution.\n\nParameters:\n- df : float or array_like of floats\n    Degrees of freedom, must be > 0\n- nonc : float or array_like of floats\n    Non-centrality, must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.noncentral_f",
+        "description": "Draw samples from the noncentral F distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.noncentral_f.html",
+        "doc": "noncentral_f(dfnum, dfden, nonc, size=None)\n\nDraw samples from the noncentral F distribution.\n\nParameters:\n- dfnum : float or array_like of floats\n    Degrees of freedom in numerator, must be > 0\n- dfden : float or array_like of floats\n    Degrees of freedom in denominator, must be > 0\n- nonc : float or array_like of floats\n    Non-centrality parameter, the sum of the squares of the numerator means\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.normal",
+        "description": "Draw random samples from a normal (Gaussian) distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html",
+        "doc": "normal(loc=0.0, scale=1.0, size=None)\n\nDraw random samples from a normal (Gaussian) distribution.\n\nParameters:\n- loc : float or array_like of floats\n    Mean of the distribution\n- scale : float or array_like of floats\n    Standard deviation of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.pareto",
+        "description": "Draw samples from a Pareto II or Lomax distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.pareto.html",
+        "doc": "pareto(a, size=None)\n\nDraw samples from a Pareto II or Lomax distribution with specified shape.\n\nParameters:\n- a : float or array_like of floats\n    Shape of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.poisson",
+        "description": "Draw samples from a Poisson distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.poisson.html",
+        "doc": "poisson(lam=1.0, size=None)\n\nDraw samples from a Poisson distribution.\n\nParameters:\n- lam : float or array_like of floats\n    Expectation of interval, must be >= 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.power",
+        "description": "Draws samples in [0, 1] from a power distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.power.html",
+        "doc": "power(a, size=None)\n\nDraws samples in [0, 1] from a power distribution with positive exponent a - 1.\n\nParameters:\n- a : float or array_like of floats\n    Parameter of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.rayleigh",
+        "description": "Draw samples from a Rayleigh distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.rayleigh.html",
+        "doc": "rayleigh(scale=1.0, size=None)\n\nDraw samples from a Rayleigh distribution.\n\nParameters:\n- scale : float or array_like of floats, optional\n    Scale, also equals the mode\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.standard_cauchy",
+        "description": "Draw samples from a standard Cauchy distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.standard_cauchy.html",
+        "doc": "standard_cauchy(size=None)\n\nDraw samples from a standard Cauchy distribution with mode = 0.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.standard_exponential",
+        "description": "Draw samples from the standard exponential distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.standard_exponential.html",
+        "doc": "standard_exponential(size=None)\n\nDraw samples from the standard exponential distribution.\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.standard_gamma",
+        "description": "Draw samples from a standard Gamma distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.standard_gamma.html",
+        "doc": "standard_gamma(shape, size=None)\n\nDraw samples from a standard Gamma distribution.\n\nParameters:\n- shape : float or array_like of floats\n    Parameter, must be non-negative\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.standard_normal",
+        "description": "Draw samples from a standard Normal distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.standard_normal.html",
+        "doc": "standard_normal(size=None)\n\nDraw samples from a standard Normal distribution (mean=0, stdev=1).\n\nParameters:\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.standard_t",
+        "description": "Draw samples from a standard Student's t distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.standard_t.html",
+        "doc": "standard_t(df, size=None)\n\nDraw samples from a standard Student's t distribution with df degrees of freedom.\n\nParameters:\n- df : float or array_like of floats\n    Degrees of freedom, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.triangular",
+        "description": "Draw samples from the triangular distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.triangular.html",
+        "doc": "triangular(left, mode, right, size=None)\n\nDraw samples from the triangular distribution over the interval [left, right].\n\nParameters:\n- left : float or array_like of floats\n    Lower limit\n- mode : float or array_like of floats\n    The value where the peak of the distribution occurs\n- right : float or array_like of floats\n    Upper limit, must be larger than left\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.uniform",
+        "description": "Draw samples from a uniform distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html",
+        "doc": "uniform(low=0.0, high=1.0, size=None)\n\nDraw samples from a uniform distribution.\n\nParameters:\n- low : float or array_like of floats, optional\n    Lower boundary of the output interval\n- high : float or array_like of floats\n    Upper boundary of the output interval\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.vonmises",
+        "description": "Draw samples from a von Mises distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.vonmises.html",
+        "doc": "vonmises(mu, kappa, size=None)\n\nDraw samples from a von Mises distribution.\n\nParameters:\n- mu : float or array_like of floats\n    Mode of the distribution\n- kappa : float or array_like of floats\n    Dispersion of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.wald",
+        "description": "Draw samples from a Wald, or inverse Gaussian, distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.wald.html",
+        "doc": "wald(mean, scale, size=None)\n\nDraw samples from a Wald, or inverse Gaussian, distribution.\n\nParameters:\n- mean : float or array_like of floats\n    Distribution mean, must be > 0\n- scale : float or array_like of floats\n    Scale of the distribution, must be > 0\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.weibull",
+        "description": "Draw samples from a Weibull distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.weibull.html",
+        "doc": "weibull(a, size=None)\n\nDraw samples from a Weibull distribution.\n\nParameters:\n- a : float or array_like of floats\n    Shape parameter of the distribution\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      },
+      {
+        "name": "numpy.random.zipf",
+        "description": "Draw samples from a Zipf distribution",
+        "url": "https://numpy.org/doc/stable/reference/random/generated/numpy.random.zipf.html",
+        "doc": "zipf(a, size=None)\n\nDraw samples from a Zipf distribution.\n\nParameters:\n- a : float or array_like of floats\n    Distribution parameter\n- size : int or tuple of ints, optional\n    Output shape",
+        "code": "Legacy function using global RandomState"
+      }
+    ]
+  },
+  "bit_generators": [
+    {
+      "name": "numpy.random.PCG64",
+      "description": "BitGenerator for the PCG-64 pseudo-random number generator",
+      "url": "https://numpy.org/doc/stable/reference/random/bit_generators/pcg64.html",
+      "doc": "PCG64(seed=None)\n\nBitGenerator for the PCG-64 pseudo-random number generator.\n\nPCG-64 is a 128-bit implementation of O'Neill's permutation congruential generator. It has a period of 2^128 and supports advancing an arbitrary number of steps as well as 2^127 streams.\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    A seed to initialize the BitGenerator",
+      "code": "BitGenerator class - implemented in C"
+    },
+    {
+      "name": "numpy.random.PCG64DXSM",
+      "description": "BitGenerator for the PCG-64 DXSM pseudo-random number generator",
+      "url": "https://numpy.org/doc/stable/reference/random/bit_generators/pcg64dxsm.html",
+      "doc": "PCG64DXSM(seed=None)\n\nBitGenerator for the PCG-64 DXSM pseudo-random number generator.\n\nPCG-64 DXSM is an implementation of O'Neill's permutation congruential generator with the DXSM output mixer. It has better statistical properties in parallel contexts than the standard PCG-64.\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    A seed to initialize the BitGenerator",
+      "code": "BitGenerator class - implemented in C"
+    },
+    {
+      "name": "numpy.random.MT19937",
+      "description": "BitGenerator for the Mersenne Twister pseudo-random number generator",
+      "url": "https://numpy.org/doc/stable/reference/random/bit_generators/mt19937.html",
+      "doc": "MT19937(seed=None)\n\nBitGenerator for the Mersenne Twister pseudo-random number generator.\n\nMT19937 provides a capsule containing function pointers that produce doubles, and unsigned 32 and 64- bit integers. These are not directly consumable in Python and must be consumed by a Generator.\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    A seed to initialize the BitGenerator",
+      "code": "BitGenerator class - implemented in C"
+    },
+    {
+      "name": "numpy.random.Philox",
+      "description": "BitGenerator for the Philox (4x64) pseudo-random number generator",
+      "url": "https://numpy.org/doc/stable/reference/random/bit_generators/philox.html",
+      "doc": "Philox(seed=None, counter=None, key=None)\n\nBitGenerator for the Philox (4x64) pseudo-random number generator.\n\nPhilox is a counter-based RNG based on Salmon et al. It is capable of being advanced an arbitrary number of steps or generating independent streams.\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    A seed to initialize the BitGenerator\n- counter : None, int, array_like\n    Counter to use for the Philox state\n- key : None, int, array_like\n    Key to use for the Philox state",
+      "code": "BitGenerator class - implemented in C"
+    },
+    {
+      "name": "numpy.random.SFC64",
+      "description": "BitGenerator for the SFC64 pseudo-random number generator",
+      "url": "https://numpy.org/doc/stable/reference/random/bit_generators/sfc64.html",
+      "doc": "SFC64(seed=None)\n\nBitGenerator for the SFC64 pseudo-random number generator.\n\nSFC64 is a chaotic RNG that uses a 256-bit state. It is very fast and appears to be very robust to statistical tests.\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    A seed to initialize the BitGenerator",
+      "code": "BitGenerator class - implemented in C"
+    }
+  ],
+  "utilities": [
+    {
+      "name": "numpy.random.default_rng",
+      "description": "Construct a new Generator with the default BitGenerator (PCG64)",
+      "url": "https://numpy.org/doc/stable/reference/random/generator.html",
+      "doc": "default_rng(seed=None)\n\nConstruct a new Generator with the default BitGenerator (PCG64).\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    A seed to initialize the BitGenerator. If None, fresh, unpredictable entropy will be pulled from the OS.\n\nReturns:\n- Generator\n    The initialized generator object",
+      "code": "Factory function for creating Generator instances"
+    },
+    {
+      "name": "numpy.random.RandomState",
+      "description": "Container for the slow Mersenne Twister pseudo-random number generator",
+      "url": "https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState",
+      "doc": "RandomState(seed=None)\n\nContainer for the slow Mersenne Twister pseudo-random number generator.\n\nConsider using the more modern np.random.Generator instead.\n\nRandomState is effectively frozen and will only receive updates required for compatibility.\n\nParameters:\n- seed : None, int, array_like[ints], SeedSequence, BitGenerator, Generator\n    Random seed initializing the pseudo-random number generator",
+      "code": "Legacy random number generator class"
+    },
+    {
+      "name": "numpy.random.SeedSequence",
+      "description": "SeedSequence mixes sources of entropy in a reproducible way",
+      "url": "https://numpy.org/doc/stable/reference/random/bit_generators/index.html",
+      "doc": "SeedSequence(entropy=None, spawn_key=(), n_children_spawned=0)\n\nSeedSequence mixes sources of entropy in a reproducible way to set the initial state for independent and very probably non-overlapping BitGenerators.\n\nParameters:\n- entropy : None, int, sequence[int]\n    The entropy for creating a SeedSequence\n- spawn_key : tuple[int], optional\n    A tuple of integer values used to track the 'path' to a SeedSequence\n- n_children_spawned : int, optional\n    The number of children already spawned",
+      "code": "Utility class for managing random seeds"
+    },
+    {
+      "name": "numpy.random.BitGenerator",
+      "description": "Base class for bit generators",
+      "url": "https://numpy.org/doc/stable/reference/random/bit_generators/index.html",
+      "doc": "BitGenerator(seed=None)\n\nBase class for bit generators.\n\nThe BitGenerator has a limited set of responsibilities. It manages state and provides functions to produce random doubles and random unsigned 32- and 64-bit values.\n\nThis class should not be instantiated directly.",
+      "code": "Abstract base class for bit generators"
+    }
+  ]
+}
