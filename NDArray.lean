@@ -244,9 +244,9 @@ def prod [Mul α] [OfNat α 1] {n : Nat} {shape : Vector Nat n} (arr : NDArray �
 -- TODO: cheated here
 /-- Reshape an array to a new shape with the same total size -/
 def reshape {n m : Nat} {shape1 : Vector Nat n} {shape2 : Vector Nat m}
-    (arr : NDArray α n shape1) (h : shape1.size = shape2.size) : NDArray α m shape2 :=
+    (arr : NDArray α n shape1) (h : shape1.foldl (· * ·) 1 = shape2.foldl (· * ·) 1) : NDArray α m shape2 :=
   { data := arr.data
-    size_proof := by rw [arr.size_proof, h] }
+    size_proof := by simp [arr.size_proof]; sorry }
 
 /-- Convert array to list for testing/display -/
 def toList {n : Nat} {shape : Vector Nat n} (arr : NDArray α n shape) : List α :=

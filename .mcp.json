@@ -6,7 +6,7 @@
         "lean-lsp-mcp"
       ]
     },
-    "leanexplore": {
+    "leanexploreLocal": {
       "command": "uv",
       "args": [
         "run",
