@@ -14,10 +14,6 @@ package NumpySpec where
   releaseRepo := "https://github.com/Beneficial-AI-Foundation/NumpySpec"
   buildArchive := "NumpySpec-{OS}-{ARCH}.tar.gz"
   preferReleaseBuild := true
-  -- Weak configuration arguments that don't trigger rebuilds
-  weakLeanArgs := #[
-    "-Dpp.unicode.fun=true"  -- Pretty printing options
-  ]
 
 /-! Dependencies (order matters for compilation) -/
 
@@ -37,6 +33,7 @@ require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 -- require mathlib from git "https://github.com/leanprover-community/mathlib4"
 
 /-- Main library -/
+@[default_target]
 lean_lib NumpySpec where
   -- Include the root module and all submodules
   globs := #[.andSubmodules `NumpySpec]
@@ -45,17 +42,6 @@ lean_lib NumpySpec where
 lean_lib FuncTracker where
   -- Include all FuncTracker modules
   globs := #[.andSubmodules `FuncTracker]
-
-/-- DafnySpecs library for ported Dafny specifications -/
-lean_lib DafnySpecs where
-  -- Include all DafnySpecs modules
-  globs := #[.andSubmodules `DafnySpecs]
-
-/-- Main library. NumPy-compatible n-dimensional arrays -/
-@[default_target]
-lean_lib NDArray where
-  -- Include all NDArray modules
-  globs := #[.andSubmodules `NDArray]
 
 /-- Executables -/
 @[default_target]
