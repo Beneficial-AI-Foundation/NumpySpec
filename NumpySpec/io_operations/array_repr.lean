@@ -1,0 +1,12 @@
+/-!
+{
+  "name": "numpy.array_repr",
+  "category": "String formatting",
+  "description": "Return the string representation of an array",
+  "url": "https://numpy.org/doc/stable/reference/generated/numpy.array_repr.html",
+  "doc": "Return the string representation of an array.\n\n    Parameters\n    ----------\n    arr : ndarray\n        Input array.\n    max_line_width : int, optional\n        Inserts newlines if text is longer than \`max_line_width\`.\n        Defaults to \`\`numpy.get_printoptions()['linewidth']\`\`.\n    precision : int, optional\n        Floating point precision.\n        Defaults to \`\`numpy.get_printoptions()['precision']\`\`.\n    suppress_small : bool, optional\n        Represent numbers \"very close\" to zero as zero; d...",
+  "code": "@array_function_dispatch(_array_repr_dispatcher, module='numpy')\ndef array_repr(arr, max_line_width=None, precision=None, suppress_small=None):\n    \"\"\"\n    Return the string representation of an array.\n\n    Parameters\n    ----------\n    arr : ndarray\n        Input array.\n    max_line_width : int, optional\n        Inserts newlines if text is longer than \`max_line_width\`.\n        Defaults to \`\`numpy.get_printoptions()['linewidth']\`\`.\n    precision : int, optional\n        Floating point precision.\n        Defaults to \`\`numpy.get_printoptions()['precision']\`\`.\n    suppress_small : bool, optional\n        Represent numbers \"very close\" to zero as zero; default is False.\n        Very close is defined by precision: if the precision is 8, e.g.,\n        numbers smaller (in absolute value) than 5e-9 are represented as\n        zero.\n        Defaults to \`\`numpy.get_printoptions()['suppress']\`\`.\n\n    Returns\n    -------\n    string : str\n      The string representation of an array.\n\n    See Also\n    --------\n    array_str, array2string, set_printoptions\n\n    Examples\n    --------\n    >>> import numpy as np\n    >>> np.array_repr(np.array([1,2]))\n    'array([1, 2])'\n    >>> np.array_repr(np.ma.array([0.]))\n    'MaskedArray([0.])'\n    >>> np.array_repr(np.array([], np.int32))\n    'array([], dtype=int32)'\n\n    >>> x = np.array([1e-6, 4e-7, 2, 3])\n    >>> np.array_repr(x, precision=6, suppress_small=True)\n    'array([0.000001,  0.      ,  2.      ,  3.      ])'\n\n    \"\"\"\n    return _array_repr_implementation(\n        arr, max_line_width, precision, suppress_small)"
+}
+-/
+
+-- TODO: Implement array_repr

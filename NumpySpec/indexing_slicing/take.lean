@@ -1,0 +1,12 @@
+/-!
+{
+  "name": "numpy.take",
+  "category": "Basic indexing",
+  "description": "Take elements from an array along an axis",
+  "url": "https://numpy.org/doc/stable/reference/generated/numpy.take.html",
+  "doc": "Take elements from an array along an axis.\n\nWhen axis is not None, this function does the same thing as \"fancy\" indexing (indexing arrays using arrays); however, it can be easier to use if you need elements along a given axis.\n\nParameters\n----------\na : array_like (Ni..., M, Nk...)\n    The source array.\nindices : array_like (Nj...)\n    The indices of the values to extract.\n    Also allow scalars for indices.\naxis : int, optional\n    The axis over which to select values. By default, the flattened\n    input array is used.\nout : ndarray, optional (Ni..., Nj..., Nk...)\n    If provided, the result will be placed in this array.\nmode : {'raise', 'wrap', 'clip'}, optional\n    Specifies how out-of-bounds indices will behave.\n\nReturns\n-------\nout : ndarray (Ni..., Nj..., Nk...)\n    The returned array has the same type as \`a\`.\n\nExamples\n--------\n>>> import numpy as np\n>>> a = [4, 3, 5, 7, 6, 8]\n>>> indices = [0, 1, 4]\n>>> np.take(a, indices)\narray([4, 3, 6])",
+  "code": "@array_function_dispatch(_take_dispatcher)\ndef take(a, indices, axis=None, out=None, mode='raise'):\n    \"\"\"\n    Take elements from an array along an axis.\n\n    When axis is not None, this function does the same thing as \"fancy\"\n    indexing (indexing arrays using arrays); however, it can be easier to use\n    if you need elements along a given axis.\n\n    Parameters\n    ----------\n    a : array_like (Ni..., M, Nk...)\n        The source array.\n    indices : array_like (Nj...)\n        The indices of the values to extract.\n        Also allow scalars for indices.\n    axis : int, optional\n        The axis over which to select values. By default, the flattened\n        input array is used.\n    out : ndarray, optional (Ni..., Nj..., Nk...)\n        If provided, the result will be placed in this array.\n    mode : {'raise', 'wrap', 'clip'}, optional\n        Specifies how out-of-bounds indices will behave.\n\n    Returns\n    -------\n    out : ndarray (Ni..., Nj..., Nk...)\n        The returned array has the same type as \`a\`.\n\n    Examples\n    --------\n    >>> import numpy as np\n    >>> a = [4, 3, 5, 7, 6, 8]\n    >>> indices = [0, 1, 4]\n    >>> np.take(a, indices)\n    array([4, 3, 6])\n    \"\"\"\n    return _wrapfunc(a, 'take', indices, axis=axis, out=out, mode=mode)"
+}
+-/
+
+-- TODO: Implement take

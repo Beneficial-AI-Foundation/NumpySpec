@@ -1,0 +1,12 @@
+/-!
+{
+  "name": "numpy.strings.ljust",
+  "category": "String operations",
+  "description": "Return an array with the elements of a left-justified in a string of length width",
+  "url": "https://numpy.org/doc/stable/reference/generated/numpy.strings.ljust.html",
+  "doc": "Return an array with the elements of \`a\` left-justified in a string of length \`width\`.\n\nParameters\n----------\na : array_like, with \`StringDType\`, \`bytes_\` or \`str_\` dtype\nwidth : array_like, with any integer dtype\n    The length of the resulting strings, unless \`\`width < str_len(a)\`\`.\nfillchar : array_like, with \`StringDType\`, \`bytes_\` or \`str_\` dtype, optional\n    The character to use for padding. Default is space.\n\nReturns\n-------\nout : ndarray\n    Output array of \`StringDType\`, \`bytes_\` or \`str_\` dtype,\n    depending on input types",
+  "code": "def ljust(a, width, fillchar=' '):\n    \"\"\"\n    Return an array with the elements of \`a\` left-justified in a\n    string of length \`width\`.\n\n    Parameters\n    ----------\n    a : array_like, with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype\n    width : array_like, with any integer dtype\n        The length of the resulting strings, unless \`\`width < str_len(a)\`\`.\n    fillchar : array_like, with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype, optional\n        The character to use for padding. Default is space.\n\n    Returns\n    -------\n    out : ndarray\n        Output array of \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype,\n        depending on input types\n\n    See Also\n    --------\n    rjust, center\n\n    Examples\n    --------\n    >>> np.strings.ljust(['hello', 'world'], 10, fillchar='*')\n    array(['hello*****', 'world*****'], dtype='<U10')\n\n    \"\"\"\n    a = np.asanyarray(a)\n    fillchar = np.asanyarray(fillchar, dtype=a.dtype)\n    width = np.asanyarray(width)\n    if not _is_string_dtype(a.dtype):\n        raise TypeError(\"string operation on non-string array\")\n    if not _is_string_dtype(fillchar.dtype):\n        raise TypeError(\"string operation on non-string array\")\n    if width.dtype.kind not in \"iu\":\n        raise TypeError(f\"expected an integer array-like, got {width.dtype}\")\n    if np.any(str_len(fillchar) != 1):\n        raise TypeError(\"The fill character must be exactly one character long\")\n    return _center_ljust_rjust_ufunc(a, width, fillchar, 1)"
+}
+-/
+
+-- TODO: Implement ljust

@@ -1,0 +1,12 @@
+/-!
+{
+  "name": "numpy.strings.partition",
+  "category": "String operations",
+  "description": "Partition each element in a around sep",
+  "url": "https://numpy.org/doc/stable/reference/generated/numpy.strings.partition.html",
+  "doc": "Partition each element in \`a\` around \`sep\`.\n\nFor each element in \`a\`, split the element at the first occurrence of \`sep\`, and return a 3-tuple containing the part before the separator, the separator itself, and the part after the separator. If the separator is not found, the first item of the tuple will contain the whole string, and the second and third ones will be empty strings.\n\nParameters\n----------\na : array_like, with \`StringDType\`, \`bytes_\` or \`str_\` dtype\n    Input array\nsep : array_like, with \`StringDType\`, \`bytes_\` or \`str_\` dtype\n    Separator to split each string element in \`a\`\n\nReturns\n-------\nout : 3-tuple of ndarrays\n    Three arrays of \`StringDType\`, \`bytes_\` or \`str_\` dtype,\n    depending on input types, with shapes (1,) + a.shape, (...,)",
+  "code": "def partition(a, sep):\n    \"\"\"\n    Partition each element in \`\`a\`\` around \`\`sep\`\`.\n\n    Parameters\n    ----------\n    a : array_like, with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype\n        Input array\n    sep : array_like, with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype\n        Separator to split each string element in \`\`a\`\`.\n\n    Returns\n    -------\n    out : 3-tuple:\n        - array with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype with the\n          part before the separator\n        - array with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype with the\n          separator\n        - array with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype with the\n          part after the separator\n\n    See Also\n    --------\n    str.partition\n\n    Examples\n    --------\n    >>> x = np.array([\"Numpy is nice!\"])\n    >>> np.strings.partition(x, \" \")\n    (array(['Numpy'], dtype='<U5'),\n     array([' '], dtype='<U1'),\n     array(['is nice!'], dtype='<U8'))\n\n    \"\"\"\n    a = np.asanyarray(a)\n    sep = np.asanyarray(sep, dtype=a.dtype)\n    if not _is_string_dtype(a.dtype):\n        raise TypeError(\"string operation on non-string array\")\n    if not _is_string_dtype(sep.dtype):\n        raise TypeError(\"string operation on non-string array\")\n    return _partition_ufunc(a, sep)"
+}
+-/
+
+-- TODO: Implement partition
