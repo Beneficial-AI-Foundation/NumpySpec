@@ -12,7 +12,8 @@ open Std.Do
     Returns an array of the same shape as x, containing the absolute values.
 -/
 def numpy_absolute {n : Nat} (x : Vector Float n) : Id (Vector Float n) :=
-  sorry
+  x.map Float.abs
+
 
 /-- Specification: numpy.absolute returns a vector where each element is the
     absolute value of the corresponding element in x.
@@ -23,5 +24,6 @@ def numpy_absolute {n : Nat} (x : Vector Float n) : Id (Vector Float n) :=
 theorem numpy_absolute_spec {n : Nat} (x : Vector Float n) :
     ⦃⌜True⌝⦄
     numpy_absolute x
-    ⦃⇓result => ∀ i : Fin n, result[i] = Float.abs x[i]⦄ := by
+    ⦃⇓result => ⌜∀ i : Fin n, result[i] = x[i].abs⌝⦄ := by
+  mvcgen [numpy_absolute]
   sorry
