@@ -126,6 +126,101 @@ Array.ofFn (fun i : Fin n => computation)
 
 5. **Generic Functions**: Lean versions often add typeclass constraints like `[DecidableEq α]` or `[Inhabited α]` where needed.
 
+## Complete Workflow for Continuing Task Porting
+
+### Step 1: Setup New Batch
+```bash
+# Create new jj change for next batch
+jj new -m "feat: Port 20 more numeric-only Dafny synthesis tasks (batch N)"
+
+# Check current status
+jj status
+```
+
+### Step 2: Find Next Tasks to Port
+1. Check [@REMAINING_TASKS.md](./REMAINING_TASKS.md) for next 20 tasks
+2. Source Dafny files are in: `/Users/alokbeniwal/vericoding/dafny/benchmarks/dafny-bench_specs/synthesis_task/`
+3. File pattern: `dafny-synthesis_task_id_XXX_spec.dfy`
+
+### Step 3: Port Each Task
+For each task, create a Lean file following this template:
+
+```lean
+-- Synthesis Task XXX: Brief description
+
+namespace NumpySpec.DafnyBenchmarks.SynthesisTaskXXX
+
+/-- Function description -/
+def functionName (params : Types) : ReturnType :=
+  sorry
+
+/-- Specification: What the function does -/
+theorem functionName_spec (params : Types) (preconditions) :
+    functionName params = expected_result :=
+  sorry
+
+end NumpySpec.DafnyBenchmarks.SynthesisTaskXXX
+```
+
+### Step 4: Common Fixes for Build Errors
+
+1. **Float.pi Error**: Use numeric constant `3.14159265358979323846`
+2. **String Indexing**: Avoid `String.Pos`, simplify specs or use `String.toList`
+3. **Array Indexing**: Use `array[i]!` with `i : Nat` and bounds condition
+4. **Fin Type Issues**: Change `∀ i : Fin n` to `∀ i : Nat, i < n →`
+5. **List.toMultiset**: Not available, use custom implementations
+
+### Step 5: Test Build
+```bash
+# Test individual file
+lake build NumpySpec.DafnyBenchmarks.SynthesisTaskXXX
+
+# Test all new files at once
+lake build NumpySpec.DafnyBenchmarks.SynthesisTask{XXX,YYY,ZZZ,...}
+```
+
+### Step 6: Copy to Vericoding
+```bash
+# Copy all new files
+for f in SynthesisTaskXXX SynthesisTaskYYY ...; do
+  cp NumpySpec/DafnyBenchmarks/$f.lean /Users/alokbeniwal/vericoding/lean4/benchmarks/dafny-bench_specs/
+done
+```
+
+### Step 7: Create PR
+```bash
+# Create bookmark
+jj bookmark create dafnybench-batchN
+
+# Push to GitHub
+jj git push --bookmark dafnybench-batchN --allow-new
+
+# Create PR
+gh pr create --base main --head dafnybench-batchN \
+  --title "feat: Port 20 more numeric-only Dafny synthesis tasks (batch N)" \
+  --body "See PR description template below"
+```
+
+### PR Description Template
+```
+## Summary
+Continue porting Dafny synthesis tasks, focusing exclusively on numeric types (Int, Nat, Float).
+
+## Changes
+- Add 20 numeric-only synthesis task specifications
+- Tasks include: [list main categories]
+- All implementations use `sorry` placeholders (type signatures only)
+
+## Test plan
+- [x] Run `lake build` to verify all files compile
+- [x] Check that all 20 files build without errors
+- [x] Verify no string types used (Int, Nat, Float only)
+
+This continues the work from PR #XXX (batch N-1).
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+```
+
 ## Current Porting Status (as of context window limit)
 
 ### Stacked PR Approach

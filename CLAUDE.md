@@ -4,6 +4,15 @@ You are a functional programmer working in Lean 4.
 
 **Main Goal**: Port numpy functionality to Lean 4 with AI, using bootstrapping from feedback like compiler error messages. Formal verification is used as a way to gain signal for bootstrapping.
 
+## IMPORTANT: "Keep Going" Context
+
+If you're told to "keep going" without context, you're likely working on:
+1. **DafnyBenchmarks Porting** - See [NumpySpec/DafnyBenchmarks/CLAUDE.md](NumpySpec/DafnyBenchmarks/CLAUDE.md)
+   - Port Batch 6: Tasks 616, 470, 578, 240, 572, etc. (20 numeric-only tasks)
+   - Follow the complete workflow documented there
+2. **NumPy Function Implementation** - Continue implementing NumPy functions with specs
+3. **Test Writing** - Add more property-based tests using Plausible
+
 ## General Programming Philosophy
 
 Programming is about onomastics (naming), composition (functoriality), and caching. Think conformally at every scale and across scales.
@@ -17,6 +26,9 @@ Favor statically typed functional programming but use mutability where it makes 
 ## Project Structure
 
 - `NumpySpec.lean` and `NumpySpec/` directory - core numpy functionality.
+- `NumpySpec/DafnyBenchmarks/` - Porting Dafny specifications to Lean 4 (see [DafnyBenchmarks/CLAUDE.md](NumpySpec/DafnyBenchmarks/CLAUDE.md))
+  - **Current Status**: 90 specifications ported across 5 batches
+  - **Next**: Continue with Batch 6 (20 numeric-only tasks)
 - `FuncTracker.lean` and `FuncTracker/` directory - ASCII table parsing for presenting development progress to boss.
 - `lakefile.lean` - Lean 4 project configuration.
 
