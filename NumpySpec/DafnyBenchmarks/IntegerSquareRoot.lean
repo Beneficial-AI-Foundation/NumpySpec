@@ -25,7 +25,7 @@ def squareRoot (N : Nat) : Id Nat :=
           findRoot (guess + 1)
       else
         guess
-    termination_by sorry
+    termination_by n - guess
     findRoot 0
   )
 

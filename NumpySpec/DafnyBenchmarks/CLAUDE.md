@@ -116,97 +116,80 @@ Array.ofFn (fun i : Fin n => computation)
 
 5. **Generic Functions**: Lean versions often add typeclass constraints like `[DecidableEq α]` or `[Inhabited α]` where needed.
 
-## Future Work
+## Current Porting Status (as of context window limit)
 
-1. **Proof Completion**: Replace `sorry` with actual proofs
-2. **Performance**: Optimize implementations for efficiency
-3. **Testing**: Add property-based tests using Plausible
-4. **Integration**: Connect with NumPy specifications where applicable
-5. **Tooling**: Develop tactics specific to array reasoning
+### Stacked PR Approach
+Using jj (Jujutsu) for managing stacked PRs on GitHub:
 
-## Contributing
+1. **PR #10** - Initial batch (110+ specifications)
+   - Base PR with comprehensive porting of Dafny benchmarks
+   - Fixed compilation issues, added Multiset stub
 
-When adding new specifications:
-1. Follow the existing naming and style conventions
-2. Document any deviations from the Dafny original
-3. Ensure the file compiles with `lake build`
-4. Update the main `DafnyBenchmarks.lean` import list
-5. Add the specification to the appropriate category in this document
+2. **PR #14** - Batch 2: 20 Dafny-Exercises 
+   - Stacked on PR #10
+   - Focus on exercise specifications
+   - All implementations removed (type signatures only)
+   - Fixed Multiset membership instance
 
-## Porting Progress
+3. **PR #15** - Batch 3: 20 Synthesis Tasks
+   - Stacked on PR #14
+   - Simple mathematical and algorithmic tasks
+   - Simplified complex string specifications
+   - Total reached: 50 new specifications
 
-### Phase 1: Initial 50 Specifications (Completed)
-Ported the first 50 Dafny specifications including basic operations, array algorithms, sorting, and string operations. All files compile successfully with minor issues in 7 specifications that need future attention.
+### Summary of New Specifications (Batches 2-4)
 
-### Phase 2: Extended Specifications (51-60) (Completed)
-- Swap operations: SwapArithReconstructed, SwapBitvector, SwapInArray, SwapSimultaneous, SwapGeneral
-- Array operations: TestArray
-- Mathematical operations: Triple, Triple2, Triple3, Triple4
-- Algorithm: TwoSum
+**Batch 2 - Dafny-Exercises (20 specs):**
+- ExerciseCountMin, ExercisePeekSum, ExerciseBubbleSort
+- ExerciseReplace, ExerciseSelSort, ExerciseSeparate
+- ExerciseInsertionSort, ExerciseSeqMaxSum, ExerciseBarrier
+- ExerciseFindMax, ExerciseExp, ExerciseSumElems
+- ExerciseCountEven, ExerciseFirstZero, ExerciseFirstNegative
+- ExerciseContained, ExerciseMaximum, ExercisePositive
+- ExerciseAllEqual, ExerciseSquareRoot
 
-### Phase 3: Next 50 Specifications (61-110) (Completed)
-Successfully ported 50 additional specifications including:
+**Batch 3 - Synthesis Tasks (20 specs):**
+- Basic math: SquarePerimeter, IsDivisibleBy11, SphereSurfaceArea
+- Array operations: SumOfNegatives, MaxDifference, KthElement
+- String operations: RemoveChars, IsInteger
+- Advanced: SharedElements, IsNonPrime, CountIdenticalPositions
+- And 10 more mathematical/algorithmic tasks
 
-**Batch 1 (61-70):**
-- UpdateArray, UpdateMap: Array and map update operations
-- DPGradientDescent, Gaussian: Differential privacy algorithms
-- SearchAddends: Two-sum in sorted sequence
-- MergeSort: Complete merge sort implementation
-- BinarySearchTree: BST operations (insert, delete, traversals)
-- CMSC433Assignment: Multiple verification problems
-- PowerFunction: Exponentiation
+**Batch 4 - More Synthesis Tasks (20 specs):**
+- Array algorithms: SynthesisTask622 (median), SynthesisTask445 (element-wise mult)
+- Math operations: SynthesisTask623 (power), SynthesisTask600 (isEven)
+- String processing: SynthesisTask741 (allCharsSame), SynthesisTask424 (extract rear)
+- Geometry: SynthesisTask458 (rectangle area), SynthesisTask581 (pyramid surface)
+- And 12 more tasks covering various algorithms and computations
 
-**Batch 2 (71-80):**
-- FindMinimum3: Minimum of three integers
-- SimpleAssignment, AddOne: Basic operations
-- MultiplyAndAdd: Arithmetic operations
-- StringOperations: String manipulation (prefix, substring, common substrings)
-- CumulativeSum: Prefix sum for range queries
-- ListFromArray: Array to functional list conversion
-- Factorial, HoareExamples: Classic verification examples
+### Key Decisions Made
 
-**Batch 3 (81-90):**
-- PrefixSum, SearchSort: Array algorithms
-- ContainerRanks: Well-foundedness properties
-- SeqFromArray: Sequence operations
-- BinarySearch2, Find2: Search variants
-- Fibonacci: Fibonacci sequence
-- TwoSum2, TwoSum3: LeetCode Two Sum variants
-- LongestPalindrome: Palindromic substring
+1. **No Implementations**: All functions use `sorry` for implementations
+2. **Simplified Specifications**: Complex string/array access simplified where needed
+3. **No Mathlib**: Custom Multiset stub to avoid dependencies
+4. **Consistent Style**: All use Hoare triple notation
+5. **Incremental Approach**: Small batches for easier review
 
-**Batch 4 (91-100):**
-- RemoveElement: LeetCode array manipulation
-- ClimbingStairs: Dynamic programming (Fibonacci pattern)
-- FindTheCelebrity: Graph-based puzzle
-- Shuffle: Array shuffling
-- ExpressionOptimization: Expression tree optimization
-- FindZero, Max, LinearSearch: Basic algorithms
+### Next Steps (for continuation)
 
-**Batch 5 (101-110):**
-- BinarySearchDec: Binary search on decreasing sequences
-- InsertionSortMultiset, SelectionSortMultiset: Sorting with multiset specs
-- QuickSelect: k-th smallest element
-- SimpleSpecs: Basic specifications
-- InsertionSortSeq, Search1000: Additional sorting and search
-- SumIntsLoop: Arithmetic series sum
-- ListReverse: List reversal with lemmas
-- DutchFlag: Three-way partitioning
+When continuing with more specifications:
+1. Create new jj change
+2. Port next batch of 20-30 specs
+3. Focus on remaining synthesis tasks or other categories
+4. Maintain same style and approach
+5. Create stacked PR on top of PR #16
 
-### Summary Statistics
+**Batch 4 is ready to be pushed as PR #16**
 
-Total specifications ported: **110**
-- Successfully compiling: ~100 specs
-- Minor issues needing attention: ~10 specs
+### Build Commands
 
-The comprehensive library now includes:
-1. **Basic algorithms**: sorting, searching, mathematical operations
-2. **Data structures**: arrays, lists, maps, binary search trees
-3. **Advanced algorithms**: dynamic programming, graph algorithms, optimization
-4. **LeetCode problems**: practical algorithm challenges
-5. **Formal verification examples**: classic proofs and lemmas
+```bash
+# Build all DafnyBenchmarks
+lake build NumpySpec.DafnyBenchmarks
 
-This collection serves as:
-1. A reference for correct algorithm implementation
-2. A test suite for verification tools
-3. A learning resource for formal methods
-4. A bridge between Dafny and Lean 4 communities
+# Build specific specification
+lake build NumpySpec.DafnyBenchmarks.SpecName
+
+# Test new additions
+lake build $(ls NumpySpec/DafnyBenchmarks/NewSpec*.lean | sed 's|/|.|g' | sed 's|\.lean||')
+```
