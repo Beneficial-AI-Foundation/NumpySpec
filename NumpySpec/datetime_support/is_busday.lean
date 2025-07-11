@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.is_busday",
@@ -9,4 +14,67 @@
 }
 -/
 
--- TODO: Implement is_busday
+/-- Date representation as an abstract type -/
+opaque Date : Type
+
+/-- Day of week enumeration (Monday = 0, Sunday = 6) -/
+inductive DayOfWeek : Type
+/-- Monday -/
+| monday : DayOfWeek
+/-- Tuesday -/
+| tuesday : DayOfWeek
+/-- Wednesday -/
+| wednesday : DayOfWeek
+/-- Thursday -/
+| thursday : DayOfWeek
+/-- Friday -/
+| friday : DayOfWeek
+/-- Saturday -/
+| saturday : DayOfWeek
+/-- Sunday -/
+| sunday : DayOfWeek
+
+/-- Convert day of week to natural number for indexing -/
+def DayOfWeek.toNat : DayOfWeek → Nat
+| .monday => 0
+| .tuesday => 1
+| .wednesday => 2
+| .thursday => 3
+| .friday => 4
+| .saturday => 5
+| .sunday => 6
+
+/-- Function to get day of week from a date -/
+axiom Date.dayOfWeek : Date → DayOfWeek
+
+/-- Function to check if a date is in a holiday list -/
+axiom Date.isHoliday : ∀ {h : Nat}, Date → Vector Date h → Bool
+
+/-- 
+Calculates which of the given dates are valid business days.
+A business day is a day that is both:
+1. Allowed by the weekmask (Monday-Friday by default)
+2. Not a holiday
+-/
+def is_busday {n h : Nat} (dates : Vector Date n) 
+    (weekmask : Vector Bool 7) 
+    (holidays : Vector Date h) : Id (Vector Bool n) :=
+  sorry
+
+/-- 
+Specification: is_busday returns a boolean vector indicating which dates are business days.
+A date is a business day if:
+1. Its day of week is allowed by the weekmask
+2. It is not in the holidays list
+-/
+theorem is_busday_spec {n h : Nat} (dates : Vector Date n) 
+    (weekmask : Vector Bool 7) 
+    (holidays : Vector Date h) :
+    ⦃⌜True⌝⦄
+    is_busday dates weekmask holidays
+    ⦃⇓result => ⌜∀ i : Fin n, 
+      let dayIdx := (dates.get i).dayOfWeek.toNat
+      let validDay := weekmask.get ⟨dayIdx, sorry⟩
+      let isHoliday := (dates.get i).isHoliday holidays
+      result.get i = (validDay ∧ ¬isHoliday)⌝⦄ := by
+  sorry

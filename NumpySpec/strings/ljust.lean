@@ -1,12 +1,46 @@
-/-!
-{
-  "name": "numpy.strings.ljust",
-  "category": "String operations",
-  "description": "Return an array with the elements of a left-justified in a string of length width",
-  "url": "https://numpy.org/doc/stable/reference/generated/numpy.strings.ljust.html",
-  "doc": "Return an array with the elements of \`a\` left-justified in a string of length \`width\`.\n\nParameters\n----------\na : array_like, with \`StringDType\`, \`bytes_\` or \`str_\` dtype\nwidth : array_like, with any integer dtype\n    The length of the resulting strings, unless \`\`width < str_len(a)\`\`.\nfillchar : array_like, with \`StringDType\`, \`bytes_\` or \`str_\` dtype, optional\n    The character to use for padding. Default is space.\n\nReturns\n-------\nout : ndarray\n    Output array of \`StringDType\`, \`bytes_\` or \`str_\` dtype,\n    depending on input types",
-  "code": "def ljust(a, width, fillchar=' '):\n    \"\"\"\n    Return an array with the elements of \`a\` left-justified in a\n    string of length \`width\`.\n\n    Parameters\n    ----------\n    a : array_like, with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype\n    width : array_like, with any integer dtype\n        The length of the resulting strings, unless \`\`width < str_len(a)\`\`.\n    fillchar : array_like, with \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype, optional\n        The character to use for padding. Default is space.\n\n    Returns\n    -------\n    out : ndarray\n        Output array of \`\`StringDType\`\`, \`\`bytes_\`\` or \`\`str_\`\` dtype,\n        depending on input types\n\n    See Also\n    --------\n    rjust, center\n\n    Examples\n    --------\n    >>> np.strings.ljust(['hello', 'world'], 10, fillchar='*')\n    array(['hello*****', 'world*****'], dtype='<U10')\n\n    \"\"\"\n    a = np.asanyarray(a)\n    fillchar = np.asanyarray(fillchar, dtype=a.dtype)\n    width = np.asanyarray(width)\n    if not _is_string_dtype(a.dtype):\n        raise TypeError(\"string operation on non-string array\")\n    if not _is_string_dtype(fillchar.dtype):\n        raise TypeError(\"string operation on non-string array\")\n    if width.dtype.kind not in \"iu\":\n        raise TypeError(f\"expected an integer array-like, got {width.dtype}\")\n    if np.any(str_len(fillchar) != 1):\n        raise TypeError(\"The fill character must be exactly one character long\")\n    return _center_ljust_rjust_ufunc(a, width, fillchar, 1)"
-}
--/
+import Std.Do.Triple
+import Std.Tactic.Do
 
--- TODO: Implement ljust
+open Std.Do
+
+/-- numpy.strings.ljust: Return an array with the elements left-justified in a string of length width.
+
+    Left-justifies each string in the input array by padding it with the specified
+    fill character (default is space) to reach the specified width. If the original
+    string is longer than or equal to the width, it remains unchanged.
+
+    Parameters:
+    - a: Input array of strings
+    - width: Target width for each string
+    - fillchar: Character to use for padding (must be exactly one character)
+    
+    Returns:
+    - Array where each string is left-justified to the specified width
+-/
+def ljust {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String) : Id (Vector String n) :=
+  sorry
+
+/-- Specification: ljust returns a vector where each string is left-justified
+    to the specified width using the given fill character.
+
+    Precondition: The fillchar must be exactly one character long
+    Postcondition: Each result string either remains unchanged (if already >= width)
+    or is left-justified with padding to reach the target width
+-/
+theorem ljust_spec {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String)
+    (h_fillchar : fillchar.length = 1) :
+    ⦃⌜fillchar.length = 1⌝⦄
+    ljust a width fillchar
+    ⦃⇓result => ⌜∀ i : Fin n, 
+        let orig := a.get i
+        let res := result.get i
+        -- Case 1: Original string is already >= width, no padding needed
+        (orig.length ≥ width → res = orig) ∧
+        -- Case 2: Original string is < width, padding is added
+        (orig.length < width → 
+            res.length = width ∧
+            res.startsWith orig ∧
+            (∃ padding : String, res = orig ++ padding ∧ padding.length = width - orig.length)) ∧
+        -- Sanity check: Result length is always max(orig.length, width)
+        res.length = max orig.length width⌝⦄ := by
+  sorry

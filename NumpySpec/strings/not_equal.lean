@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.strings.not_equal",
@@ -9,4 +14,43 @@
 }
 -/
 
--- TODO: Implement not_equal
+/-- numpy.strings.not_equal: Return (x1 != x2) element-wise for string arrays.
+
+    Performs element-wise string inequality comparison between two vectors of strings.
+    Returns a boolean vector indicating whether corresponding strings are not equal.
+    
+    This function compares strings lexicographically and returns True for each
+    position where the strings are different, False where they are identical.
+-/
+def not_equal {n : Nat} (x1 x2 : Vector String n) : Id (Vector Bool n) :=
+  sorry
+
+/-- Specification: numpy.strings.not_equal returns element-wise inequality comparison.
+
+    Precondition: True (no special preconditions for string inequality)
+    Postcondition: For all indices i, result[i] = (x1[i] != x2[i])
+    
+    Mathematical Properties:
+    - Irreflexive: not_equal x x returns all False
+    - Symmetric: not_equal x y = not_equal y x  
+    - Negation of equality: not_equal x y = ¬(equal x y)
+    - Decidable: String inequality is decidable for all strings
+    - Type-safe: Result vector has same length as input vectors
+    - Complementary: for any two strings s1 and s2, exactly one of (s1 = s2) or (s1 ≠ s2) holds
+-/
+theorem not_equal_spec {n : Nat} (x1 x2 : Vector String n) :
+    ⦃⌜True⌝⦄
+    not_equal x1 x2
+    ⦃⇓result => ⌜-- Core property: result[i] = (x1[i] != x2[i]) for all indices
+                 (∀ i : Fin n, result.get i = (x1.get i ≠ x2.get i)) ∧
+                 -- Equivalence: result[i] is true iff strings are not equal
+                 (∀ i : Fin n, (result.get i = true ↔ x1.get i ≠ x2.get i)) ∧
+                 -- Irreflexivity: if inputs are the same, result is all false
+                 (x1 = x2 → ∀ i : Fin n, result.get i = false) ∧
+                 -- Symmetry: not_equal is symmetric
+                 (∀ i : Fin n, result.get i = (x2.get i ≠ x1.get i)) ∧
+                 -- Decidability: result is always boolean (true or false)
+                 (∀ i : Fin n, result.get i = true ∨ result.get i = false) ∧
+                 -- Complementarity: result is negation of equality
+                 (∀ i : Fin n, result.get i = ¬(x1.get i = x2.get i))⌝⦄ := by
+  sorry

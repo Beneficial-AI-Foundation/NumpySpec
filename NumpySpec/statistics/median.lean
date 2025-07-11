@@ -22,10 +22,10 @@ def median {n : Nat} (a : Vector Float (n + 1)) : Id Float :=
   sorry
 
 /-- Specification: median returns the middle value(s) of a sorted vector.
-    - For odd n+1, the median is the value at position (n+1)/2 in the sorted vector (1-indexed)
-    - For even n+1, the median is the average of values at positions n/2 and n/2+1 in the sorted vector (0-indexed)
-    - The median divides the data such that approximately half the values are less than or equal to it,
-      and approximately half are greater than or equal to it -/
+    - For odd length (n+1), the median is the middle element when sorted
+    - For even length (n+1), the median is the average of the two middle elements when sorted
+    - The median divides the data such that approximately half the values are ≤ it,
+      and approximately half are ≥ it -/
 theorem median_spec {n : Nat} (a : Vector Float (n + 1)) :
     ⦃⌜True⌝⦄
     median a
@@ -42,11 +42,15 @@ theorem median_spec {n : Nat} (a : Vector Float (n + 1)) :
                 have : n / 2 < n + 1 := sorry
                 exact this⟩
             else
-              -- even case: average of two middle elements
+              -- even case: average of two middle elements  
               m = (sorted.get ⟨n / 2, by
                 have : n / 2 < n + 1 := sorry
                 exact this⟩ + 
-                   sorted.get ⟨n / 2 + 1, by
-                have : n / 2 + 1 < n + 1 := sorry
-                exact this⟩) / 2)⌝⦄ := by
+                   sorted.get ⟨(n + 1) / 2, by
+                have : (n + 1) / 2 < n + 1 := sorry
+                exact this⟩) / 2) ∧
+            -- median property: it's a value that appears in the original vector
+            -- or can be computed from values in the vector
+            (∃ i : Fin (n + 1), m = sorted.get i ∨ 
+             ∃ i j : Fin (n + 1), m = (sorted.get i + sorted.get j) / 2)⌝⦄ := by
   sorry

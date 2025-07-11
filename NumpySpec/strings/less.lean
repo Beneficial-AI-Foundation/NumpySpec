@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.strings.less",
@@ -9,4 +14,42 @@
 }
 -/
 
--- TODO: Implement less
+/-- numpy.strings.less: Return the truth value of (x1 < x2) element-wise for string arrays.
+
+    Performs element-wise string comparison between two vectors of strings.
+    Returns a boolean vector indicating whether corresponding strings from x1 
+    are lexicographically less than corresponding strings from x2.
+    
+    This function compares strings lexicographically and returns True for each
+    position where x1[i] < x2[i] in lexicographic ordering, False otherwise.
+-/
+def less {n : Nat} (x1 x2 : Vector String n) : Id (Vector Bool n) :=
+  sorry
+
+/-- Specification: numpy.strings.less returns element-wise lexicographic comparison.
+
+    Precondition: True (no special preconditions for string comparison)
+    Postcondition: For all indices i, result[i] = (x1[i] < x2[i])
+    
+    Mathematical Properties:
+    - Asymmetric: if less x1 x2 is True at position i, then less x2 x1 is False at position i
+    - Transitive: if less x1 x2 and less x2 x3 are both True at position i, then less x1 x3 is True at position i
+    - Irreflexive: less x x returns all False (no string is less than itself)
+    - Trichotomous: for any two strings s1 and s2, exactly one of s1 < s2, s1 = s2, or s1 > s2 holds
+    - Decidable: String comparison is decidable for all strings
+    - Type-safe: Result vector has same length as input vectors
+-/
+theorem less_spec {n : Nat} (x1 x2 : Vector String n) :
+    ⦃⌜True⌝⦄
+    less x1 x2
+    ⦃⇓result => ⌜-- Core property: result[i] = (x1[i] < x2[i]) for all indices
+                 (∀ i : Fin n, result.get i = (x1.get i < x2.get i)) ∧
+                 -- Asymmetry: if x1[i] < x2[i], then NOT (x2[i] < x1[i])
+                 (∀ i : Fin n, result.get i = true → ¬(x2.get i < x1.get i)) ∧
+                 -- Irreflexivity: no string is less than itself
+                 (∀ i : Fin n, x1.get i = x2.get i → result.get i = false) ∧
+                 -- Transitivity property (partial): if x1[i] < x2[i] and we have x3, then x1[i] < x3[i] when x2[i] < x3[i]
+                 (∀ i : Fin n, result.get i = true → ∀ s : String, x2.get i < s → x1.get i < s) ∧
+                 -- Decidability: result is always boolean (true or false)
+                 (∀ i : Fin n, result.get i = true ∨ result.get i = false)⌝⦄ := by
+  sorry

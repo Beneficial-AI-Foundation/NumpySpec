@@ -1,12 +1,59 @@
-/-!
-{
-  "name": "numpy.cov",
-  "category": "Correlating",
-  "description": "Estimate a covariance matrix, given data and weights",
-  "url": "https://numpy.org/doc/stable/reference/generated/numpy.cov.html",
-  "doc": "numpy.cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None, *, dtype=None)\n\nEstimate a covariance matrix, given data and weights.\n\nCovariance indicates the level to which two variables vary together. If we examine N-dimensional samples, X = [x_1, x_2, ... x_N]^T, then the covariance matrix element C_{ij} is the covariance of x_i and x_j. The element C_{ii} is the variance of x_i.\n\nParameters\n----------\nm : array_like\n    A 1-D or 2-D array containing multiple variables and observations. Each row of m represents a variable, and each column a single observation of all those variables. Also see rowvar below.\ny : array_like, optional\n    An additional set of variables and observations. y has the same form as that of m.\nrowvar : bool, optional\n    If rowvar is True (default), then each row represents a variable, with observations in the columns. Otherwise, the relationship is transposed: each column represents a variable, while the rows contain observations.\nbias : bool, optional\n    Default normalization (False) is by (N - 1), where N is the number of observations given (unbiased estimate). If bias is True, then normalization is by N.\nddof : int, optional\n    If not None the default value implied by bias is overridden. Note that ddof=1 will return the unbiased estimate, even if both fweights and aweights are specified.\nfweights : array_like, int, optional\n    1-D array of integer frequency weights; the number of times each observation vector should be repeated.\naweights : array_like, optional\n    1-D array of observation vector weights. These relative weights are typically large for observations considered \"important\" and smaller for observations considered less \"important\".\ndtype : data-type, optional\n    Data-type of the result. By default, the return data-type will have at least numpy.float64 precision.\n\nReturns\n-------\nout : ndarray\n    The covariance matrix of the variables.",
-  "code": "# Implementation in numpy/lib/_function_base_impl.py\n@array_function_dispatch(_cov_dispatcher)\ndef cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None,\n        aweights=None, *, dtype=None):\n    \"\"\"\n    Estimate a covariance matrix, given data and weights.\n    \"\"\"\n    # Check inputs\n    if ddof is not None and ddof != int(ddof):\n        raise ValueError(\n            \"ddof must be integer\")\n    \n    # Handles complex arrays too\n    m = np.asarray(m)\n    if m.ndim > 2:\n        raise ValueError(\"m has more than 2 dimensions\")\n    \n    if y is not None:\n        y = np.asarray(y)\n        if y.ndim > 2:\n            raise ValueError(\"y has more than 2 dimensions\")\n    \n    if dtype is None:\n        if y is None:\n            dtype = np.result_type(m, np.float64)\n        else:\n            dtype = np.result_type(m, y, np.float64)\n    \n    X = array(m, ndmin=2, dtype=dtype)\n    if not rowvar and X.shape[0] != 1:\n        X = X.T\n    if X.shape[0] == 0:\n        return np.array([]).reshape(0, 0)\n    if y is not None:\n        y = array(y, ndmin=2, dtype=dtype)\n        if not rowvar and y.shape[0] != 1:\n            y = y.T\n        X = np.concatenate((X, y), axis=0)\n    \n    if ddof is None:\n        if bias == 0:\n            ddof = 1\n        else:\n            ddof = 0\n    \n    # Get the product of frequencies and weights\n    w = None\n    if fweights is not None:\n        fweights = np.asarray(fweights, dtype=float)\n        if not np.all(fweights == np.around(fweights)):\n            raise TypeError(\n                \"fweights must be integer\")\n        if fweights.ndim > 1:\n            raise RuntimeError(\n                \"cannot handle multidimensional fweights\")\n        if fweights.shape[0] != X.shape[1]:\n            raise RuntimeError(\n                \"incompatible numbers of samples and fweights\")\n        if any(fweights < 0):\n            raise ValueError(\n                \"fweights cannot be negative\")\n        w = fweights\n    if aweights is not None:\n        aweights = np.asarray(aweights, dtype=float)\n        if aweights.ndim > 1:\n            raise RuntimeError(\n                \"cannot handle multidimensional aweights\")\n        if aweights.shape[0] != X.shape[1]:\n            raise RuntimeError(\n                \"incompatible numbers of samples and aweights\")\n        if any(aweights < 0):\n            raise ValueError(\n                \"aweights cannot be negative\")\n        if w is None:\n            w = aweights\n        else:\n            w *= aweights\n    \n    avg, w_sum = average(X, axis=1, weights=w, returned=True)\n    w_sum = w_sum[0]\n    \n    # Determine the normalization\n    if w is None:\n        fact = X.shape[1] - ddof\n    elif ddof == 0:\n        fact = w_sum\n    elif aweights is None:\n        fact = w_sum - ddof\n    else:\n        fact = w_sum - ddof*sum(w*aweights)/w_sum\n    \n    if fact <= 0:\n        warnings.warn(\"Degrees of freedom <= 0 for slice\",\n                      RuntimeWarning, stacklevel=2)\n        fact = 0.0\n    \n    X -= avg[:, None]\n    if w is None:\n        X_T = X.T\n    else:\n        X_T = (X*w).T\n    c = dot(X, X_T.conj())\n    c *= np.true_divide(1, fact)\n    return c.squeeze()"
-}
--/
+import Std.Do.Triple
+import Std.Tactic.Do
 
--- TODO: Implement cov
+open Std.Do
+
+/-- numpy.cov: Estimate a covariance matrix, given data and weights.
+
+    Covariance indicates the level to which two variables vary together. 
+    If we examine N-dimensional samples, X = [x_1, x_2, ... x_N]^T, 
+    then the covariance matrix element C_{ij} is the covariance of x_i and x_j. 
+    The element C_{ii} is the variance of x_i.
+
+    For a matrix with `vars` variables and `obs` observations:
+    - Each row represents a variable
+    - Each column represents an observation
+    - Returns a vars × vars covariance matrix
+
+    This implementation focuses on the basic unweighted case without bias correction.
+-/
+def numpy_cov {vars obs : Nat} (m : Vector (Vector Float obs) vars) (h : obs > 0) : Id (Vector (Vector Float vars) vars) :=
+  sorry
+
+/-- Specification: numpy.cov computes the covariance matrix from data matrix m.
+
+    Given a data matrix m where each row is a variable and each column is an observation,
+    the covariance matrix C has the following mathematical properties:
+
+    1. Symmetry: C[i,j] = C[j,i] for all i,j
+    2. Diagonal elements are variances: C[i,i] = Var(X_i)
+    3. Off-diagonal elements are covariances: C[i,j] = Cov(X_i, X_j)
+    4. Positive semi-definite: all eigenvalues ≥ 0
+
+    The covariance between variables i and j is computed as:
+    Cov(X_i, X_j) = E[(X_i - μ_i)(X_j - μ_j)]
+    where μ_i is the mean of variable i.
+
+    Precondition: At least one observation (obs > 0)
+    Postcondition: Returns a symmetric positive semi-definite covariance matrix
+-/
+theorem numpy_cov_spec {vars obs : Nat} (m : Vector (Vector Float obs) vars) (h : obs > 0) :
+    ⦃⌜obs > 0⌝⦄
+    numpy_cov m h
+    ⦃⇓cov_matrix => ⌜
+      -- Symmetry property: C[i,j] = C[j,i]
+      (∀ i j : Fin vars, (cov_matrix.get i).get j = (cov_matrix.get j).get i) ∧
+      -- Diagonal elements are variances (non-negative)
+      (∀ i : Fin vars, (cov_matrix.get i).get i ≥ 0) ∧
+      -- Covariance relationship: for any two variables i and j,
+      -- the covariance matrix element C[i,j] represents their covariance
+      (∀ i j : Fin vars, 
+        let var_i := m.get i
+        let var_j := m.get j
+        let mean_i := (List.sum (List.map (fun k : Fin obs => var_i.get k) (List.finRange obs))) / (obs.toFloat)
+        let mean_j := (List.sum (List.map (fun k : Fin obs => var_j.get k) (List.finRange obs))) / (obs.toFloat)
+        (cov_matrix.get i).get j = 
+          (List.sum (List.map (fun k : Fin obs => 
+            (var_i.get k - mean_i) * (var_j.get k - mean_j)
+          ) (List.finRange obs))) / (obs.toFloat - 1))⌝⦄ := by
+  sorry

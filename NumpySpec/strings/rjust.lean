@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.strings.rjust",
@@ -9,4 +12,63 @@
 }
 -/
 
--- TODO: Implement rjust
+open Std.Do
+
+/-- numpy.strings.rjust: Return an array with the elements of a right-justified in a string of length width.
+
+    Right-justifies each string in the input array by padding it with the specified
+    fill character (default is space) to reach the specified width. If the original
+    string is longer than or equal to the width, it remains unchanged.
+
+    Parameters:
+    - a: Input array of strings
+    - width: Target width for each string
+    - fillchar: Character to use for padding (must be exactly one character)
+    
+    Returns:
+    - Array where each string is right-justified to the specified width
+    
+    Mathematical Properties:
+    1. Length preservation: If original.length >= width, return original unchanged
+    2. Right-justification: If original.length < width, pad on the left with fillchar
+    3. Padding placement: Original string appears as suffix in the result
+    4. Character preservation: Original string appears as contiguous substring
+    5. Width compliance: Result length equals max(original.length, width)
+-/
+def rjust {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String) : Id (Vector String n) :=
+  sorry
+
+/-- Specification: rjust returns a vector where each string is right-justified
+    to the specified width using the given fill character.
+
+    Precondition: The fillchar must be exactly one character long
+    Postcondition: Each result string either remains unchanged (if already >= width)
+    or is right-justified with left padding to reach the target width
+    
+    Mathematical Properties:
+    1. Length preservation: If original string length >= target width, return original
+    2. Right-justification: If original string length < target width, pad left with fillchar
+    3. Padding placement: Padding appears as prefix, original string as suffix
+    4. Character preservation: Original string appears as contiguous substring
+    5. Width compliance: Result length equals max(original.length, target_width)
+    6. Fill character usage: Padding uses the specified fill character exclusively
+-/
+theorem rjust_spec {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String)
+    (h_fillchar : fillchar.length = 1) :
+    ⦃⌜fillchar.length = 1⌝⦄
+    rjust a width fillchar
+    ⦃⇓result => ⌜∀ i : Fin n, 
+        let orig := a.get i
+        let res := result.get i
+        -- Case 1: Original string is already >= width, no padding needed
+        (orig.length ≥ width → res = orig) ∧
+        -- Case 2: Original string is < width, left padding is added for right-justification
+        (orig.length < width → 
+            res.length = width ∧
+            res.endsWith orig ∧
+            (∃ padding : String, res = padding ++ orig ∧ 
+                padding.length = width - orig.length ∧
+                ∀ c ∈ padding.data, c = fillchar.get ⟨0, by simp [h_fillchar]⟩)) ∧
+        -- Sanity check: Result length is always max(orig.length, width)
+        res.length = max orig.length width⌝⦄ := by
+  sorry

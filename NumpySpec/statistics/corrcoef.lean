@@ -1,12 +1,55 @@
-/-!
-{
-  "name": "numpy.corrcoef",
-  "category": "Correlating",
-  "description": "Return Pearson product-moment correlation coefficients",
-  "url": "https://numpy.org/doc/stable/reference/generated/numpy.corrcoef.html",
-  "doc": "numpy.corrcoef(x, y=None, rowvar=True, bias=<no value>, ddof=<no value>, *, dtype=None)\n\nReturn Pearson product-moment correlation coefficients.\n\nPlease refer to the documentation for cov for more detail. The relationship between the correlation coefficient matrix, R, and the covariance matrix, C, is\n\nR_{ij} = C_{ij} / sqrt(C_{ii} * C_{jj})\n\nThe values of R are between -1 and 1, inclusive.\n\nParameters\n----------\nx : array_like\n    A 1-D or 2-D array containing multiple variables and observations. Each row of x represents a variable, and each column a single observation of all those variables. Also see rowvar below.\ny : array_like, optional\n    An additional set of variables and observations. y has the same shape as x.\nrowvar : bool, optional\n    If rowvar is True (default), then each row represents a variable, with observations in the columns. Otherwise, the relationship is transposed: each column represents a variable, while the rows contain observations.\nbias : _NoValue, optional\n    Has no effect, do not use.\nddof : _NoValue, optional\n    Has no effect, do not use.\ndtype : data-type, optional\n    Data-type of the result. By default, the return data-type will have at least numpy.float64 precision.\n\nReturns\n-------\nR : ndarray\n    The correlation coefficient matrix of the variables.\n\nNotes\n-----\nDue to floating point rounding the resulting array may not be Hermitian, the diagonal elements may not be 1, and the elements may not satisfy the inequality abs(a) <= 1. The real and imaginary parts are clipped to the interval [-1, 1] in an attempt to improve on that situation but is not much help in the complex case.",
-  "code": "# Implementation in numpy/lib/_function_base_impl.py\n@array_function_dispatch(_corrcoef_dispatcher)\ndef corrcoef(x, y=None, rowvar=True, bias=np._NoValue, ddof=np._NoValue,\n             *, dtype=None):\n    \"\"\"\n    Return Pearson product-moment correlation coefficients.\n    \"\"\"\n    if bias is not np._NoValue or ddof is not np._NoValue:\n        warnings.warn('bias and ddof have no effect and are deprecated',\n                      DeprecationWarning, stacklevel=2)\n    \n    c = cov(x, y, rowvar, dtype=dtype)\n    try:\n        d = diag(c)\n    except ValueError:\n        # scalar covariance\n        # nan if incorrect value (nan, inf, 0), 1 otherwise\n        return c / c\n    \n    stddev = sqrt(d.real)\n    c /= stddev[:, None]\n    c /= stddev[None, :]\n    \n    # Clip to [-1, 1].  This does not guarantee\n    # abs(a[i,j]) <= 1 for complex arrays, but is\n    # the best we can do without excessive work.\n    np.clip(c.real, -1, 1, out=c.real)\n    if np.iscomplexobj(c):\n        np.clip(c.imag, -1, 1, out=c.imag)\n    \n    return c"
-}
--/
+import Std.Do.Triple
+import Std.Tactic.Do
 
--- TODO: Implement corrcoef
+open Std.Do
+
+/-- numpy.corrcoef: Return Pearson product-moment correlation coefficients.
+
+    The correlation coefficient measures the linear relationship between two variables.
+    For two vectors x and y, the correlation coefficient is computed as:
+    
+    corr(x, y) = cov(x, y) / (std(x) * std(y))
+    
+    Where:
+    - cov(x, y) is the covariance between x and y
+    - std(x) and std(y) are the standard deviations of x and y
+    
+    This function computes the correlation coefficient between two vectors of observations.
+    The result is bounded between -1 and 1, where:
+    - 1 indicates perfect positive correlation
+    - -1 indicates perfect negative correlation  
+    - 0 indicates no linear correlation
+    
+    Requires non-empty vectors and non-zero variance in both variables.
+-/
+def corrcoef {n : Nat} (x y : Vector Float (n + 1)) : Id Float :=
+  sorry
+
+/-- Specification: corrcoef computes the Pearson correlation coefficient between two vectors.
+
+    The correlation coefficient satisfies several mathematical properties:
+    1. Symmetry: corr(x, y) = corr(y, x)
+    2. Bounded: -1 ≤ corr(x, y) ≤ 1
+    3. Self-correlation: corr(x, x) = 1 (if x has non-zero variance)
+    4. Scale invariance: correlation is preserved under linear transformations
+    
+    Precondition: Both vectors have non-zero variance (not all elements equal)
+    Postcondition: Result is bounded between -1 and 1, and captures linear relationship
+-/
+theorem corrcoef_spec {n : Nat} (x y : Vector Float (n + 1)) 
+    (hx_var : ∃ i j : Fin (n + 1), x.get i ≠ x.get j) 
+    (hy_var : ∃ i j : Fin (n + 1), y.get i ≠ y.get j) :
+    ⦃⌜∃ i j : Fin (n + 1), x.get i ≠ x.get j ∧ 
+       ∃ i j : Fin (n + 1), y.get i ≠ y.get j⌝⦄
+    corrcoef x y
+    ⦃⇓result => ⌜-- Bounded property: correlation coefficient is always between -1 and 1
+                  -1.0 ≤ result ∧ result ≤ 1.0 ∧
+                  -- Relationship to covariance: correlation normalizes covariance
+                  (∀ (mean_x mean_y : Float),
+                   mean_x = (List.sum (x.toList)) / Float.ofNat (n + 1) →
+                   mean_y = (List.sum (y.toList)) / Float.ofNat (n + 1) →
+                   ∃ (cov_xy var_x var_y : Float),
+                   cov_xy = (List.sum (List.zipWith (fun xi yi => (xi - mean_x) * (yi - mean_y)) x.toList y.toList)) / Float.ofNat (n + 1) ∧
+                   var_x > 0 ∧ var_y > 0 ∧
+                   result = cov_xy / Float.sqrt (var_x * var_y))⌝⦄ := by
+  sorry

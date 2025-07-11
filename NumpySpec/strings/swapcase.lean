@@ -9,4 +9,22 @@
 }
 -/
 
--- TODO: Implement swapcase
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
+/-- Return element-wise a copy of the string with uppercase characters converted to lowercase and vice versa -/
+def swapcase {n : Nat} (a : Vector String n) : Id (Vector String n) :=
+  sorry
+
+/-- Specification: swapcase transforms each string by swapping the case of all alphabetic characters -/
+theorem swapcase_spec {n : Nat} (a : Vector String n) :
+    ⦃⌜True⌝⦄
+    swapcase a
+    ⦃⇓result => ∀ i : Fin n, 
+      (∀ c ∈ (a.get i).toList, c.isLower → (result.get i).toList.get? ((a.get i).toList.indexOf c) = some c.toUpper) ∧
+      (∀ c ∈ (a.get i).toList, c.isUpper → (result.get i).toList.get? ((a.get i).toList.indexOf c) = some c.toLower) ∧
+      (∀ c ∈ (a.get i).toList, ¬c.isAlpha → (result.get i).toList.get? ((a.get i).toList.indexOf c) = some c) ∧
+      (result.get i).length = (a.get i).length⦄ := by
+  sorry

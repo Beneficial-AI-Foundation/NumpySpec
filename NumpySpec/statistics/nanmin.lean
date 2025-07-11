@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.nanmin",
@@ -9,4 +14,49 @@
 }
 -/
 
--- TODO: Implement nanmin
+/-- Returns the minimum value of all elements in a non-empty vector, ignoring NaN values.
+    When all elements are NaN, returns NaN.
+    
+    Mathematical Properties:
+    - Ignores NaN values in the computation
+    - Returns the minimum of all non-NaN elements
+    - If all elements are NaN, returns NaN
+    - If at least one element is not NaN, returns the minimum non-NaN value
+    - For vectors with no NaN values, behaves identically to regular min -/
+def nanmin {n : Nat} (a : Vector Float (n + 1)) : Id Float :=
+  sorry
+
+/-- Specification: nanmin returns the minimum value in the vector, ignoring NaN values.
+    
+    Mathematical properties:
+    1. If there exists at least one non-NaN element, the result is the minimum among non-NaN elements
+    2. If all elements are NaN, the result is NaN
+    3. The result is either a non-NaN element from the vector or NaN
+    4. For vectors without NaN values, nanmin behaves identically to regular min
+    5. NaN values are completely ignored during the minimum computation
+    6. Sanity check: result is either NaN or exists in the vector -/
+theorem nanmin_spec {n : Nat} (a : Vector Float (n + 1)) :
+    ⦃⌜True⌝⦄
+    nanmin a
+    ⦃⇓result => ⌜-- Case 1: If there exists at least one non-NaN element
+                 ((∃ i : Fin (n + 1), ¬result.isNaN ∧ ¬(a.get i).isNaN) →
+                   (∃ min_idx : Fin (n + 1), 
+                     result = a.get min_idx ∧ 
+                     ¬(a.get min_idx).isNaN ∧
+                     (∀ j : Fin (n + 1), ¬(a.get j).isNaN → result ≤ a.get j))) ∧
+                 -- Case 2: If all elements are NaN, result is NaN
+                 ((∀ i : Fin (n + 1), (a.get i).isNaN) → result.isNaN) ∧
+                 -- Case 3: NaN values are ignored (result is min of non-NaN elements)
+                 (¬result.isNaN → 
+                   (∃ witness : Fin (n + 1), 
+                     result = a.get witness ∧ 
+                     ¬(a.get witness).isNaN ∧
+                     (∀ j : Fin (n + 1), ¬(a.get j).isNaN → result ≤ a.get j))) ∧
+                 -- Case 4: For vectors without NaN, behaves like regular min
+                 ((∀ i : Fin (n + 1), ¬(a.get i).isNaN) → 
+                   (∃ min_idx : Fin (n + 1),
+                     result = a.get min_idx ∧
+                     (∀ j : Fin (n + 1), result ≤ a.get j))) ∧
+                 -- Sanity check: result is either NaN or exists in the vector
+                 (result.isNaN ∨ (∃ witness : Fin (n + 1), result = a.get witness))⌝⦄ := by
+  sorry

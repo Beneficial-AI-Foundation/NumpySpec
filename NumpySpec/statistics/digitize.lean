@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.digitize",
@@ -9,4 +14,44 @@
 }
 -/
 
--- TODO: Implement digitize
+/-- Check if a vector is monotonically increasing -/
+def isMonotonicIncreasing {n : Nat} (bins : Vector Float n) : Bool :=
+  sorry
+
+/-- Return the indices of the bins to which each value in input array belongs.
+    
+    For each value x[i] in the input array, digitize returns the bin index:
+    - 0 if x[i] < bins[0] (below the first bin)
+    - bins.size if x[i] >= bins[last] (at or above the last bin)
+    - j if bins[j-1] <= x[i] < bins[j] (between bins)
+    
+    The bins array must be monotonically increasing.
+-/
+def digitize {n m : Nat} (x : Vector Float n) (bins : Vector Float m) (right : Bool := false) : 
+  Id (Vector Nat n) :=
+  sorry
+
+/-- Specification: digitize returns bin indices for each input value.
+    
+    Precondition: The bins array must be monotonically increasing.
+    
+    Postcondition: The returned indices satisfy:
+    1. All indices are bounded by the number of bins
+    2. Values below the first bin are assigned index 0
+    3. Values at or above the last bin are assigned index m+1
+    4. The function preserves monotonicity: if x[i] ≤ x[j], then indices[i] ≤ indices[j]
+-/
+theorem digitize_spec {n m : Nat} (x : Vector Float n) (bins : Vector Float (m + 1)) 
+    (h_mono : isMonotonicIncreasing bins) :
+    ⦃⌜isMonotonicIncreasing bins⌝⦄
+    digitize x bins false
+    ⦃⇓indices => ⌜
+      -- Each index is bounded by the number of bins
+      (∀ i : Fin n, indices.get i ≤ m + 1) ∧
+      -- Values below the first bin get index 0
+      (∀ i : Fin n, x.get i < bins.get ⟨0, by simp⟩ → indices.get i = 0) ∧
+      -- Values at or above the last bin get index m+1
+      (∀ i : Fin n, x.get i ≥ bins.get ⟨m, by simp⟩ → indices.get i = m + 1) ∧
+      -- Monotonicity property: if x[i] ≤ x[j], then indices[i] ≤ indices[j]
+      (∀ i j : Fin n, x.get i ≤ x.get j → indices.get i ≤ indices.get j)⌝⦄ := by
+  sorry

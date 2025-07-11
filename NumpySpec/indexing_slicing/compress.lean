@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.compress",
@@ -9,4 +12,39 @@
 }
 -/
 
--- TODO: Implement compress
+open Std.Do
+
+/-- Compresses a vector by selecting only elements where the corresponding 
+    condition is true. Returns a new vector containing only the selected elements.
+    The result size is the number of true values in the condition vector. -/
+def compress {n : Nat} (condition : Vector Bool n) (a : Vector Float n) 
+    (m : Nat) (h : m = (condition.toList.filter (· = true)).length) : 
+    Id (Vector Float m) :=
+  sorry
+
+/-- Specification: compress returns a new vector containing only the elements 
+    from the input vector where the corresponding condition element is true.
+    
+    Mathematical properties:
+    1. The result size equals the number of true values in the condition
+    2. The result preserves the order of elements from the original vector
+    3. Each element in the result corresponds to a true condition at the same index
+    4. The result is empty if and only if all condition elements are false
+    
+    This function implements array compression/masking, a fundamental operation
+    in array programming that allows selective extraction of elements based on
+    a boolean mask. It's equivalent to boolean indexing in NumPy. -/
+theorem compress_spec {n : Nat} (condition : Vector Bool n) (a : Vector Float n) 
+    (m : Nat) (h : m = (condition.toList.filter (· = true)).length) :
+    ⦃⌜True⌝⦄
+    compress condition a m h
+    ⦃⇓result => ⌜-- Result preserves order and corresponds to true conditions
+                 (∃ mapping : Fin m → Fin n,
+                   (∀ i : Fin m, condition.get (mapping i) = true) ∧
+                   (∀ i : Fin m, result.get i = a.get (mapping i)) ∧
+                   (∀ i j : Fin m, i < j → mapping i < mapping j)) ∧
+                 -- Empty result iff all conditions are false
+                 (m = 0 ↔ ∀ i : Fin n, condition.get i = false) ∧
+                 -- Full result iff all conditions are true
+                 (m = n ↔ ∀ i : Fin n, condition.get i = true)⌝⦄ := by
+  sorry

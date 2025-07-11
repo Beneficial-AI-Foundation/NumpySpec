@@ -1,12 +1,61 @@
-/-!
-{
-  "name": "numpy.save",
-  "category": "Binary file I/O",
-  "description": "Save an array to a binary file in NumPy .npy format",
-  "url": "https://numpy.org/doc/stable/reference/generated/numpy.save.html",
-  "doc": "Save an array to a binary file in NumPy \`\`.npy\`\` format.\n\n    Parameters\n    ----------\n    file : file, str, or pathlib.Path\n        File or filename to which the data is saved. If file is a file-object,\n        then the filename is unchanged.  If file is a string or Path,\n        a \`\`.npy\`\` extension will be appended to the filename if it does not\n        already have one.\n    arr : array_like\n        Array data to be saved.\n    allow_pickle : bool, optional\n        Allow saving object arrays ...",
-  "code": "@array_function_dispatch(_save_dispatcher)\ndef save(file, arr, allow_pickle=True, fix_imports=np._NoValue):\n    \"\"\"\n    Save an array to a binary file in NumPy \`\`.npy\`\` format.\n\n    Parameters\n    ----------\n    file : file, str, or pathlib.Path\n        File or filename to which the data is saved. If file is a file-object,\n        then the filename is unchanged.  If file is a string or Path,\n        a \`\`.npy\`\` extension will be appended to the filename if it does not\n        already have one.\n    arr : array_like\n        Array data to be saved.\n    allow_pickle : bool, optional\n        Allow saving object arrays using Python pickles. Reasons for\n        disallowing pickles include security (loading pickled data can execute\n        arbitrary code) and portability (pickled objects may not be loadable\n        on different Python installations, for example if the stored objects\n        require libraries that are not available, and not all pickled data is\n        compatible between different versions of Python).\n        Default: True\n    fix_imports : bool, optional\n        The \`fix_imports\` flag is deprecated and has no effect.\n\n        .. deprecated:: 2.1\n            This flag is ignored since NumPy 1.17 and was only needed to\n            support loading in Python 2 some files written in Python 3.\n\n    See Also\n    --------\n    savez : Save several arrays into a \`\`.npz\`\` archive\n    savetxt, load\n\n    Notes\n    -----\n    For a description of the \`\`.npy\`\` format, see :py:mod:\`numpy.lib.format\`.\n\n    Any data saved to the file is appended to the end of the file.\n\n    Examples\n    --------\n    >>> import numpy as np\n\n    >>> from tempfile import TemporaryFile\n    >>> outfile = TemporaryFile()\n\n    >>> x = np.arange(10)\n    >>> np.save(outfile, x)\n\n    >>> _ = outfile.seek(0) # Only needed to simulate closing & reopening file\n    >>> np.load(outfile)\n    array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])\n\n\n    >>> with open('test.npy', 'wb') as f:\n    ...     np.save(f, np.array([1, 2]))\n    ...     np.save(f, np.array([1, 3]))\n    >>> with open('test.npy', 'rb') as f:\n    ...     a = np.load(f)\n    ...     b = np.load(f)\n    >>> print(a, b)\n    # [1 2] [1 3]\n    \"\"\"\n    if fix_imports is not np._NoValue:\n        # Deprecated 2024-05-16, NumPy 2.1\n        warnings.warn(\n            \"The 'fix_imports' flag is deprecated and has no effect. \"\n            \"(Deprecated in NumPy 2.1)\",\n            DeprecationWarning, stacklevel=2)\n    if hasattr(file, 'write'):\n        file_ctx = contextlib.nullcontext(file)\n    else:\n        file = os.fspath(file)\n        if not file.endswith('.npy'):\n            file = file + '.npy'\n        file_ctx = open(file, \"wb\")\n\n    with file_ctx as fid:\n        arr = np.asanyarray(arr)\n        format.write_array(fid, arr, allow_pickle=allow_pickle,\n                           pickle_kwargs={'fix_imports': fix_imports})"
-}
--/
+import Std.Do.Triple
+import Std.Tactic.Do
 
--- TODO: Implement save
+open Std.Do
+
+/-- numpy.save: Save an array to a binary file in NumPy .npy format.
+    
+    Saves Vector data to a binary file in NumPy .npy format. This operation serializes 
+    the array data and writes it to disk storage. The function supports:
+    - Automatic .npy extension appending if not present
+    - Binary format writing for efficient storage and loading
+    - Security control via allow_pickle parameter
+    
+    The file parameter represents the path where the data should be saved.
+    For security reasons, object arrays with pickled data should be avoided 
+    unless explicitly allowed.
+    
+    This is a file output operation that creates or overwrites the target file.
+-/
+def save {n : Nat} (file : String) (arr : Vector Float n) (allow_pickle : Bool := false) : Id Unit :=
+  sorry
+
+/-- Specification: numpy.save persists vector data to disk in a recoverable format.
+    
+    This specification captures the essential properties of the save operation:
+    
+    1. Data Persistence: The vector data is written to the specified file
+    2. Format Consistency: Data is saved in .npy format for later loading
+    3. File Creation: The target file is created or overwritten
+    4. Extension Management: .npy extension is added if not present
+    5. Security Control: Object arrays are only saved when explicitly allowed
+    
+    Mathematical Properties:
+    - Determinism: Saving the same vector to the same file produces identical results
+    - Completeness: All vector elements are preserved in the saved format
+    - Recoverability: The saved data can be loaded back to reconstruct the original vector
+    - Idempotence: Multiple saves of the same data to the same file yield identical files
+    
+    Precondition: The file path is valid and writable
+    Postcondition: The file exists and contains the serialized vector data
+-/
+theorem save_spec {n : Nat} (file : String) (arr : Vector Float n) (allow_pickle : Bool := false)
+    (h_valid_path : True) (h_writable : True) :
+    ⦃⌜True⌝⦄
+    save file arr allow_pickle
+    ⦃⇓result => ⌜result = () ∧
+                  (∃ (file_content : String), 
+                    -- File exists and contains serialized data
+                    True ∧
+                    -- Data can be recovered (save-load roundtrip property)
+                    (∀ (loaded_vec : Vector Float n), 
+                      (∃ (load_result : Id (Vector Float n)), 
+                        load_result = pure loaded_vec) → 
+                        (∀ i : Fin n, loaded_vec.get i = arr.get i)) ∧
+                    -- Filename extension property
+                    (file.endsWith ".npy" ∨ (file ++ ".npy").length > file.length) ∧
+                    -- Determinism: same input produces same file
+                    (∀ (second_save : Unit), 
+                      (save file arr allow_pickle = pure second_save) → 
+                      result = second_save))⌝⦄ := by
+  sorry

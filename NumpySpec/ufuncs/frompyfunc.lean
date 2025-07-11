@@ -1,24 +1,36 @@
-/-!
-{
-  "name": "numpy.frompyfunc",
-  "category": "Ufunc Creation",
-  "description": "Takes an arbitrary Python function and returns a NumPy ufunc",
-  "url": "https://numpy.org/doc/stable/reference/generated/numpy.frompyfunc.html",
-  "signature": "numpy.frompyfunc(func, /, nin, nout, *, identity=None)",
-  "parameters": {
-    "func": "Python function object to be converted to a ufunc",
-    "nin": "Number of input arguments the function accepts",
-    "nout": "Number of objects returned by the function",
-    "identity": "Optional value to use for the ufunc's identity attribute"
-  },
-  "returns": "A NumPy universal function (ufunc) object",
-  "notes": [
-    "Always returns PyObject arrays",
-    "Useful for applying Python functions with broadcasting",
-    "Not optimized for performance like built-in ufuncs"
-  ],
-  "example": "import numpy as np\noct_array = np.frompyfunc(oct, 1, 1)\nresult = oct_array(np.array((10, 30, 100)))\n# Returns: array(['0o12', '0o36', '0o144'], dtype=object)"
-}
--/
+import Std.Do.Triple
+import Std.Tactic.Do
 
--- TODO: Implement frompyfunc
+open Std.Do
+
+/-- numpy.frompyfunc: Takes a function and returns a universal function that applies it element-wise.
+
+    Creates a universal function (ufunc) from a Python function. The resulting ufunc
+    applies the original function element-wise to input arrays. For simplicity, we
+    model this for the common case of a unary function (nin=1, nout=1).
+
+    In our Vector-based model, this takes a function α → β and returns a function
+    that applies it element-wise to Vector α n, producing Vector β n.
+
+    This function enables the creation of vectorized operations from arbitrary functions,
+    which is a core capability of NumPy's universal function system.
+-/
+def numpy_frompyfunc {α β : Type} {n : Nat} (func : α → β) (input : Vector α n) : Id (Vector β n) :=
+  sorry
+
+/-- Specification: numpy.frompyfunc creates a vectorized version of a function
+    that applies the original function element-wise.
+
+    Precondition: True (any function can be vectorized)
+    Postcondition: For all indices i, the result at index i equals func applied
+    to the input at index i.
+
+    This captures the essential property that frompyfunc creates an element-wise
+    mapping from the original function, preserving the functional behavior
+    while extending it to work with vectors.
+-/
+theorem numpy_frompyfunc_spec {α β : Type} {n : Nat} (func : α → β) (input : Vector α n) :
+    ⦃⌜True⌝⦄
+    numpy_frompyfunc func input
+    ⦃⇓result => ⌜∀ i : Fin n, result.get i = func (input.get i)⌝⦄ := by
+  sorry

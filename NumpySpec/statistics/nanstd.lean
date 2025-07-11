@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.nanstd",
@@ -9,4 +14,47 @@
 }
 -/
 
--- TODO: Implement nanstd
+/-- Compute the standard deviation along the specified axis, ignoring NaNs.
+    Returns the standard deviation, a measure of the spread of a distribution,
+    of the non-NaN array elements. The standard deviation is the square root
+    of the variance computed from non-NaN values.
+    
+    For all-NaN slices, NaN is returned. -/
+def nanstd {n : Nat} (a : Vector Float n) (ddof : Nat := 0) : Id Float :=
+  sorry
+
+/-- Specification: nanstd computes the standard deviation while ignoring NaN values.
+    Mathematical properties:
+    1. If vector contains valid (non-NaN) values and ddof < valid_count, 
+       result is the square root of the variance of valid values
+    2. If all values are NaN, result is NaN
+    3. If ddof >= valid_count, result is NaN
+    4. Result is always non-negative when valid
+    
+    The standard deviation is computed as:
+    1. Filter out NaN values to get valid values
+    2. Calculate the mean of valid values
+    3. Calculate squared deviations from the mean for valid values
+    4. Sum the squared deviations
+    5. Divide by (valid_count - ddof)
+    6. Take the square root of the result -/
+theorem nanstd_spec {n : Nat} (a : Vector Float n) (ddof : Nat) :
+    ⦃⌜True⌝⦄
+    nanstd a ddof
+    ⦃⇓result => ⌜let valid_indices := (List.range n).filter (fun i => ¬(a.get ⟨i, by sorry⟩).isNaN)
+                 let valid_count := valid_indices.length
+                 -- Case 1: Valid values exist and ddof < valid_count
+                 if valid_count > 0 ∧ ddof < valid_count then
+                   let valid_sum := valid_indices.foldl (fun acc i => acc + a.get ⟨i, by sorry⟩) 0
+                   let valid_mean := valid_sum / Float.ofNat valid_count
+                   let squared_deviations := valid_indices.map (fun i => 
+                     let val := a.get ⟨i, by sorry⟩
+                     (val - valid_mean) * (val - valid_mean))
+                   let variance := (squared_deviations.foldl (· + ·) 0) / Float.ofNat (valid_count - ddof)
+                   result = Float.sqrt variance ∧ 
+                   result ≥ 0 ∧
+                   ¬result.isNaN
+                 -- Case 2: All values are NaN or ddof >= valid_count
+                 else
+                   result.isNaN⌝⦄ := by
+  sorry

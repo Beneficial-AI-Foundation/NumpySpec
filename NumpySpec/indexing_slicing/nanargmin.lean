@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.nanargmin",
@@ -9,4 +12,34 @@
 }
 -/
 
--- TODO: Implement nanargmin
+open Std.Do
+
+/-- Returns the index of the minimum value in a non-empty vector, ignoring NaN values.
+    
+    This function finds the index of the minimum value among all non-NaN elements in the vector.
+    Requires that at least one element is not NaN, otherwise it would raise an error.
+    
+    In case of multiple occurrences of the minimum values, the indices
+    corresponding to the first occurrence are returned.
+-/
+def nanargmin {n : Nat} (a : Vector Float (n + 1)) (h_not_all_nan : ∃ i : Fin (n + 1), ¬(a.get i).isNaN) : Id (Fin (n + 1)) :=
+  sorry
+
+/-- Specification: nanargmin returns the index of the first minimum element among non-NaN values.
+    
+    This comprehensive specification captures:
+    1. The returned index points to an element that is not NaN
+    2. The element at the returned index is the minimum among all non-NaN elements
+    3. The function returns the first occurrence of the minimum value (among non-NaN elements)
+    4. The returned index is valid (type-safe with Fin)
+    5. The precondition ensures at least one element is not NaN
+    6. All non-NaN elements are greater than or equal to the minimum
+    7. Among elements with the same minimum value, the first index is returned
+-/
+theorem nanargmin_spec {n : Nat} (a : Vector Float (n + 1)) (h_not_all_nan : ∃ i : Fin (n + 1), ¬(a.get i).isNaN) :
+    ⦃⌜∃ i : Fin (n + 1), ¬(a.get i).isNaN⌝⦄
+    nanargmin a h_not_all_nan
+    ⦃⇓idx => ⌜¬(a.get idx).isNaN ∧ 
+             (∀ j : Fin (n + 1), ¬(a.get j).isNaN → a.get idx ≤ a.get j) ∧
+             (∀ j : Fin (n + 1), ¬(a.get j).isNaN → a.get j = a.get idx → idx ≤ j)⌝⦄ := by
+  sorry

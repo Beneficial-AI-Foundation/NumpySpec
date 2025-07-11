@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.strings.lower",
@@ -9,4 +14,59 @@
 }
 -/
 
--- TODO: Implement lower
+/-- numpy.strings.lower: Return an array with the elements converted to lowercase.
+
+    Converts each string element in the input vector to lowercase. This transformation
+    applies to all alphabetic characters while preserving non-alphabetic characters
+    (digits, punctuation, whitespace) unchanged.
+
+    The function preserves the shape of the input array and handles empty strings
+    appropriately by returning them unchanged.
+
+    From NumPy documentation:
+    - Parameters: a (array_like) - Input array with string dtype
+    - Returns: out (ndarray) - Output array with elements converted to lowercase
+
+    Mathematical Properties:
+    1. Element-wise transformation: result[i] = lower(a[i]) for all i
+    2. Length preservation: result[i].length = a[i].length for all i
+    3. Case transformation: uppercase letters become lowercase, others unchanged
+    4. Idempotent: lower(lower(x)) = lower(x)
+    5. Preserves vector length: result.size = a.size
+-/
+def lower {n : Nat} (a : Vector String n) : Id (Vector String n) :=
+  sorry
+
+/-- Specification: numpy.strings.lower returns a vector where each string element
+    is converted to lowercase.
+
+    Mathematical Properties:
+    1. Element-wise correctness: Each element is correctly converted to lowercase
+    2. Length preservation: Each transformed string has the same length as the original
+    3. Case transformation: Uppercase letters become lowercase, others unchanged
+    4. Idempotent property: Applying lower twice gives the same result as applying it once
+    5. Empty string handling: Empty strings remain empty
+
+    Precondition: True (no special preconditions for lowercase conversion)
+    Postcondition: For all indices i, result[i] is the lowercase version of a[i]
+-/
+theorem lower_spec {n : Nat} (a : Vector String n) :
+    ⦃⌜True⌝⦄
+    lower a
+    ⦃⇓r => ⌜∀ i : Fin n, 
+      let original := a.get i
+      let result := r.get i
+      -- Length preservation: result has same length as original
+      (result.length = original.length) ∧
+      -- Empty string case: empty input produces empty output
+      (original.length = 0 → result = "") ∧
+      -- Case transformation: all uppercase letters become lowercase
+      (∀ j : Nat, j < original.length → 
+        ∃ origChar : Char, 
+          original.get? ⟨j⟩ = some origChar ∧ 
+          result.get? ⟨j⟩ = some origChar.toLower) ∧
+      -- Idempotent property: applying lower twice gives same result as once
+      (result.toLower = result) ∧
+      -- Sanity check: the result should match Lean's built-in toLower
+      (result = original.toLower)⌝⦄ := by
+  sorry

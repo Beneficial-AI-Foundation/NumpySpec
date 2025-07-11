@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.percentile",
@@ -9,4 +14,32 @@
 }
 -/
 
--- TODO: Implement percentile
+/-- Compute the q-th percentile of the data in a vector.
+    For a sorted vector, the q-th percentile is the value below which q percent of the data falls.
+    This implementation focuses on the fundamental mathematical definition of percentiles. -/
+def percentile {n : Nat} (arr : Vector Float (n + 1)) (q : Float) : Id Float :=
+  sorry
+
+/-- Specification: percentile computes the q-th percentile value correctly.
+    The percentile is defined as the value v such that at least q% of the data
+    is less than or equal to v, and at least (100-q)% of the data is greater than or equal to v.
+    
+    Mathematical properties:
+    1. The percentile value must be within the range of the data (or interpolated between values)
+    2. Special cases: q=0 gives minimum, q=100 gives maximum
+    3. The result is bounded by the minimum and maximum values in the array -/
+theorem percentile_spec {n : Nat} (arr : Vector Float (n + 1)) (q : Float) 
+    (h_valid_q : 0 ≤ q ∧ q ≤ 100) :
+    ⦃⌜0 ≤ q ∧ q ≤ 100⌝⦄
+    percentile arr q
+    ⦃⇓result => ⌜
+      -- The result is bounded by the minimum and maximum values in the array
+      (∀ i : Fin (n + 1), arr.get i ≤ result → 
+        ∃ j : Fin (n + 1), arr.get j ≥ result) ∧
+      (∀ i : Fin (n + 1), arr.get i ≥ result → 
+        ∃ j : Fin (n + 1), arr.get j ≤ result) ∧
+      -- Special cases
+      (q = 0 → ∀ i : Fin (n + 1), result ≤ arr.get i) ∧
+      (q = 100 → ∀ i : Fin (n + 1), arr.get i ≤ result)
+    ⌝⦄ := by
+  sorry

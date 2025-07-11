@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.nanvar",
@@ -9,4 +14,43 @@
 }
 -/
 
--- TODO: Implement nanvar
+/-- Compute the variance along the specified axis, while ignoring NaNs.
+    Uses the formula: sum((x - mean)²) / (n - ddof) for non-NaN elements.
+    Returns NaN if all elements are NaN or if degrees of freedom <= 0. -/
+def nanvar {n : Nat} (a : Vector Float n) (ddof : Nat := 0) : Id Float :=
+  sorry
+
+/-- Specification for nanvar: Computes variance while ignoring NaN values.
+    Mathematical properties:
+    1. If vector contains valid (non-NaN) values and ddof < valid_count, 
+       result is the variance of valid values
+    2. If all values are NaN, result is NaN
+    3. If ddof >= valid_count, result is NaN
+    4. Result is always non-negative when valid
+    
+    The variance is computed as:
+    1. Filter out NaN values to get valid values
+    2. Calculate the mean of valid values
+    3. Calculate squared deviations from the mean for valid values
+    4. Sum the squared deviations
+    5. Divide by (valid_count - ddof) -/
+theorem nanvar_spec {n : Nat} (a : Vector Float n) (ddof : Nat) :
+    ⦃⌜True⌝⦄
+    nanvar a ddof
+    ⦃⇓result => ⌜let valid_indices := (List.range n).filter (fun i => ¬(a.get ⟨i, by sorry⟩).isNaN)
+                 let valid_count := valid_indices.length
+                 -- Case 1: Valid values exist and ddof < valid_count
+                 if valid_count > 0 ∧ ddof < valid_count then
+                   let valid_sum := valid_indices.foldl (fun acc i => acc + a.get ⟨i, by sorry⟩) 0
+                   let valid_mean := valid_sum / Float.ofNat valid_count
+                   let squared_deviations := valid_indices.map (fun i => 
+                     let val := a.get ⟨i, by sorry⟩
+                     (val - valid_mean) * (val - valid_mean))
+                   let variance := (squared_deviations.foldl (· + ·) 0) / Float.ofNat (valid_count - ddof)
+                   result = variance ∧ 
+                   result ≥ 0 ∧
+                   ¬result.isNaN
+                 -- Case 2: All values are NaN or ddof >= valid_count
+                 else
+                   result.isNaN⌝⦄ := by
+  sorry

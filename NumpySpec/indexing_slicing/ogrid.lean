@@ -1,12 +1,37 @@
-/-!
-{
-  "name": "numpy.ogrid",
-  "category": "Advanced indexing",
-  "description": "Open multi-dimensional \"meshgrid\"",
-  "url": "https://numpy.org/doc/stable/reference/generated/numpy.ogrid.html",
-  "doc": "Open multi-dimensional \"meshgrid\".\n\nAn instance of \`numpy.lib.index_tricks.nd_grid\` which returns an open (i.e. not fleshed out) mesh-grid when indexed, so that only one dimension of each returned array is greater than 1. The dimension and number of the output arrays are equal to the number of indexing dimensions. If the step length is not a complex number, then the stop is not inclusive.\n\nHowever, if the step length is a complex number (e.g. 5j), then the integer part of its magnitude is interpreted as specifying the number of points to create between the start and stop values, where the stop value is inclusive.",
-  "code": "# numpy.ogrid is an instance of nd_grid with sparse=True"
-}
--/
+import Std.Do.Triple
+import Std.Tactic.Do
 
--- TODO: Implement ogrid
+open Std.Do
+
+/-- numpy.ogrid: Open multi-dimensional "meshgrid".
+    
+    Returns an open (i.e. not fleshed out) mesh-grid when indexed, 
+    so that only one dimension of each returned array is greater than 1.
+    
+    This is a simplified 1D version that generates a linear sequence
+    similar to arange but with the ogrid interface. The dimension and 
+    number of the output arrays are equal to the number of indexing dimensions.
+    
+    For the 1D case, it returns a single vector with evenly spaced values
+    from start to stop (exclusive) with the given step size.
+-/
+def ogrid (start stop step : Float) (n : Nat) : Id (Vector Float n) :=
+  sorry
+
+/-- Specification: ogrid returns a vector of evenly spaced values.
+    
+    Precondition: step ≠ 0 and n = ⌊(stop - start) / step⌋
+    Postcondition: The result is a vector where each element i satisfies:
+    - result[i] = start + i * step
+    - All elements are in the range [start, stop)
+    - The sequence is arithmetic with common difference step
+-/
+theorem ogrid_spec (start stop step : Float) (n : Nat) 
+    (h_step : step ≠ 0) :
+    ⦃⌜step ≠ 0⌝⦄
+    ogrid start stop step n
+    ⦃⇓result => ⌜(∀ i : Fin n, result.get i = start + (i.val.toFloat) * step) ∧
+                (∀ i : Fin n, 
+                  if step > 0 then start ≤ result.get i ∧ result.get i < stop
+                  else stop < result.get i ∧ result.get i ≤ start)⌝⦄ := by
+  sorry

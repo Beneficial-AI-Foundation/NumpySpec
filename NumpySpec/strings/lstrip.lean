@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.strings.lstrip",
@@ -9,4 +14,22 @@
 }
 -/
 
--- TODO: Implement lstrip
+/-- For each element in a vector, return a copy with the leading characters removed. -/
+def lstrip {n : Nat} (a : Vector String n) (chars : Option String) : Id (Vector String n) :=
+  sorry
+
+/-- Specification: lstrip removes leading characters from each string in the vector.
+    If chars is None, whitespace characters are removed.
+    If chars is provided, any combination of those characters is removed from the beginning. -/
+theorem lstrip_spec {n : Nat} (a : Vector String n) (chars : Option String) :
+    ⦃⌜True⌝⦄
+    lstrip a chars
+    ⦃⇓result => 
+      ∀ i : Fin n, 
+        (chars.isNone → (result.get i = (a.get i).trimLeft)) ∧
+        (chars.isSome → 
+          ∃ k : Nat, k ≤ (a.get i).length ∧ 
+          result.get i = (a.get i).drop k ∧
+          (∀ j : Nat, j < k → (a.get i).get ⟨j, by sorry⟩ ∈ chars.get!.toList) ∧
+          (k < (a.get i).length → (a.get i).get ⟨k, by sorry⟩ ∉ chars.get!.toList))⦄ := by
+  sorry

@@ -9,4 +9,78 @@
 }
 -/
 
--- TODO: Implement tril
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
+/-- numpy.tril: Lower triangle of an array.
+    
+    Return a copy of an array with elements above the k-th diagonal zeroed.
+    For simplicity, this specification focuses on square matrices and k=0 (main diagonal).
+    
+    Given a flattened square matrix (stored in row-major order), returns a copy
+    where elements above the main diagonal are set to zero.
+    
+    This captures the essential mathematical property of extracting the lower
+    triangular part of a matrix.
+-/
+def tril {n : Nat} (matrix : Vector Float (n * n)) : Id (Vector Float (n * n)) :=
+  sorry
+
+/-- Specification: tril returns the lower triangle of a matrix with elements above the main diagonal zeroed.
+    
+    Mathematical Properties:
+    1. Shape Preservation: The output has the same shape as the input
+    2. Lower Triangle Preservation: Elements at or below the main diagonal are unchanged
+    3. Upper Triangle Zeroing: Elements above the main diagonal are set to zero
+    4. Diagonal Definition: For a square matrix stored in row-major order,
+       element at position (i,j) corresponds to index i*n + j in the flattened vector
+    
+    The main diagonal consists of elements where i = j.
+    Lower triangle consists of elements where i ≥ j.
+    Upper triangle consists of elements where i < j.
+    
+    This specification provides a foundation for formal verification of
+    triangular matrix operations in numerical computing.
+-/
+theorem tril_spec {n : Nat} (matrix : Vector Float (n * n)) :
+    ⦃⌜True⌝⦄
+    tril matrix
+    ⦃⇓result => 
+      (∀ i j : Fin n, i.val ≥ j.val → 
+        result.get ⟨i.val * n + j.val, by
+          have h1 : i.val < n := i.isLt
+          have h2 : j.val < n := j.isLt
+          have h3 : i.val * n + j.val < n * n := by
+            cases' n with n
+            · simp at h1
+            · simp [Nat.succ_mul]
+              have : i.val * (n + 1) ≤ n * (n + 1) := Nat.mul_le_mul_right _ (Nat.le_of_lt_succ h1)
+              have : j.val ≤ n := Nat.le_of_lt_succ h2
+              omega
+          exact h3⟩ = 
+        matrix.get ⟨i.val * n + j.val, by
+          have h1 : i.val < n := i.isLt
+          have h2 : j.val < n := j.isLt
+          have h3 : i.val * n + j.val < n * n := by
+            cases' n with n
+            · simp at h1
+            · simp [Nat.succ_mul]
+              have : i.val * (n + 1) ≤ n * (n + 1) := Nat.mul_le_mul_right _ (Nat.le_of_lt_succ h1)
+              have : j.val ≤ n := Nat.le_of_lt_succ h2
+              omega
+          exact h3⟩) ∧
+      (∀ i j : Fin n, i.val < j.val → 
+        result.get ⟨i.val * n + j.val, by
+          have h1 : i.val < n := i.isLt
+          have h2 : j.val < n := j.isLt
+          have h3 : i.val * n + j.val < n * n := by
+            cases' n with n
+            · simp at h1
+            · simp [Nat.succ_mul]
+              have : i.val * (n + 1) ≤ n * (n + 1) := Nat.mul_le_mul_right _ (Nat.le_of_lt_succ h1)
+              have : j.val ≤ n := Nat.le_of_lt_succ h2
+              omega
+          exact h3⟩ = 0)⦄ := by
+  sorry

@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.strings.rstrip",
@@ -9,4 +14,22 @@
 }
 -/
 
--- TODO: Implement rstrip
+/-- For each element in a vector, return a copy with the trailing characters removed. -/
+def rstrip {n : Nat} (a : Vector String n) (chars : Option String) : Id (Vector String n) :=
+  sorry
+
+/-- Specification: rstrip removes trailing characters from each string in the vector.
+    If chars is None, whitespace characters are removed.
+    If chars is provided, any combination of those characters is removed from the end. -/
+theorem rstrip_spec {n : Nat} (a : Vector String n) (chars : Option String) :
+    ⦃⌜True⌝⦄
+    rstrip a chars
+    ⦃⇓result => 
+      ∀ i : Fin n, 
+        (chars.isNone → (result.get i = (a.get i).trimRight)) ∧
+        (chars.isSome → 
+          ∃ k : Nat, k ≤ (a.get i).length ∧ 
+          result.get i = (a.get i).take ((a.get i).length - k) ∧
+          (∀ j : Nat, j < k → (a.get i).get ⟨(a.get i).length - 1 - j, by sorry⟩ ∈ chars.get!.toList) ∧
+          (k < (a.get i).length → (a.get i).get ⟨(a.get i).length - 1 - k, by sorry⟩ ∉ chars.get!.toList))⦄ := by
+  sorry

@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.array2string",
@@ -9,4 +14,23 @@
 }
 -/
 
--- TODO: Implement array2string
+/-- numpy.array2string: Return a string representation of an array
+
+    Converts an array to its string representation with customizable separator.
+    This function provides a way to format arrays for display purposes.
+
+    The separator parameter controls how elements are separated in the output.
+-/
+def array2string {n : Nat} (arr : Vector Float n) (separator : String := " ") : Id String :=
+  sorry
+
+/-- Specification: array2string returns a string representation of the array
+
+    Precondition: True (no special preconditions)
+    Postcondition: result is non-empty string that starts with '[' and ends with ']'
+-/
+theorem array2string_spec {n : Nat} (arr : Vector Float n) (separator : String) :
+    ⦃⌜True⌝⦄
+    array2string arr separator
+    ⦃⇓result => ⌜result ≠ "" ∧ result.startsWith "[" ∧ result.endsWith "]"⌝⦄ := by
+  sorry

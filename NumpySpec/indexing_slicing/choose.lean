@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.choose",
@@ -9,4 +12,38 @@
 }
 -/
 
--- TODO: Implement choose
+open Std.Do
+
+/-- Construct an array from an index array and a set of arrays to choose from.
+    Given an index vector 'indices' and a vector of choice vectors 'choices',
+    constructs a result vector where each element is selected from the corresponding
+    choice vector based on the index value at that position.
+    
+    For each position i in the result, result[i] = choices[indices[i]][i]
+    
+    This is a simplified version focusing on the core functionality with 'raise' mode,
+    where all indices must be valid (in range [0, num_choices-1]). -/
+def choose {n num_choices : Nat} (indices : Vector (Fin num_choices) n) 
+          (choices : Vector (Vector Float n) num_choices) : Id (Vector Float n) :=
+  sorry
+
+/-- Specification: choose constructs an array by selecting elements from choice arrays
+    based on index values. Each position in the result is filled by selecting from
+    the corresponding choice array at that position using the index value.
+    
+    Mathematical properties:
+    1. The result has the same length as the index array
+    2. For each position i, result[i] = choices[indices[i]][i]
+    3. All indices must be valid (enforced by Fin type)
+    
+    The function essentially implements: result[i] = choices[indices.get i].get i
+    
+    This captures the core behavior of numpy.choose in 'raise' mode where indices
+    must be in valid range. The use of Fin type ensures type safety and eliminates
+    the need for runtime bounds checking. -/
+theorem choose_spec {n num_choices : Nat} (indices : Vector (Fin num_choices) n) 
+                   (choices : Vector (Vector Float n) num_choices) :
+    ⦃⌜True⌝⦄
+    choose indices choices
+    ⦃⇓result => ⌜∀ i : Fin n, result.get i = (choices.get (indices.get i)).get i⌝⦄ := by
+  sorry

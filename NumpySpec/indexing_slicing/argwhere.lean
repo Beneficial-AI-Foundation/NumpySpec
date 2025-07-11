@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.argwhere",
@@ -9,4 +12,40 @@
 }
 -/
 
--- TODO: Implement argwhere
+open Std.Do
+
+/-- numpy.argwhere: Find the indices of array elements that are non-zero, grouped by element.
+
+    For a 1D vector, returns a list of indices where elements are non-zero.
+    Each index corresponds to a position in the original vector where the element is non-zero.
+    The returned indices are in the same order as they appear in the original vector.
+    
+    This function is equivalent to finding all positions i such that a[i] ≠ 0.
+    The result is a list of indices, not suitable for direct array indexing but useful
+    for analysis and conditional processing.
+-/
+def argwhere {n : Nat} (a : Vector Float n) : Id (List (Fin n)) :=
+  sorry
+
+/-- Specification: numpy.argwhere returns all indices of non-zero elements.
+
+    Precondition: True (no special requirements)
+    Postcondition: 
+    1. All returned indices correspond to non-zero elements in the input vector
+    2. All non-zero elements in the input vector have their indices in the result (completeness)
+    3. The result contains no duplicate indices
+    4. The indices are ordered according to their position in the original vector
+    5. The result is empty if and only if all elements in the input are zero
+-/
+theorem argwhere_spec {n : Nat} (a : Vector Float n) :
+    ⦃⌜True⌝⦄
+    argwhere a
+    ⦃⇓indices => ⌜
+      (∀ i ∈ indices, a.get i ≠ 0) ∧
+      (∀ i : Fin n, a.get i ≠ 0 → i ∈ indices) ∧
+      (indices.Nodup) ∧
+      (∀ i j : Fin n, i ∈ indices → j ∈ indices → i < j → 
+        indices.idxOf i < indices.idxOf j) ∧
+      (indices = [] ↔ ∀ i : Fin n, a.get i = 0)
+    ⌝⦄ := by
+  sorry

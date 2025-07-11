@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.average",
@@ -9,4 +14,33 @@
 }
 -/
 
--- TODO: Implement average
+/-- numpy.average: Compute the weighted average along the specified axis.
+
+    Computes the weighted average of the elements in the input vector.
+    If weights are not provided, it computes the arithmetic mean.
+    If weights are provided, it computes the weighted average where each
+    element contributes according to its associated weight.
+
+    The weighted average is computed as:
+    sum(a * weights) / sum(weights)
+
+    When weights are not provided, this reduces to:
+    sum(a) / len(a)
+-/
+def average {n : Nat} (a : Vector Float (n + 1)) (weights : Option (Vector Float (n + 1))) : Id Float :=
+  sorry
+
+/-- Specification: numpy.average computes the weighted average when weights are provided,
+    and arithmetic mean when weights are None.
+
+    Precondition: Array is non-empty and if weights are provided, their sum is non-zero
+    Postcondition: Returns the weighted average or arithmetic mean as appropriate
+-/
+theorem average_spec {n : Nat} (a : Vector Float (n + 1)) (weights : Option (Vector Float (n + 1))) :
+    ⦃⌜True⌝⦄
+    average a weights
+    ⦃⇓result => ⌜(weights.isNone → 
+        ∃ sum_a : Float, result = sum_a / Float.ofNat (n + 1)) ∧
+      (∀ w, weights = some w → 
+        ∃ sum_aw sum_w : Float, result = sum_aw / sum_w ∧ sum_w ≠ 0)⌝⦄ := by
+  sorry

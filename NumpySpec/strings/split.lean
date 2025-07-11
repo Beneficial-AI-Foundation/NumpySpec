@@ -9,4 +9,33 @@
 }
 -/
 
--- TODO: Implement split
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
+/-- For each element in a vector of strings, return a list of the words in the string, using sep as the delimiter string -/
+def split {n : Nat} (a : Vector String n) (sep : String) (maxsplit : Option Nat) : Id (Vector (List String) n) :=
+  sorry
+
+/-- Specification: split returns a vector where each string is split into a list of substrings 
+    based on the separator, with proper handling of maxsplit constraints -/
+theorem split_spec {n : Nat} (a : Vector String n) (sep : String) (maxsplit : Option Nat) 
+    (h_sep_nonempty : sep ≠ "") :
+    ⦃⌜sep ≠ ""⌝⦄
+    split a sep maxsplit
+    ⦃⇓result => 
+      ∀ i : Fin n, 
+        let parts := result.get i
+        let original := a.get i
+        -- The parts when joined with separator reconstruct parts of the original string
+        (∀ j : Fin parts.length, ∀ part ∈ parts, part ≠ sep) ∧
+        -- If maxsplit is specified, respect the limit
+        (match maxsplit with
+         | none => True
+         | some limit => parts.length ≤ limit + 1) ∧
+        -- The result is non-empty (at least contains the original string if no splits)
+        parts.length ≥ 1 ∧
+        -- If no separator found, return the original string as single element
+        (¬ (sep ∈ original.data) → parts = [original])⦄ := by
+  sorry

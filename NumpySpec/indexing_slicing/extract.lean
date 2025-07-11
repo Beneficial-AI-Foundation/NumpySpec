@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.extract",
@@ -9,4 +14,30 @@
 }
 -/
 
--- TODO: Implement extract
+/-- numpy.extract: Return the elements of an array that satisfy some condition.
+    
+    Extracts elements from an array where the corresponding condition is True.
+    Both arrays must have the same size, and the result contains only the elements
+    from `arr` where `condition` is True, in the same order they appear in `arr`.
+    
+    The result size `k` must equal the number of True elements in the condition array.
+-/
+def extract {n k : Nat} (condition : Vector Bool n) (arr : Vector Float n) 
+    (h : k = (condition.toArray.toList.count true)) : Id (Vector Float k) :=
+  sorry
+
+/-- Specification: numpy.extract returns elements where condition is True.
+    
+    Precondition: k equals the count of True elements in condition
+    Postcondition: The result contains exactly the elements from arr where condition is True,
+                  in the same order they appear in arr.
+-/
+theorem extract_spec {n k : Nat} (condition : Vector Bool n) (arr : Vector Float n) 
+    (h : k = (condition.toArray.toList.count true)) :
+    ⦃⌜k = (condition.toArray.toList.count true)⌝⦄
+    extract condition arr h
+    ⦃⇓result => 
+      -- The result contains exactly the elements from arr where condition is True
+      ⌜∀ i : Fin k, ∃ idx : Fin n, condition.get idx = true ∧ result.get i = arr.get idx⌝
+    ⦄ := by
+  sorry

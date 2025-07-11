@@ -16,27 +16,36 @@ open Std.Do
 
 /-- Compute the variance of the elements in a vector with specified delta degrees of freedom.
     The variance is the average of the squared deviations from the mean. -/
-def var {n : Nat} (a : Vector Float n) (ddof : Nat) (h : ddof < n) : Id Float :=
+def var {n : Nat} (a : Vector Float (n + 1)) (ddof : Nat) (h : ddof < n + 1) : Id Float :=
   sorry
 
 /-- Specification: var computes the variance as the average of squared deviations from the mean,
-    divided by (n - ddof). The variance measures the spread of a distribution.
+    divided by (n + 1 - ddof). The variance measures the spread of a distribution.
     
     Mathematical properties:
     1. The result is always non-negative
     2. The variance is zero if and only if all elements are equal
-    3. The computation requires ddof < n to ensure a positive divisor
+    3. The computation requires ddof < n + 1 to ensure a positive divisor
+    4. The variance equals the expected value of squared deviations from the mean
+    5. Translation invariance: var(a + c) = var(a) for any constant c
+    6. Scaling property: var(c * a) = c^2 * var(a) for any constant c
     
     The variance formula implemented is:
-    var = (1/(n-ddof)) * sum_{i=0}^{n-1} (a[i] - mean)^2
-    where mean = (1/n) * sum_{i=0}^{n-1} a[i]
+    var = (1/(n+1-ddof)) * sum_{i=0}^{n} (a[i] - mean)^2
+    where mean = (1/(n+1)) * sum_{i=0}^{n} a[i]
     
     This specification captures both the mathematical definition of variance
     and its key properties. When ddof=0, this gives the population variance;
     when ddof=1, this gives the sample variance (unbiased estimator). -/
-theorem var_spec {n : Nat} (a : Vector Float n) (ddof : Nat) (h : ddof < n) :
-    ⦃⌜ddof < n⌝⦄
+theorem var_spec {n : Nat} (a : Vector Float (n + 1)) (ddof : Nat) (h : ddof < n + 1) :
+    ⦃⌜ddof < n + 1⌝⦄
     var a ddof h
     ⦃⇓result => ⌜result ≥ 0 ∧
-                 (result = 0 ↔ ∀ i j : Fin n, a.get i = a.get j)⌝⦄ := by
+                 (result = 0 ↔ ∀ i j : Fin (n + 1), a.get i = a.get j) ∧
+                 (∀ (c : Float), ∀ (b : Vector Float (n + 1)), 
+                   (∀ i : Fin (n + 1), b.get i = a.get i + c) → 
+                   var b ddof h = result) ∧
+                 (∀ (c : Float), c ≠ 0 → ∀ (b : Vector Float (n + 1)), 
+                   (∀ i : Fin (n + 1), b.get i = c * a.get i) → 
+                   var b ddof h = c^2 * result)⌝⦄ := by
   sorry

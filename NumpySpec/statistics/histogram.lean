@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.histogram",
@@ -9,4 +14,54 @@
 }
 -/
 
--- TODO: Implement histogram
+/-- numpy.histogram: Compute the histogram of a dataset.
+
+    Computes the histogram of a dataset by dividing the range into equal-width bins
+    and counting the number of values that fall into each bin.
+    
+    The function returns both the histogram counts and the bin edges.
+    For n_bins bins, there are n_bins+1 bin edges.
+    
+    This implementation focuses on the core mathematical properties:
+    - Monotonically increasing bin edges
+    - Equal bin widths (uniform binning)
+    - Correct counting of values in each bin
+    - Conservation of total count
+-/
+def histogram {n_data n_bins : Nat} (data : Vector Float n_data) (min_val max_val : Float)
+    (h_bins_pos : n_bins > 0) (h_range : min_val < max_val) : 
+    Id (Vector Nat n_bins × Vector Float (n_bins + 1)) :=
+  sorry
+
+/-- Specification: histogram correctly partitions data into bins and counts occurrences.
+    
+    The histogram satisfies fundamental mathematical properties:
+    1. Bin edges are monotonically increasing
+    2. The first edge equals min_val and the last edge equals max_val
+    3. Bin widths are equal for uniform binning
+    4. Each bin count equals the number of data points in that bin
+    5. The sum of all bin counts equals the number of data points in range
+    
+    Precondition: Number of bins > 0 and min_val < max_val
+    Postcondition: The result satisfies the histogram mathematical properties
+-/
+theorem histogram_spec {n_data n_bins : Nat} (data : Vector Float n_data) (min_val max_val : Float)
+    (h_bins_pos : n_bins > 0) (h_range : min_val < max_val) :
+    ⦃⌜n_bins > 0 ∧ min_val < max_val⌝⦄
+    histogram data min_val max_val h_bins_pos h_range
+    ⦃⇓result => ⌜-- Bin edges are monotonically increasing
+      (∀ i j : Fin (n_bins + 1), i.val < j.val → result.2.get i < result.2.get j) ∧
+      -- Boundary conditions: first edge is min_val, last edge is max_val
+      (result.2.get ⟨0, Nat.succ_pos n_bins⟩ = min_val) ∧
+      (result.2.get ⟨n_bins, Nat.le_refl (n_bins + 1)⟩ = max_val) ∧
+      -- Uniform binning: all bin widths are equal
+      (∀ i : Fin n_bins, 
+        result.2.get ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ - 
+        result.2.get ⟨i.val, Nat.lt_trans i.isLt (Nat.lt_succ_self n_bins)⟩ = 
+        (max_val - min_val) / n_bins.toFloat) ∧
+      -- Each bin count is non-negative (trivially true for Nat)
+      (∀ i : Fin n_bins, result.1.get i ≥ 0) ∧
+      -- Conservation: total count equals number of data points in range
+      (List.sum (List.map result.1.get (List.finRange n_bins)) = 
+        (data.toList.filter (fun x => min_val ≤ x ∧ x ≤ max_val)).length)⌝⦄ := by
+  sorry

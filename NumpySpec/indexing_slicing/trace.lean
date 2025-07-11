@@ -9,4 +9,49 @@
 }
 -/
 
--- TODO: Implement trace
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
+/-- numpy.trace: Return the sum along diagonals of the array.
+    
+    For a 2D matrix, computes the sum of elements along the diagonal
+    with an optional offset. For offset=0, it computes the sum of 
+    elements a[i,i] for all valid i. For positive offset, it sums
+    a[i,i+offset], and for negative offset, it sums a[i-offset,i].
+    
+    This implementation focuses on the 2D case as the core functionality.
+-/
+def trace {rows cols : Nat} (a : Vector (Vector Float cols) rows) (offset : Int) : Id Float :=
+  sorry
+
+/-- Specification: numpy.trace returns the sum along the diagonal.
+    
+    For a 2D matrix with given offset, the trace is the sum of all
+    elements a[i,j] where j = i + offset and both i,j are valid indices.
+    
+    Precondition: True
+    Postcondition: Result equals the sum of diagonal elements with given offset
+-/
+theorem trace_spec {rows cols : Nat} (a : Vector (Vector Float cols) rows) (offset : Int) :
+    ⦃⌜True⌝⦄
+    trace a offset
+    ⦃⇓result => ⌜
+      -- The result is the sum of all valid diagonal elements with the given offset
+      -- For offset ≥ 0: sum a[i][i+offset] for all valid i where i+offset < cols
+      -- For offset < 0: sum a[i-offset][i] for all valid i where i-offset ≥ 0
+      (if offset ≥ 0 then
+        result = (List.range rows).foldl (fun acc i => 
+          if i + offset.natAbs < cols then 
+            acc + a.get ⟨i, by simp; exact Nat.lt_of_mem_range i⟩ |>.get ⟨i + offset.natAbs, by simp⟩
+          else acc
+        ) 0
+      else
+        result = (List.range cols).foldl (fun acc i => 
+          if i + offset.natAbs < rows then 
+            acc + a.get ⟨i + offset.natAbs, by simp⟩ |>.get ⟨i, by simp; exact Nat.lt_of_mem_range i⟩
+          else acc
+        ) 0)
+    ⌝⦄ := by
+  sorry

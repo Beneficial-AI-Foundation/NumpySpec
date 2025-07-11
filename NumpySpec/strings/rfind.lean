@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.strings.rfind",
@@ -9,4 +14,22 @@
 }
 -/
 
--- TODO: Implement rfind
+/-- For each element, return the highest index in the string where substring is found -/
+def rfind {n : Nat} (a : Vector String n) (sub : Vector String n) (start : Vector Int n) (endPos : Vector Int n) : Id (Vector Int n) :=
+  sorry
+
+/-- Specification: rfind returns the highest index where substring is found within range, or -1 if not found -/
+theorem rfind_spec {n : Nat} (a : Vector String n) (sub : Vector String n) (start : Vector Int n) (endPos : Vector Int n) :
+    ⦃⌜∀ i : Fin n, 0 ≤ start.get i ∧ start.get i ≤ endPos.get i⌝⦄
+    rfind a sub start endPos
+    ⦃⇓result => ⌜∀ i : Fin n, 
+      (result.get i = -1 ↔ 
+        ∀ j : Nat, (start.get i).toNat ≤ j ∧ j + (sub.get i).length ≤ (endPos.get i + 1).toNat → 
+          ¬(((a.get i).drop j).take (sub.get i).length = sub.get i)) ∧
+      (result.get i ≥ 0 → 
+        start.get i ≤ result.get i ∧ 
+        Int.natAbs (result.get i) + (sub.get i).length ≤ (endPos.get i + 1).toNat ∧
+        ((a.get i).drop (Int.natAbs (result.get i))).take (sub.get i).length = sub.get i ∧
+        (∀ j : Nat, Int.natAbs (result.get i) < j ∧ j + (sub.get i).length ≤ (endPos.get i + 1).toNat → 
+          ¬(((a.get i).drop j).take (sub.get i).length = sub.get i)))⌝⦄ := by
+  sorry

@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.busday_offset",
@@ -9,4 +14,56 @@
 }
 -/
 
--- TODO: Implement busday_offset
+/-- Represents a date as days since epoch -/
+abbrev Date := Int
+
+/-- Represents roll strategies for adjusting invalid dates -/
+inductive RollStrategy
+  /-- Raise exception for invalid day -/
+  | raise
+  /-- Return NaT for invalid day -/
+  | nat
+  /-- Take first valid day later in time -/
+  | forward
+  /-- Take first valid day earlier in time -/
+  | backward
+  /-- Forward unless across month boundary -/
+  | modifiedfollowing
+  /-- Backward unless across month boundary -/
+  | modifiedpreceding
+
+/-- Represents a weekmask as a 7-element vector for Monday through Sunday -/
+abbrev Weekmask := Vector Bool 7
+
+/-- Predicate to check if a date is a valid business day -/
+def isBusinessDay (date : Date) (weekmask : Weekmask) (holidays : List Date) : Bool :=
+  let dayOfWeek := (date % 7).natAbs
+  if h : dayOfWeek < 7 then
+    weekmask.get ⟨dayOfWeek, h⟩ && !holidays.contains date
+  else
+    false
+
+/-- Adjusts a date according to roll strategy to fall on a valid business day -/
+def adjustDate (date : Date) (roll : RollStrategy) (weekmask : Weekmask) (holidays : List Date) : Date :=
+  sorry
+
+/-- Applies business day offset to a date -/
+def applyBusinessDayOffset (date : Date) (offset : Int) (weekmask : Weekmask) (holidays : List Date) : Date :=
+  sorry
+
+/-- Business day offset operation on vectors of dates and offsets -/
+def busday_offset {n : Nat} (dates : Vector Date n) (offsets : Vector Int n) 
+    (roll : RollStrategy) (weekmask : Weekmask) (holidays : List Date) : Id (Vector Date n) :=
+  sorry
+
+/-- Specification for busday_offset: applies business day offsets to dates after adjustment -/
+theorem busday_offset_spec {n : Nat} (dates : Vector Date n) (offsets : Vector Int n) 
+    (roll : RollStrategy) (weekmask : Weekmask) (holidays : List Date) :
+    ⦃⌜True⌝⦄
+    busday_offset dates offsets roll weekmask holidays
+    ⦃⇓result => ⌜∀ i : Fin n, 
+        let adjustedDate := adjustDate (dates.get i) roll weekmask holidays
+        let finalDate := applyBusinessDayOffset adjustedDate (offsets.get i) weekmask holidays
+        result.get i = finalDate ∧
+        isBusinessDay (result.get i) weekmask holidays = true⌝⦄ := by
+  sorry

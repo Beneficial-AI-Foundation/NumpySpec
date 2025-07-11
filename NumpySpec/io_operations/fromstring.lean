@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.fromstring",
@@ -9,4 +14,20 @@
 }
 -/
 
--- TODO: Implement fromstring
+/-- Create a 1-D array from text data in a string.
+    Parses a string containing numeric data separated by a specified separator
+    and returns a vector of the parsed values. -/
+def fromstring {n : Nat} (input : String) (sep : String) : Id (Vector Float n) :=
+  sorry
+
+/-- Specification: fromstring creates a vector by parsing numeric values from a string.
+    The function parses the input string using the given separator and converts
+    the resulting substrings to floating-point numbers. -/
+theorem fromstring_spec {n : Nat} (input : String) (sep : String) 
+    (h_valid : (input.splitOn sep).length = n) 
+    (h_nonempty : sep ≠ "") :
+    ⦃⌜(input.splitOn sep).length = n ∧ sep ≠ ""⌝⦄
+    fromstring (n := n) input sep
+    ⦃⇓result => ⌜∀ i : Fin n, 
+       (input.splitOn sep)[i.val]!.trim ≠ ""⌝⦄ := by
+  sorry

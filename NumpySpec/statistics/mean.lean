@@ -28,13 +28,8 @@ theorem mean_spec {n : Nat} (a : Vector Float (n + 1)) :
     mean a
     ⦃⇓result => ⌜-- Core property: mean is sum divided by count
                  (∃ sum : Float, 
-                   (∃ accumulate : Fin (n + 1) → Float,
-                     accumulate ⟨0, Nat.zero_lt_succ n⟩ = a.get ⟨0, Nat.zero_lt_succ n⟩ ∧
-                     (∀ i : Fin n, accumulate ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ = 
-                       accumulate ⟨i.val, Nat.lt_trans i.isLt (Nat.lt_succ_self n)⟩ + 
-                       a.get ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩) ∧
-                     sum = accumulate ⟨n, Nat.lt_succ_self n⟩) ∧
-                   result = sum / Float.ofNat (n + 1)) ∧
+                   (sum = (List.range (n + 1)).foldl (fun acc i => acc + a.get ⟨i, by sorry⟩) 0 ∧
+                    result = sum / Float.ofNat (n + 1))) ∧
                  -- Mean is bounded by min and max
                  (∃ min_idx max_idx : Fin (n + 1),
                    (∀ i : Fin (n + 1), a.get min_idx ≤ a.get i) ∧

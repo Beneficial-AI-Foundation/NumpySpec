@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.fill_diagonal",
@@ -9,4 +12,21 @@
 }
 -/
 
--- TODO: Implement fill_diagonal
+open Std.Do
+
+/-- Fill the main diagonal of a 2D matrix with a specified value -/
+def fill_diagonal {T : Type} {rows cols : Nat} (mat : Vector (Vector T cols) rows) (val : T) : 
+    Id (Vector (Vector T cols) rows) :=
+  sorry
+
+/-- Specification: fill_diagonal modifies the diagonal entries to the specified value -/
+theorem fill_diagonal_spec {T : Type} {rows cols : Nat} (mat : Vector (Vector T cols) rows) (val : T) :
+    ⦃⌜True⌝⦄
+    fill_diagonal mat val
+    ⦃⇓result => ⌜-- Diagonal elements are filled with val
+      (∀ i : Fin rows, ∀ j : Fin cols, i.val = j.val → 
+        (result.get i).get j = val) ∧
+      -- Non-diagonal elements remain unchanged
+      (∀ i : Fin rows, ∀ j : Fin cols, i.val ≠ j.val → 
+        (result.get i).get j = (mat.get i).get j)⌝⦄ := by
+  sorry

@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.busdaycalendar",
@@ -9,4 +12,38 @@
 }
 -/
 
--- TODO: Implement busdaycalendar
+open Std.Do
+
+/-- Business day calendar object that efficiently stores information defining valid days --/
+structure BusdayCalendar (n : Nat) where
+  /-- Seven-element array indicating which days are valid (Mon-Sun) --/
+  weekmask : Vector Bool 7  
+  /-- Array of dates (represented as day numbers) to consider invalid --/
+  holidays : Vector Nat n
+
+/-- A business day calendar object that efficiently stores information defining valid days
+    for the busday family of functions.
+    
+    The default valid days are Monday through Friday ("business days"). A busdaycalendar 
+    object can be specified with any set of weekly valid days, plus an optional "holiday" 
+    dates that always will be invalid. --/
+def busdaycalendar {n : Nat} (weekmask : Vector Bool 7) (holidays : Vector Nat n) : Id (BusdayCalendar n) :=
+  sorry
+
+/-- Specification: busdaycalendar creates a valid business day calendar object with the given weekmask and holidays --/
+-- Basic specification: busdaycalendar creates a calendar with the given weekmask and holidays
+theorem busdaycalendar_spec {n : Nat} (weekmask : Vector Bool 7) (holidays : Vector Nat n) :
+    busdaycalendar weekmask holidays = pure (BusdayCalendar.mk weekmask holidays) := by
+  sorry
+
+-- Sanity check: weekmask preserves the 7-day structure
+theorem busdaycalendar_weekmask_preserved {n : Nat} (weekmask : Vector Bool 7) (holidays : Vector Nat n) :
+    let calendar := (busdaycalendar weekmask holidays).run
+    calendar.weekmask = weekmask := by
+  sorry
+
+-- Mathematical property: holidays are preserved in the calendar
+theorem busdaycalendar_holidays_preserved {n : Nat} (weekmask : Vector Bool 7) (holidays : Vector Nat n) :
+    let calendar := (busdaycalendar weekmask holidays).run
+    calendar.holidays = holidays := by
+  sorry

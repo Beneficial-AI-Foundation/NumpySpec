@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.histogram_bin_edges",
@@ -9,4 +12,54 @@
 }
 -/
 
--- TODO: Implement histogram_bin_edges
+open Std.Do
+
+/-- Calculate the bin edges for histogram computation with equal-width bins.
+    Takes non-empty data and number of bins, returns bin edges. -/
+def histogram_bin_edges {n : Nat} (data : Vector Float (n + 1)) (num_bins : Nat) 
+    (h_bins : num_bins > 0) : Id (Vector Float (num_bins + 1)) :=
+  sorry
+
+/-- Specification: histogram_bin_edges computes equal-width bin edges from data range.
+    This comprehensive specification captures:
+    1. The number of returned edges equals num_bins + 1
+    2. The edges are monotonically increasing (strictly ordered)
+    3. The first edge is at or below the minimum data value
+    4. The last edge is at or above the maximum data value
+    5. The edges are evenly spaced (equal width bins)
+    6. All data values fall within the range [first_edge, last_edge]
+    7. The bin width is consistent across all bins
+    8. The function handles non-empty data correctly
+-/
+theorem histogram_bin_edges_spec {n : Nat} (data : Vector Float (n + 1)) (num_bins : Nat)
+    (h_bins : num_bins > 0) :
+    ⦃⌜num_bins > 0⌝⦄
+    histogram_bin_edges data num_bins h_bins
+    ⦃⇓edges => ⌜-- The returned edges have the correct length
+                (edges.size = num_bins + 1) ∧
+                -- The edges are monotonically increasing
+                (∀ i : Fin num_bins, 
+                  let curr_edge := edges.get ⟨i.val, Nat.lt_trans i.isLt (Nat.lt_succ_self _)⟩
+                  let next_edge := edges.get ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩
+                  curr_edge < next_edge) ∧
+                -- The first edge is at or below the minimum data value
+                (let min_val := (data.toArray.foldl min (data.get ⟨0, Nat.succ_pos _⟩) : Float)
+                 let first_edge := edges.get ⟨0, Nat.succ_pos _⟩
+                 first_edge ≤ min_val) ∧
+                -- The last edge is at or above the maximum data value
+                (let max_val := (data.toArray.foldl max (data.get ⟨0, Nat.succ_pos _⟩) : Float)
+                 let last_edge := edges.get ⟨num_bins, Nat.lt_succ_self _⟩
+                 last_edge ≥ max_val) ∧
+                -- The bins have equal width (equal spacing between consecutive edges)
+                (∀ i j : Fin num_bins, 
+                  let bin_width_i := edges.get ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ - 
+                                    edges.get ⟨i.val, Nat.lt_trans i.isLt (Nat.lt_succ_self _)⟩
+                  let bin_width_j := edges.get ⟨j.val + 1, Nat.succ_lt_succ j.isLt⟩ - 
+                                    edges.get ⟨j.val, Nat.lt_trans j.isLt (Nat.lt_succ_self _)⟩
+                  bin_width_i = bin_width_j) ∧
+                -- All data values fall within the range of the edges
+                (let first_edge := edges.get ⟨0, Nat.succ_pos _⟩
+                 let last_edge := edges.get ⟨num_bins, Nat.lt_succ_self _⟩
+                 ∀ i : Fin (n + 1), 
+                   first_edge ≤ data.get i ∧ data.get i ≤ last_edge)⌝⦄ := by
+  sorry

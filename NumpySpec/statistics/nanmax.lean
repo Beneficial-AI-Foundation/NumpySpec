@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.nanmax",
@@ -9,4 +12,51 @@
 }
 -/
 
--- TODO: Implement nanmax
+open Std.Do
+
+/-- Returns the maximum value of all elements in a non-empty vector, ignoring NaN values.
+    When all elements are NaN, returns NaN.
+    
+    Mathematical Properties:
+    - Ignores NaN values in the computation
+    - Returns the maximum of all non-NaN elements
+    - If all elements are NaN, returns NaN
+    - If at least one element is not NaN, returns the maximum non-NaN value
+    - For vectors with no NaN values, behaves identically to regular max -/
+def nanmax {n : Nat} (a : Vector Float (n + 1)) : Id Float :=
+  sorry
+
+/-- Specification: nanmax returns the maximum value in the vector, ignoring NaN values.
+    
+    Mathematical properties:
+    1. If there exists at least one non-NaN element, the result is the maximum among non-NaN elements
+    2. If all elements are NaN, the result is NaN
+    3. The result is either a non-NaN element from the vector or NaN
+    4. For vectors without NaN values, nanmax behaves identically to regular max
+    5. NaN values are completely ignored during the maximum computation
+    6. Sanity check: result is either NaN or exists in the vector -/
+theorem nanmax_spec {n : Nat} (a : Vector Float (n + 1)) :
+    ⦃⌜True⌝⦄
+    nanmax a
+    ⦃⇓result => ⌜-- Case 1: If there exists at least one non-NaN element
+                 ((∃ i : Fin (n + 1), ¬result.isNaN ∧ ¬(a.get i).isNaN) →
+                   (∃ max_idx : Fin (n + 1), 
+                     result = a.get max_idx ∧ 
+                     ¬(a.get max_idx).isNaN ∧
+                     (∀ j : Fin (n + 1), ¬(a.get j).isNaN → a.get j ≤ result))) ∧
+                 -- Case 2: If all elements are NaN, result is NaN
+                 ((∀ i : Fin (n + 1), (a.get i).isNaN) → result.isNaN) ∧
+                 -- Case 3: NaN values are ignored (result is max of non-NaN elements)
+                 (¬result.isNaN → 
+                   (∃ witness : Fin (n + 1), 
+                     result = a.get witness ∧ 
+                     ¬(a.get witness).isNaN ∧
+                     (∀ j : Fin (n + 1), ¬(a.get j).isNaN → a.get j ≤ result))) ∧
+                 -- Case 4: For vectors without NaN, behaves like regular max
+                 ((∀ i : Fin (n + 1), ¬(a.get i).isNaN) → 
+                   (∃ max_idx : Fin (n + 1),
+                     result = a.get max_idx ∧
+                     (∀ j : Fin (n + 1), a.get j ≤ result))) ∧
+                 -- Sanity check: result is either NaN or exists in the vector
+                 (result.isNaN ∨ (∃ witness : Fin (n + 1), result = a.get witness))⌝⦄ := by
+  sorry

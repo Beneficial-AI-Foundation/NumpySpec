@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.nanmedian",
@@ -9,4 +12,46 @@
 }
 -/
 
--- TODO: Implement nanmedian
+open Std.Do
+
+/-- Compute the median along the specified axis, ignoring NaNs.
+    Returns the median of the array elements.
+    For a vector V of length N, the median is the middle value of a sorted copy of V
+    (ignoring NaN values), when N is odd, and the average of the two middle values when N is even.
+    If all values are NaN, returns NaN. -/
+def nanmedian {n : Nat} (a : Vector Float n) : Id Float :=
+  sorry
+
+/-- Specification: nanmedian computes the median of non-NaN values in the array.
+    The result is NaN if all values are NaN, otherwise it's the median of the finite values.
+    The median is defined as the middle value (for odd number of elements) or the average
+    of two middle values (for even number of elements) when the non-NaN values are sorted. -/
+theorem nanmedian_spec {n : Nat} (a : Vector Float n) :
+    ⦃⌜True⌝⦄
+    nanmedian a
+    ⦃⇓result => ⌜
+      -- Case 1: All values are NaN
+      (∀ i : Fin n, (a.get i).isNaN) → result.isNaN ∧
+      -- Case 2: At least one finite value exists
+      (∃ i : Fin n, ¬(a.get i).isNaN) → 
+        ∃ finite_indices : List (Fin n),
+          -- finite_indices contains all indices with finite values
+          (∀ i : Fin n, i ∈ finite_indices ↔ ¬(a.get i).isNaN) ∧
+          finite_indices.length > 0 ∧
+          -- There exists a sorted permutation of finite values
+          ∃ sorted_vals : List Float,
+            -- sorted_vals is the sorted list of finite values
+            sorted_vals.length = finite_indices.length ∧
+            (∀ i : Fin finite_indices.length, 
+              sorted_vals.get ⟨i, sorry⟩ = a.get (finite_indices.get ⟨i, sorry⟩)) ∧
+            -- sorted_vals is in non-decreasing order
+            (∀ i j : Fin sorted_vals.length, i < j → 
+              sorted_vals.get ⟨i, sorry⟩ ≤ sorted_vals.get ⟨j, sorry⟩) ∧
+            -- result is the median of sorted finite values
+            (if sorted_vals.length % 2 = 1 then
+              result = sorted_vals.get ⟨sorted_vals.length / 2, sorry⟩
+            else
+              result = (sorted_vals.get ⟨sorted_vals.length / 2 - 1, sorry⟩ + 
+                       sorted_vals.get ⟨sorted_vals.length / 2, sorry⟩) / 2)
+    ⌝⦄ := by
+  sorry

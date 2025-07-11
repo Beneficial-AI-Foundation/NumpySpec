@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.argmin",
@@ -9,4 +14,27 @@
 }
 -/
 
--- TODO: Implement argmin
+/-- numpy.argmin: Returns the index of the minimum value in a vector.
+    
+    Returns the index of the minimum value among all elements in the array.
+    Requires a non-empty array since there is no minimum of an empty set.
+    
+    This function returns the position of the smallest element in the array.
+    In case of multiple occurrences of the minimum value, the index of the
+    first occurrence is returned.
+-/
+def argmin {n : Nat} (a : Vector Float (n + 1)) : Id (Fin (n + 1)) :=
+  sorry
+
+/-- Specification: argmin returns the index of the minimum element.
+    
+    Precondition: True (non-empty constraint is in the type)
+    Postcondition: The element at the returned index is the minimum value,
+    and it is the first occurrence of this minimum value in the array.
+-/
+theorem argmin_spec {n : Nat} (a : Vector Float (n + 1)) :
+    ⦃⌜True⌝⦄
+    argmin a
+    ⦃⇓i => ⌜(∀ j : Fin (n + 1), a.get i ≤ a.get j) ∧ 
+           (∀ k : Fin (n + 1), k < i → a.get k > a.get i)⌝⦄ := by
+  sorry

@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.quantile",
@@ -9,4 +14,23 @@
 }
 -/
 
--- TODO: Implement quantile
+/-- Compute the q-th quantile of the data in a vector -/
+def quantile {n : Nat} (a : Vector Float (n + 1)) (q : Float) 
+    (h_valid : 0 ≤ q ∧ q ≤ 1) : Id Float :=
+  sorry
+
+/-- Specification: quantile returns a value that has the property that 
+    approximately q proportion of the data is less than or equal to it -/
+theorem quantile_spec {n : Nat} (a : Vector Float (n + 1)) (q : Float) 
+    (h_valid : 0 ≤ q ∧ q ≤ 1) :
+    ⦃⌜0 ≤ q ∧ q ≤ 1⌝⦄
+    quantile a q h_valid
+    ⦃⇓result => ⌜
+      -- The result is within the range of the input data
+      (∃ i : Fin (n + 1), a.get i ≤ result) ∧
+      (∃ i : Fin (n + 1), result ≤ a.get i) ∧
+      -- For 0-quantile, result should be ≤ minimum
+      (q = 0 → ∀ i : Fin (n + 1), result ≤ a.get i) ∧
+      -- For 1-quantile, result should be ≥ maximum  
+      (q = 1 → ∀ i : Fin (n + 1), a.get i ≤ result)⌝⦄ := by
+  sorry

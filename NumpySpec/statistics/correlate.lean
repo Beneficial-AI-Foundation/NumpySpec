@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.correlate",
@@ -9,4 +12,35 @@
 }
 -/
 
--- TODO: Implement correlate
+open Std.Do
+
+/-- Cross-correlation of two 1-dimensional sequences in 'valid' mode.
+    Computes c_k = sum_i a_{k+i} * v_i for positions where both sequences fully overlap. -/
+def correlate {m n : Nat} (a : Vector Float m) (v : Vector Float n) (h : n ≤ m) (h_pos : 0 < n) : Id (Vector Float (m + 1 - n)) :=
+  sorry
+
+/-- Specification: correlate computes cross-correlation with valid mode overlap.
+    Each output element is the sum of products of overlapping elements from the input sequences.
+    
+    Mathematical properties:
+    1. The result has size (m + 1 - n) for valid mode
+    2. Each output element k is computed as: sum_i a[k+i] * v[i] for i in [0, n-1]
+    3. Only positions where both sequences fully overlap are computed
+    4. The correlation preserves the mathematical definition of cross-correlation -/
+theorem correlate_spec {m n : Nat} (a : Vector Float m) (v : Vector Float n) (h : n ≤ m) (h_pos : 0 < n) :
+    ⦃⌜n ≤ m ∧ 0 < n⌝⦄
+    correlate a v h h_pos
+    ⦃⇓result => ⌜-- Cross-correlation computation property: each output element is the sum of products
+                 (∀ k : Fin (m + 1 - n), 
+                   ∃ products : Fin n → Float,
+                   (∀ i : Fin n, products i = a.get ⟨k.val + i.val, by sorry⟩ * v.get i) ∧
+                   result.get k = (Vector.ofFn products).toList.sum) ∧
+                 -- Boundary condition: all indices are valid for the computation
+                 (∀ k : Fin (m + 1 - n), ∀ i : Fin n, k.val + i.val < m) ∧
+                 -- Mathematical property: correlation is bilinear in its arguments
+                 (∀ k : Fin (m + 1 - n), 
+                   result.get k = (Vector.ofFn (fun i : Fin n => a.get ⟨k.val + i.val, by sorry⟩ * v.get i)).toList.sum) ∧
+                 -- Non-negativity when both sequences are non-negative
+                 ((∀ i : Fin m, 0 ≤ a.get i) ∧ (∀ i : Fin n, 0 ≤ v.get i) →
+                   ∀ k : Fin (m + 1 - n), 0 ≤ result.get k)⌝⦄ := by
+  sorry
