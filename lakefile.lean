@@ -43,6 +43,12 @@ lean_lib FuncTracker where
   -- Include all FuncTracker modules
   globs := #[.andSubmodules `FuncTracker]
 
+/-- DafnyBenchmarks library for ported Dafny specifications -/
+@[default_target]
+lean_lib DafnyBenchmarks where
+  -- Include all DafnyBenchmarks modules
+  globs := #[.andSubmodules `NumpySpec.DafnyBenchmarks]
+
 /-- Executables -/
 @[default_target]
 lean_exe numpyspec where
