@@ -1,1 +1,23 @@
 -- Root of `NumpySpec` project
+
+-- Import synthesis tasks
+import NumpySpec.DafnyBenchmarks.SynthesisSquarePerimeter
+import NumpySpec.DafnyBenchmarks.SynthesisIsDivisibleBy11
+import NumpySpec.DafnyBenchmarks.SynthesisSphereSurfaceArea
+import NumpySpec.DafnyBenchmarks.SynthesisSumOfNegatives
+import NumpySpec.DafnyBenchmarks.SynthesisMaxDifference
+import NumpySpec.DafnyBenchmarks.SynthesisKthElement
+import NumpySpec.DafnyBenchmarks.SynthesisTriangularPrismVolume
+import NumpySpec.DafnyBenchmarks.SynthesisRemoveChars
+import NumpySpec.DafnyBenchmarks.SynthesisSharedElements
+import NumpySpec.DafnyBenchmarks.SynthesisIsNonPrime
+import NumpySpec.DafnyBenchmarks.SynthesisHasOppositeSign
+import NumpySpec.DafnyBenchmarks.SynthesisCountTrue
+import NumpySpec.DafnyBenchmarks.SynthesisAppendArrayToSeq
+import NumpySpec.DafnyBenchmarks.SynthesisIsInteger
+import NumpySpec.DafnyBenchmarks.SynthesisSumOfCommonDivisors
+import NumpySpec.DafnyBenchmarks.SynthesisMultiply
+import NumpySpec.DafnyBenchmarks.SynthesisNthHexagonalNumber
+import NumpySpec.DafnyBenchmarks.SynthesisCircleCircumference
+import NumpySpec.DafnyBenchmarks.SynthesisCountIdenticalPositions
+import NumpySpec.DafnyBenchmarks.SynthesisCountArrays
