@@ -23,6 +23,6 @@ def numpy_sqrt {n : Nat} (x : Vector Float n) : Id (Vector Float n) :=
 theorem numpy_sqrt_spec {n : Nat} (x : Vector Float n) :
     ⦃⌜True⌝⦄
     numpy_sqrt x
-    ⦃⇓result => ∀ i : Fin n,
-      (x.get i ≥ 0 → result.get i ^ 2 = x.get i ∧ result.get i ≥ 0)⦄ := by
+    ⦃⇓result => ⌜∀ i : Fin n,
+      (x.get i ≥ 0 → result.get i ^ 2 = x.get i ∧ result.get i ≥ 0)⌝⦄ := by
   sorry
