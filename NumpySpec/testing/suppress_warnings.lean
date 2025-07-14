@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.testing.suppress_warnings",
@@ -9,4 +14,86 @@
 }
 -/
 
--- TODO: Implement suppress_warnings
+-- Types for warning management
+/-- Filter specification for warning suppression -/
+structure WarningFilter where
+  /-- Warning category to filter -/
+  category : String
+  /-- Message pattern to match -/
+  message : String
+  /-- Optional module restriction -/
+  module : Option String
+  /-- Whether to record matching warnings -/
+  record : Bool
+
+-- Forwarding rules for warnings
+/-- Rules for forwarding unmatched warnings -/
+inductive ForwardingRule where
+  /-- Always forward warnings -/
+  | always
+  /-- Forward warnings only once -/
+  | once
+  /-- Forward warnings once per module -/
+  | module  
+  /-- Forward warnings once per location -/
+  | location
+
+-- State of the warning suppression system
+/-- State of the warning suppression system -/
+structure WarningState (n k : Nat) where
+  /-- Whether the context has been entered -/
+  entered : Bool
+  /-- Active warning filters -/
+  suppressions : Vector WarningFilter n
+  /-- Rule for forwarding unmatched warnings -/
+  forwarding_rule : ForwardingRule
+  /-- Log of recorded warnings -/
+  logged_warnings : Vector String k
+
+/-- numpy.testing.suppress_warnings: Context manager and decorator for suppressing warnings.
+
+    Creates a warning suppression context that can filter warnings by category,
+    message pattern, and module. Supports both context manager and decorator usage.
+    
+    The function manages warning filters and can record warnings that match
+    specific criteria while suppressing others based on configurable rules.
+-/
+def suppress_warnings {n : Nat} (forwarding_rule : ForwardingRule) 
+    (initial_filters : Vector WarningFilter n) : Id (WarningState n 0) :=
+  sorry
+
+/-- Specification: numpy.testing.suppress_warnings manages warning filtering and recording.
+
+    Precondition: Valid forwarding rule and well-formed filter specifications
+    Postcondition: Warning state is properly initialized with correct configuration
+    
+    Mathematical Properties:
+    - State management: The warning state tracks entered status and filters correctly
+    - Filter isolation: Filters are properly isolated between contexts
+    - Forwarding rules: Warnings are forwarded according to the specified rule
+    - Recording capability: Matching warnings are recorded when record=True
+    - Context safety: Cannot enter the same context twice
+-/
+theorem suppress_warnings_spec {n : Nat} (forwarding_rule : ForwardingRule) 
+    (initial_filters : Vector WarningFilter n) :
+    ⦃⌜-- Valid forwarding rule
+     (forwarding_rule = ForwardingRule.always ∨ 
+      forwarding_rule = ForwardingRule.once ∨ 
+      forwarding_rule = ForwardingRule.module ∨ 
+      forwarding_rule = ForwardingRule.location) ∧
+     -- Well-formed filters
+     (∀ i : Fin n, let filter := initial_filters.get i
+                   filter.category.length > 0 ∧ 
+                   filter.message.length ≥ 0)⌝⦄
+    suppress_warnings forwarding_rule initial_filters
+    ⦃⇓result => ⌜-- State initialization properties
+                 (result.entered = false) ∧
+                 (result.suppressions = initial_filters) ∧
+                 (result.forwarding_rule = forwarding_rule) ∧
+                 -- Filter preservation
+                 (∀ i : Fin n, result.suppressions.get i = initial_filters.get i) ∧
+                 -- Context safety
+                 (result.entered = false → True) ∧
+                 -- Forwarding rule preservation
+                 (result.forwarding_rule = forwarding_rule)⌝⦄ := by
+  sorry

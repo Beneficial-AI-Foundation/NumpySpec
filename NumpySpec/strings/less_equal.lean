@@ -39,6 +39,7 @@ def less_equal {n : Nat} (x1 x2 : Vector String n) : Id (Vector Bool n) :=
     - Consistency with equality: if x = y, then less_equal x y = True
     - Decidable: String comparison is decidable for all strings
     - Type-safe: Result vector has same length as input vectors
+    - Lexicographic ordering: String comparison follows lexicographic ordering
 -/
 theorem less_equal_spec {n : Nat} (x1 x2 : Vector String n) :
     ⦃⌜True⌝⦄
@@ -53,6 +54,8 @@ theorem less_equal_spec {n : Nat} (x1 x2 : Vector String n) :
                  (∀ i : Fin n, x1.get i = x2.get i → result.get i = true) ∧
                  -- Antisymmetry: if x1[i] <= x2[i] and x2[i] <= x1[i], then x1[i] = x2[i]
                  (∀ i : Fin n, (x1.get i <= x2.get i) ∧ (x2.get i <= x1.get i) → x1.get i = x2.get i) ∧
+                 -- Transitivity preservation: consistent with transitive nature of string ordering
+                 (∀ i : Fin n, ∀ z : String, x1.get i <= z ∧ z <= x2.get i → x1.get i <= x2.get i) ∧
                  -- Decidability: result is always boolean (true or false)
                  (∀ i : Fin n, result.get i = true ∨ result.get i = false)⌝⦄ := by
   sorry

@@ -52,16 +52,23 @@ def join {n : Nat} (sep seq : Vector String n) : Id (Vector String n) :=
     3. Empty string handling: join(sep, '') = '' for any separator
     4. Single character handling: join(sep, 'c') = 'c' (no separator added)
     5. Multiple character handling: join('-', 'abc') = 'a-b-c'
+    6. Length property: For non-empty strings with length > 1, the result length is
+       original_length + (original_length - 1) * separator_length
+    7. Preservation of empty inputs: Empty strings remain empty regardless of separator
+    8. Character order preservation: Characters appear in the same order as in input
     
     Sanity checks:
     - Result vector has same length as input vectors
     - Empty sequences produce empty results
     - Single character sequences produce the original character
     - Multiple character sequences are properly separated
+    - Each result character is either from the original string or the separator
+    - No characters are lost or duplicated (except separators)
     
     Precondition: True (no special preconditions for string joining)
     Postcondition: Each result element is the join of characters from the corresponding
-                   sequence element using the corresponding separator
+                   sequence element using the corresponding separator, with proper
+                   length and character ordering properties
 -/
 theorem join_spec {n : Nat} (sep seq : Vector String n) :
     ⦃⌜True⌝⦄
@@ -69,6 +76,16 @@ theorem join_spec {n : Nat} (sep seq : Vector String n) :
     ⦃⇓result => ⌜∀ i : Fin n, 
       let s := seq.get i
       let separator := sep.get i
-      result.get i = if s.length ≤ 1 then s 
-                     else String.intercalate separator (s.toList.map String.singleton)⌝⦄ := by
+      let expected_result := if s.length ≤ 1 then s 
+                           else String.intercalate separator (s.toList.map String.singleton)
+      -- Core correctness property
+      result.get i = expected_result ∧
+      -- Length property for non-trivial cases
+      (s.length > 1 → (result.get i).length = s.length + (s.length - 1) * separator.length) ∧
+      -- Empty string preservation
+      (s.length = 0 → result.get i = "") ∧
+      -- Single character preservation  
+      (s.length = 1 → result.get i = s) ∧
+      -- Non-empty result for non-empty input
+      (s.length > 0 → (result.get i).length > 0)⌝⦄ := by
   sorry

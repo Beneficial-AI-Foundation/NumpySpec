@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.testing.rundocs",
@@ -9,4 +12,36 @@
 }
 -/
 
--- TODO: Implement rundocs
+open Std.Do
+
+/-- Result of running doctests, containing success status and error message -/
+structure DocTestResult where
+  /-- Whether all doctests passed -/
+  success : Bool
+  /-- Error message if tests failed -/
+  error_message : String
+
+/-- Run doctests found in the given file -/
+def rundocs (filename : Option String) (raise_on_error : Bool := true) : Id DocTestResult :=
+  sorry
+
+/-- Specification: rundocs processes a file and returns test results.
+    Mathematical properties:
+    1. The function returns a result with success status and error message
+    2. If tests pass, success is true and error message is empty
+    3. If tests fail and raise_on_error is true, success is false and error message is non-empty
+    4. The function handles both explicit filenames and automatic detection -/
+theorem rundocs_spec (filename : Option String) (raise_on_error : Bool) :
+    ⦃⌜True⌝⦄
+    rundocs filename raise_on_error
+    ⦃⇓result => ⌜-- Core property: function returns valid result structure
+                 (result.success = true ∨ result.success = false) ∧
+                 -- If tests pass, success is true and error message is empty
+                 (result.success = true → result.error_message = "") ∧
+                 -- If tests fail and raise_on_error is true, success is false and error message is non-empty
+                 (result.success = false ∧ raise_on_error → result.error_message ≠ "") ∧
+                 -- If raise_on_error is false, the function can still indicate failure but won't raise
+                 (¬raise_on_error → (result.success = true ∨ result.success = false)) ∧
+                 -- Result is deterministic for the same input
+                 True⌝⦄ := by
+  sorry

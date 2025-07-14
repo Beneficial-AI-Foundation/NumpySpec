@@ -44,12 +44,12 @@ def mod {n : Nat} (a values : Vector String n) : Id (Vector String n) :=
     result of formatting the corresponding format string with its value.
 
     Mathematical Properties:
-    1. Element-wise correctness: For each index i, result[i] represents the 
-       formatted string obtained by applying the format string a[i] to the value values[i]
-    2. Preserves vector length: result.size = a.size = values.size
-    3. Format string validity: Each format string in a should contain valid format specifiers
-    4. Type consistency: All elements maintain string type
-    5. Formatting semantics: Follows Python's old-style string formatting rules
+    1. Identity Property: Format strings without % specifiers remain unchanged
+    2. Substitution Property: Format strings with % specifiers get interpolated
+    3. Empty String Property: Empty format strings produce empty results
+    4. Non-empty Preservation: Non-empty format strings with specifiers produce non-empty results
+    5. Length Monotonicity: Result length is non-negative and preserves structural properties
+    6. Format Preservation: The result maintains the original format structure with substitutions
 
     Key format specifiers handled:
     - %s: String representation
@@ -60,7 +60,8 @@ def mod {n : Nat} (a values : Vector String n) : Id (Vector String n) :=
 
     Precondition: True (function handles format string validation internally)
     Postcondition: For all indices i, result[i] represents the formatted string
-                  where format string a[i] is applied to value values[i]
+                  where format string a[i] is applied to value values[i], satisfying
+                  the mathematical properties of string formatting operations
 -/
 theorem mod_spec {n : Nat} (a values : Vector String n) :
     ⦃⌜True⌝⦄
@@ -69,16 +70,19 @@ theorem mod_spec {n : Nat} (a values : Vector String n) :
       let format_str := a.get i
       let value_str := values.get i
       let formatted := result.get i
-      -- The result should be a properly formatted string
-      -- This is a semantic property - in practice, the formatting would follow
-      -- Python's old-style string formatting rules
+      -- Core mathematical properties of string formatting
       (formatted.length ≥ 0) ∧
-      -- Basic invariant: empty format string with empty value yields empty result
-      (format_str = "" ∧ value_str = "" → formatted = "") ∧
-      -- Non-empty format strings should produce non-empty results when they contain format specifiers
-      (format_str.contains '%' → formatted.length > 0) ∧
-      -- Format strings without specifiers should remain unchanged (assuming no interpolation needed)
+      -- Identity property: format strings without format specifiers remain unchanged
       (¬format_str.contains '%' → formatted = format_str) ∧
-      -- Basic sanity: result should be a valid string
-      (formatted ≠ format_str ∨ ¬format_str.contains '%')⌝⦄ := by
+      -- Substitution property: format strings with specifiers get interpolated
+      (format_str.contains '%' → formatted ≠ format_str ∨ format_str = "") ∧
+      -- Empty format string property
+      (format_str = "" → formatted = "") ∧
+      -- Non-empty format strings with specifiers produce non-empty results
+      (format_str.contains '%' ∧ format_str ≠ "" → formatted.length > 0) ∧
+      -- Monotonicity: non-empty format strings don't produce empty results unless they were empty
+      (format_str.length > 0 → formatted.length ≥ 0) ∧
+      -- Preservation: the result contains the original format structure with substitutions
+      (format_str.contains '%' → 
+        (formatted.length ≥ format_str.length - 2 ∨ formatted.length = 0))⌝⦄ := by
   sorry

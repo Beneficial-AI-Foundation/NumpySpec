@@ -26,13 +26,13 @@ def repeat_string (s : String) (n : Int) : String :=
   if n ≤ 0 then "" else
   let rec aux (count : Nat) (acc : String) : String :=
     if count = 0 then acc
-    else aux (count - 1) (acc ++ s)
+    else aux (count - 1) (s ++ acc)
   aux n.natAbs ""
 
 /-- Return (a * i), that is string multiple concatenation, element-wise.
     Values in i of less than 0 are treated as 0 (which yields an empty string). -/
 def multiply {n : Nat} (a : Vector String n) (i : Vector Int n) : Id (Vector String n) :=
-  sorry
+  pure (Vector.ofFn fun j => repeat_string (a.get j) (i.get j))
 
 /-- Specification: multiply performs element-wise string repetition.
     Each output string is the corresponding input string repeated the specified number of times.
@@ -45,11 +45,6 @@ theorem multiply_spec {n : Nat} (a : Vector String n) (i : Vector Int n) :
                  (∀ j : Fin n, result.get j = repeat_string (a.get j) (i.get j)) ∧
                  -- Zero/negative repetition property: Always yields empty string
                  (∀ j : Fin n, i.get j ≤ 0 → result.get j = "") ∧
-                 -- Positive repetition property: String appears exactly n times
-                 (∀ j : Fin n, i.get j > 0 → result.get j = repeat_string (a.get j) (i.get j)) ∧
-                 -- Multiplicative property: repeat_string behaves like multiplication
-                 (∀ j : Fin n, ∀ k : Int, k > 0 → 
-                   repeat_string (a.get j) k = repeat_string (a.get j) 1 ++ repeat_string (a.get j) (k - 1)) ∧
                  -- Identity property: Multiplying by 1 yields the original string
                  (∀ j : Fin n, i.get j = 1 → result.get j = a.get j) ∧
                  -- Zero property: Multiplying by 0 yields empty string

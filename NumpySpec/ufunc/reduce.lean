@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "ufunc.reduce",
@@ -23,4 +28,21 @@
 }
 -/
 
--- TODO: Implement reduce
+/-- Reduces an array by applying a binary operation repeatedly along an axis.
+    For 1D arrays, this applies the operation successively to pairs of elements. -/
+def reduce {n : Nat} (op : Float → Float → Float) (arr : Vector Float (n + 1)) : Id Float :=
+  sorry
+
+/-- Specification: reduce applies a binary operation repeatedly to reduce an array to a single value.
+    The operation is applied left-associatively: ((a[0] op a[1]) op a[2]) op ... op a[n-1] -/
+theorem reduce_spec {n : Nat} (op : Float → Float → Float) (arr : Vector Float (n + 1)) :
+    ⦃⌜True⌝⦄
+    reduce op arr
+    ⦃⇓result => ⌜(n = 0 → result = arr.get ⟨0, Nat.zero_lt_succ _⟩) ∧
+                 (n > 0 → ∃ (fold_fn : Fin (n + 1) → Float), 
+                          fold_fn ⟨0, Nat.zero_lt_succ _⟩ = arr.get ⟨0, Nat.zero_lt_succ _⟩ ∧
+                          (∀ i : Fin n, fold_fn ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩ = 
+                            op (fold_fn ⟨i.val, Nat.lt_succ_of_lt i.isLt⟩) 
+                               (arr.get ⟨i.val + 1, Nat.succ_lt_succ i.isLt⟩)) ∧
+                          result = fold_fn ⟨n, Nat.lt_succ_self _⟩)⌝⦄ := by
+  sorry

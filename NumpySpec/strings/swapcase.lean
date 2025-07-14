@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "numpy.strings.swapcase",
@@ -9,22 +12,59 @@
 }
 -/
 
-import Std.Do.Triple
-import Std.Tactic.Do
-
 open Std.Do
 
 /-- Return element-wise a copy of the string with uppercase characters converted to lowercase and vice versa -/
 def swapcase {n : Nat} (a : Vector String n) : Id (Vector String n) :=
   sorry
 
-/-- Specification: swapcase transforms each string by swapping the case of all alphabetic characters -/
+/-- Specification: numpy.strings.swapcase returns a vector where each string element
+    has its case swapped (uppercase becomes lowercase and vice versa).
+
+    Mathematical Properties:
+    1. Element-wise correctness: Each element has its alphabetic characters case-swapped
+    2. Length preservation: Each transformed string has the same length as the original
+    3. Case transformation: Uppercase→lowercase, lowercase→uppercase, non-alpha unchanged
+    4. Involutive property: swapcase(swapcase(x)) = x
+    5. Empty string handling: Empty strings remain empty
+    6. Character-level correctness: Each character is correctly transformed
+
+    Precondition: True (no special preconditions for case swapping)
+    Postcondition: For all indices i, result[i] is the case-swapped version of a[i]
+-/
 theorem swapcase_spec {n : Nat} (a : Vector String n) :
     ⦃⌜True⌝⦄
     swapcase a
-    ⦃⇓result => ∀ i : Fin n, 
-      (∀ c ∈ (a.get i).toList, c.isLower → (result.get i).toList.get? ((a.get i).toList.indexOf c) = some c.toUpper) ∧
-      (∀ c ∈ (a.get i).toList, c.isUpper → (result.get i).toList.get? ((a.get i).toList.indexOf c) = some c.toLower) ∧
-      (∀ c ∈ (a.get i).toList, ¬c.isAlpha → (result.get i).toList.get? ((a.get i).toList.indexOf c) = some c) ∧
-      (result.get i).length = (a.get i).length⦄ := by
+    ⦃⇓r => ⌜∀ i : Fin n, 
+      let original := a.get i
+      let result := r.get i
+      -- Length preservation: result has same length as original
+      (result.length = original.length) ∧
+      -- Empty string case: empty input produces empty output
+      (original.length = 0 → result = "") ∧
+      -- Character-level transformation: each character is correctly converted
+      (∀ j : Nat, j < original.length → 
+        ∃ origChar : Char, 
+          original.get? ⟨j⟩ = some origChar ∧ 
+          result.get? ⟨j⟩ = some (if origChar.isLower then origChar.toUpper 
+                                    else if origChar.isUpper then origChar.toLower 
+                                    else origChar)) ∧
+      -- Involutive property: applying swapcase twice gives original string
+      (∀ j : Nat, j < original.length → 
+        ∃ origChar : Char, 
+          original.get? ⟨j⟩ = some origChar ∧ 
+          let swappedOnce := if origChar.isLower then origChar.toUpper 
+                           else if origChar.isUpper then origChar.toLower 
+                           else origChar
+          let swappedTwice := if swappedOnce.isLower then swappedOnce.toUpper 
+                             else if swappedOnce.isUpper then swappedOnce.toLower 
+                             else swappedOnce
+          swappedTwice = origChar) ∧
+      -- Case transformation specifics
+      (∀ j : Nat, j < original.length → 
+        ∃ origChar : Char, 
+          original.get? ⟨j⟩ = some origChar ∧ 
+          (origChar.isLower → result.get? ⟨j⟩ = some origChar.toUpper) ∧
+          (origChar.isUpper → result.get? ⟨j⟩ = some origChar.toLower) ∧
+          (¬origChar.isAlpha → result.get? ⟨j⟩ = some origChar))⌝⦄ := by
   sorry

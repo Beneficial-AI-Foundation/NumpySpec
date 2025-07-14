@@ -23,9 +23,12 @@ def ljust {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String) : Id
 /-- Specification: ljust returns a vector where each string is left-justified
     to the specified width using the given fill character.
 
-    Precondition: The fillchar must be exactly one character long
-    Postcondition: Each result string either remains unchanged (if already >= width)
-    or is left-justified with padding to reach the target width
+    Mathematical Properties:
+    - Length preservation: Result length is max(original_length, width)
+    - Identity: Strings already >= width remain unchanged
+    - Left-justification: Original content preserved as prefix, padding on right
+    - Minimality: No unnecessary padding beyond required width
+    - Fillchar constraint: Padding uses specified fill character
 -/
 theorem ljust_spec {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String)
     (h_fillchar : fillchar.length = 1) :
@@ -34,13 +37,22 @@ theorem ljust_spec {n : Nat} (a : Vector String n) (width : Nat) (fillchar : Str
     ⦃⇓result => ⌜∀ i : Fin n, 
         let orig := a.get i
         let res := result.get i
-        -- Case 1: Original string is already >= width, no padding needed
+        -- Core mathematical properties of left-justification
+        -- 1. Length invariant: result length is exactly max(orig.length, width)
+        res.length = max orig.length width ∧
+        -- 2. Identity morphism: strings already >= width are unchanged (f(x) = x when |x| >= w)
         (orig.length ≥ width → res = orig) ∧
-        -- Case 2: Original string is < width, padding is added
+        -- 3. Padding morphism: strings < width are extended (f(x) = x ++ p when |x| < w)
         (orig.length < width → 
             res.length = width ∧
-            res.startsWith orig ∧
-            (∃ padding : String, res = orig ++ padding ∧ padding.length = width - orig.length)) ∧
-        -- Sanity check: Result length is always max(orig.length, width)
-        res.length = max orig.length width⌝⦄ := by
+            (∃ padding : String, res = orig ++ padding ∧ 
+                padding.length = width - orig.length) ∧
+            -- Left-justification property: original is preserved as prefix
+            res.startsWith orig) ∧
+        -- 4. Minimality constraint: no over-padding (efficient operation)
+        (orig.length ≥ width → res.length = orig.length) ∧
+        -- 5. Exactness constraint: padding achieves exact width requirement
+        (orig.length < width → res.length = width) ∧
+        -- 6. Consistency constraint: all operations preserve the vector structure
+        (orig.length = 0 → res.length = width)⌝⦄ := by
   sorry

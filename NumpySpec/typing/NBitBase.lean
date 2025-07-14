@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "NBitBase",
@@ -9,4 +12,34 @@
 }
 -/
 
--- TODO: Implement NBitBase
+open Std.Do
+
+/-- NBitBase: Create a precision instance with a specific bit width.
+
+    NBitBase represents the base of a hierarchical set of subclasses for precision levels.
+    Each subsequent subclass represents a lower level of precision, e.g. 64Bit > 32Bit > 16Bit.
+    
+    This is used exclusively for static type checking to ensure type safety with 
+    different precision levels in numeric computations.
+-/
+def NBitBase (bitWidth : Nat) (h_valid : bitWidth ∈ [8, 16, 32, 64, 96, 128]) : 
+    Id { n : Nat // n = bitWidth ∧ n ∈ [8, 16, 32, 64, 96, 128] } :=
+  sorry
+
+/-- Specification: NBitBase creates a precision instance that enforces valid bit widths
+    and maintains the hierarchical precision relationship.
+
+    Precondition: The bit width must be one of the valid numpy precision levels
+    Postcondition: The resulting instance represents exactly the specified bit width
+    and maintains the precision hierarchy constraint
+-/
+theorem NBitBase_spec (bitWidth : Nat) 
+    (h_valid : bitWidth ∈ [8, 16, 32, 64, 96, 128]) :
+    ⦃⌜bitWidth ∈ [8, 16, 32, 64, 96, 128]⌝⦄
+    NBitBase bitWidth h_valid
+    ⦃⇓precision_instance => ⌜precision_instance.val = bitWidth ∧ 
+                            precision_instance.val ∈ [8, 16, 32, 64, 96, 128] ∧
+                            (∀ (other_width : Nat), other_width ∈ [8, 16, 32, 64, 96, 128] → 
+                             other_width > bitWidth → other_width ≠ bitWidth → 
+                             ¬ (bitWidth = other_width))⌝⦄ := by
+  sorry

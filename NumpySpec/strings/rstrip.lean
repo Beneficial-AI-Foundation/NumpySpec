@@ -18,18 +18,43 @@ open Std.Do
 def rstrip {n : Nat} (a : Vector String n) (chars : Option String) : Id (Vector String n) :=
   sorry
 
-/-- Specification: rstrip removes trailing characters from each string in the vector.
-    If chars is None, whitespace characters are removed.
-    If chars is provided, any combination of those characters is removed from the end. -/
+/-- Specification: numpy.strings.rstrip removes trailing characters from each string in the vector.
+    
+    rstrip removes trailing characters from the end of each string. If chars is None, 
+    whitespace characters are removed. If chars is provided, any combination of those 
+    characters is removed from the end.
+    
+    Mathematical Properties:
+    1. Element-wise transformation: Each string is processed independently
+    2. Trailing character removal: Only characters at the end are removed
+    3. Maximal stripping: Remove as many trailing characters as possible
+    4. Character set filtering: Only characters in the specified set are removed
+    5. Whitespace default: When chars is None, whitespace characters are removed
+    
+    From NumPy documentation:
+    - Parameters: a (array_like) - Input array with string dtype
+                  chars (optional) - Characters to remove, whitespace if None
+    - Returns: out (ndarray) - Output array with trailing characters removed
+-/
 theorem rstrip_spec {n : Nat} (a : Vector String n) (chars : Option String) :
     ⦃⌜True⌝⦄
     rstrip a chars
-    ⦃⇓result => 
-      ∀ i : Fin n, 
-        (chars.isNone → (result.get i = (a.get i).trimRight)) ∧
-        (chars.isSome → 
-          ∃ k : Nat, k ≤ (a.get i).length ∧ 
-          result.get i = (a.get i).take ((a.get i).length - k) ∧
-          (∀ j : Nat, j < k → (a.get i).get ⟨(a.get i).length - 1 - j, by sorry⟩ ∈ chars.get!.toList) ∧
-          (k < (a.get i).length → (a.get i).get ⟨(a.get i).length - 1 - k, by sorry⟩ ∉ chars.get!.toList))⦄ := by
+    ⦃⇓result => ⌜∀ i : Fin n, 
+      let original := a.get i
+      let stripped := result.get i
+      -- Case 1: When chars is None, use trimRight (removes whitespace)
+      (chars.isNone → stripped = original.trimRight) ∧
+      -- Case 2: When chars is provided, remove characters from that set
+      (chars.isSome → 
+        ∃ suffix : String, 
+          -- The result is the original string with the suffix removed
+          (original = stripped ++ suffix) ∧
+          -- The suffix consists only of characters from the chars set
+          (∀ c : Char, c ∈ suffix.toList → c ∈ chars.get!.toList) ∧
+          -- Maximal stripping: result doesn't end with any character from chars set
+          (stripped = "" ∨ 
+           ∀ c : Char, c ∈ chars.get!.toList → 
+             stripped.back ≠ c) ∧
+          -- Length constraint: result is never longer than original
+          (stripped.length ≤ original.length))⌝⦄ := by
   sorry

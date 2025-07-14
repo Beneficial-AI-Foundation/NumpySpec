@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "ufunc.__call__",
@@ -18,4 +23,16 @@
 }
 -/
 
--- TODO: Implement __call__
+/-- Apply a binary universal function elementwise to two vectors.
+    This represents the core __call__ behavior for binary ufuncs like add, multiply, etc. -/
+def ufunc_call {n : Nat} (op : Float → Float → Float) (a b : Vector Float n) : Id (Vector Float n) :=
+  sorry
+
+/-- Specification: ufunc.__call__ applies the operation elementwise to input vectors.
+    The result has the same shape as the inputs (broadcasting to common shape) and
+    each element is computed by applying the operation to corresponding elements. -/
+theorem ufunc_call_spec {n : Nat} (op : Float → Float → Float) (a b : Vector Float n) :
+    ⦃⌜True⌝⦄
+    ufunc_call op a b
+    ⦃⇓result => ⌜∀ i : Fin n, result.get i = op (a.get i) (b.get i)⌝⦄ := by
+  sorry

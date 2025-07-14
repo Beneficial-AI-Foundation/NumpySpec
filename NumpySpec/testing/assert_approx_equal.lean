@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.testing.assert_approx_equal",
@@ -9,4 +14,70 @@
 }
 -/
 
--- TODO: Implement assert_approx_equal
+/-- numpy.testing.assert_approx_equal: Raises an AssertionError if two items are not approximately equal to specified significant figures.
+    
+    Given two numbers, check that they are approximately equal based on significant digits.
+    The function compares normalized values to determine if they agree to the specified
+    number of significant figures.
+    
+    From NumPy documentation:
+    - Parameters: actual, desired (scalar) - Input values to compare
+    - Parameter: significant (int) - Desired precision (default 7)
+    - Returns: Unit - Success case returns unit, failure would raise AssertionError
+    
+    Mathematical Properties:
+    1. Reflexivity: For any value x, assert_approx_equal(x, x) succeeds
+    2. Tolerance-based comparison: Uses normalized difference < 10^(-(significant-1))
+    3. Symmetry for equal magnitudes: If |actual| ≈ |desired|, then comparison is symmetric
+    4. Handles special cases: exact equality, zero values, and infinite/NaN values
+    5. Scale invariance: Comparison is based on significant figures, not absolute difference
+-/
+def assert_approx_equal (actual desired : Float) (significant : Nat := 7) : Id Unit :=
+  sorry
+
+/-- Specification: assert_approx_equal succeeds when two floating-point numbers are approximately
+    equal to the specified number of significant digits.
+    
+    Mathematical Properties:
+    1. Exact equality: If actual = desired, the assertion always succeeds
+    2. Significant digit comparison: Values are considered equal if their normalized 
+       difference is less than 10^(-(significant-1))
+    3. Scale normalization: Both values are normalized by their geometric mean scale
+    4. Zero handling: Special handling for cases where one or both values are zero
+    5. Range validation: significant must be positive for meaningful comparison
+    
+    Precondition: significant > 0 (must have at least 1 significant digit)
+    Postcondition: Returns unit when values are approximately equal, otherwise would fail
+-/
+theorem assert_approx_equal_spec (actual desired : Float) (significant : Nat) 
+    (h_sig_pos : significant > 0) :
+    ⦃⌜significant > 0⌝⦄
+    assert_approx_equal actual desired significant
+    ⦃⇓result => ⌜actual = desired ∨ 
+                  Float.abs (actual - desired) < 10 ^ (Float.ofNat significant)⌝⦄ := by
+  sorry
+
+-- Additional properties for comprehensive specification
+
+/-- Reflexivity: Any value is approximately equal to itself -/
+theorem assert_approx_equal_refl (x : Float) (significant : Nat) (h_pos : significant > 0) :
+    assert_approx_equal x x significant = pure () := by
+  sorry
+
+/-- Symmetry: For values of similar magnitude, the comparison is symmetric -/
+theorem assert_approx_equal_symm (actual desired : Float) (significant : Nat) 
+    (h_pos : significant > 0) (h_similar : Float.abs actual / 2 ≤ Float.abs desired ∧ Float.abs desired ≤ 2 * Float.abs actual) :
+    assert_approx_equal actual desired significant = assert_approx_equal desired actual significant := by
+  sorry
+
+/-- Monotonicity: Increasing significant digits makes the test more strict -/
+theorem assert_approx_equal_monotonic (actual desired : Float) (sig1 sig2 : Nat)
+    (h_order : sig1 ≤ sig2) (h_pos1 : sig1 > 0) (h_pos2 : sig2 > 0)
+    (h_success : assert_approx_equal actual desired sig2 = pure ()) :
+    assert_approx_equal actual desired sig1 = pure () := by
+  sorry
+
+/-- Zero case: Special handling when both values are zero -/
+theorem assert_approx_equal_both_zero (significant : Nat) (h_pos : significant > 0) :
+    assert_approx_equal 0.0 0.0 significant = pure () := by
+  sorry

@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.testing.assert_almost_equal",
@@ -9,4 +14,66 @@
 }
 -/
 
--- TODO: Implement assert_almost_equal
+/-- numpy.testing.assert_almost_equal: Tests if two scalar values are equal up to desired precision.
+
+    This function verifies that two scalar floating-point values are almost equal
+    by checking that the absolute difference is less than a threshold based on
+    decimal places precision. The test formula is:
+    
+    abs(desired - actual) < 1.5 * 10^(-decimal)
+    
+    For vectors/arrays, this function tests element-wise almost equality.
+    The function returns true (success) if the assertion passes, or false if it fails.
+    
+    From NumPy documentation:
+    - Parameters: actual, desired (scalars or vectors), decimal (precision, default 7)
+    - Returns: bool indicating if assertion passes
+    - Behavior: Tests abs(desired - actual) < 1.5 * 10^(-decimal)
+    
+    Mathematical Properties:
+    1. Tolerance formula: abs(desired - actual) < 1.5 * 10^(-decimal)
+    2. Reflexivity: assert_almost_equal(x, x, decimal) always succeeds
+    3. Symmetry: assert_almost_equal(x, y, decimal) ⟺ assert_almost_equal(y, x, decimal)
+    4. Precision scaling: smaller decimal values allow larger differences
+    5. Element-wise testing for vectors: all elements must satisfy the tolerance
+-/
+def assertAlmostEqual {n : Nat} (actual desired : Vector Float n) (decimal : Nat := 7) : Id Bool :=
+  sorry
+
+/-- Specification: numpy.testing.assert_almost_equal tests element-wise almost equality
+    with the specific tolerance formula from NumPy.
+    
+    Mathematical Properties:
+    1. Tolerance correctness: Uses exact NumPy formula 1.5 * 10^(-decimal)
+    2. Element-wise testing: All corresponding elements must be within tolerance
+    3. Reflexivity: Any vector is almost equal to itself
+    4. Symmetry: almost_equal(x, y) ⟺ almost_equal(y, x)
+    5. Precision control: smaller decimal allows larger differences
+    6. Non-transitive: almost_equal(x, y) ∧ almost_equal(y, z) ⇏ almost_equal(x, z)
+    
+    Precondition: True (accepts any finite floating-point vectors)
+    Postcondition: Returns true iff all elements satisfy the tolerance condition
+-/
+theorem assertAlmostEqual_spec {n : Nat} (actual desired : Vector Float n) (decimal : Nat) :
+    ⦃⌜True⌝⦄
+    assertAlmostEqual actual desired decimal
+    ⦃⇓result => ⌜result = (∀ i : Fin n, Float.abs (desired.get i - actual.get i) < 1.5 * (10.0 : Float) ^ (-((decimal : Nat).toFloat)))⌝⦄ := by
+  sorry
+
+-- Additional properties for comprehensive specification
+theorem assertAlmostEqual_reflexivity {n : Nat} (x : Vector Float n) (decimal : Nat) :
+    assertAlmostEqual x x decimal = (pure True : Id Bool) := by
+  sorry
+
+theorem assertAlmostEqual_symmetry {n : Nat} (x y : Vector Float n) (decimal : Nat) :
+    assertAlmostEqual x y decimal = assertAlmostEqual y x decimal := by
+  sorry
+
+theorem assertAlmostEqual_precision_relaxation {n : Nat} (x y : Vector Float n) (d1 d2 : Nat) 
+    (h : d1 ≤ d2) :
+    assertAlmostEqual x y d2 = (pure True : Id Bool) → assertAlmostEqual x y d1 = (pure True : Id Bool) := by
+  sorry
+
+theorem assertAlmostEqual_tolerance_formula {n : Nat} (actual desired : Vector Float n) (decimal : Nat) :
+    assertAlmostEqual actual desired decimal = (pure (∀ i : Fin n, Float.abs (desired.get i - actual.get i) < 1.5 * (10.0 : Float) ^ (-((decimal : Nat).toFloat))) : Id Bool) := by
+  sorry

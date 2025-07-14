@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.testing.assert_equal",
@@ -9,4 +14,31 @@
 }
 -/
 
--- TODO: Implement assert_equal
+/-- Assert that two objects are equal.
+    For array-like objects, checks that all elements are equal.
+    For scalars, checks direct equality.
+    This function handles NaN comparisons as if NaN was a "normal" number.
+    Returns Unit on success, raises AssertionError on failure. -/
+def assert_equal {n : Nat} (actual desired : Vector Float n) (err_msg : String := "") : Id Unit :=
+  sorry
+
+/-- Specification: assert_equal succeeds if and only if the two vectors are elementwise equal.
+    The function returns Unit on success and would raise an AssertionError on failure.
+    Since we're in the specification phase, we model the success case.
+    
+    This specification captures the core mathematical property:
+    - Sanity check: The function returns Unit when all elements are equal
+    - Mathematical property: Element-wise equality across all indices
+    - Special handling: NaN values are treated as equal when in same positions -/
+theorem assert_equal_spec {n : Nat} (actual desired : Vector Float n) (err_msg : String := "") :
+    ⦃⌜∀ i : Fin n, actual.get i = desired.get i⌝⦄
+    assert_equal actual desired err_msg
+    ⦃⇓result => ⌜
+      -- The assertion succeeds when all elements are equal
+      (∀ i : Fin n, actual.get i = desired.get i) ∧
+      -- The result is always Unit (representing successful assertion)
+      result = () ∧
+      -- Additional property: function is deterministic
+      (∀ msg : String, assert_equal actual desired msg = assert_equal actual desired err_msg)
+    ⌝⦄ := by
+  sorry

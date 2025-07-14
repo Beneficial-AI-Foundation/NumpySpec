@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "ArrayLike",
@@ -9,4 +14,30 @@
 }
 -/
 
--- TODO: Implement ArrayLike
+/-- A union type representing objects that can be coerced into a Vector.
+    Includes scalars, sequences, and nested sequences. -/
+inductive ArrayLike (T : Type) : Type where
+  /-- A single scalar value that becomes a 1-element vector -/
+  | scalar : T → ArrayLike T
+  /-- A flat sequence of values -/
+  | sequence : {n : Nat} → Vector T n → ArrayLike T
+  /-- A nested sequence (matrix) that gets flattened -/
+  | nestedSequence : {rows cols : Nat} → Vector (Vector T cols) rows → ArrayLike T
+
+/-- Convert an ArrayLike object to a Vector by flattening its structure -/
+def toVector {T : Type} (arraylike : ArrayLike T) : Id (Σ n : Nat, Vector T n) :=
+  sorry
+
+/-- Specification: toVector correctly converts ArrayLike objects to vectors -/
+theorem toVector_spec {T : Type} (arraylike : ArrayLike T) :
+    ⦃⌜True⌝⦄
+    toVector arraylike
+    ⦃⇓result => ⌜
+      (match arraylike with
+        | ArrayLike.scalar x => result.1 = 1 ∧ (∃ h : 0 < result.1, result.2.get ⟨0, h⟩ = x)
+        | ArrayLike.sequence v => result.1 = v.size ∧ (∀ i : Fin v.size, ∃ h : i.val < result.1, result.2.get ⟨i.val, h⟩ = v.get i)
+        | ArrayLike.nestedSequence mat => 
+            (∃ total_size : Nat, result.1 = total_size) ∧
+            (∀ i : Fin mat.size, ∀ j : Fin (mat.get i).size,
+              ∃ k : Fin result.1, result.2.get k = (mat.get i).get j))⌝⦄ := by
+  sorry

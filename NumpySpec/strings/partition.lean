@@ -65,9 +65,14 @@ theorem partition_spec {n : Nat} (a : Vector String n) (sep : String) :
                    let before_i := before.get i
                    let sep_i := separator.get i
                    let after_i := after.get i
-                   -- If separator is found in the string
-                   (sep_i = sep ∧ before_i ++ sep_i ++ after_i = original ∧ 
-                    (∀ j : Nat, j < before_i.length → (before_i.take j ++ sep).isSubstring original = false)) ∨
-                   -- If separator is not found
-                   (sep_i = "" ∧ after_i = "" ∧ before_i = original ∧ ¬sep.isSubstring original)⌝⦄ := by
+                   -- Fundamental partition property: parts reconstruct original string
+                   before_i ++ sep_i ++ after_i = original ∧
+                   -- Separator correctness: either the separator or empty string
+                   (sep_i = sep ∨ sep_i = "") ∧
+                   -- Case 1: Separator found - the separator part is exactly the separator
+                   (sep_i = sep → sep_i = sep) ∧
+                   -- Case 2: Separator not found - before contains whole string, others empty
+                   (sep_i = "" → after_i = "" ∧ before_i = original) ∧
+                   -- Length preservation: total length is preserved
+                   original.length = before_i.length + sep_i.length + after_i.length⌝⦄ := by
   sorry

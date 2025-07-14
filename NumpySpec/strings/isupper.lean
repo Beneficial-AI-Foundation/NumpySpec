@@ -22,26 +22,16 @@ def isupper {n : Nat} (a : Vector String n) : Id (Vector Bool n) :=
     in the string are uppercase and there is at least one character, false otherwise.
     Mathematical properties:
     1. Empty strings return false
-    2. Strings with no cased characters return false
+    2. Strings with no cased characters return false  
     3. Strings with mixed case return false
-    4. Strings with all cased characters uppercase return true
-    5. Preserves vector length -/
+    4. Strings with all cased characters uppercase return true -/
 theorem isupper_spec {n : Nat} (a : Vector String n) :
     ⦃⌜True⌝⦄
     isupper a
-    ⦃⇓result => ⌜-- Core property: each element is true iff all cased chars are uppercase and at least one char exists
-                 (∀ i : Fin n, 
+    ⦃⇓result => ⌜∀ i : Fin n, 
                    let s := a.get i
                    let chars := s.toList
                    result.get i = (chars.length > 0 ∧ 
                                   (∃ c ∈ chars, c.isAlpha) ∧
-                                  (∀ c ∈ chars, c.isAlpha → c.isUpper))) ∧
-                 -- Empty strings return false
-                 (∀ i : Fin n, a.get i = "" → result.get i = false) ∧
-                 -- Strings with no cased characters return false
-                 (∀ i : Fin n, (∀ c ∈ (a.get i).toList, ¬c.isAlpha) → result.get i = false) ∧
-                 -- All uppercase strings with at least one cased char return true
-                 (∀ i : Fin n, (∃ c ∈ (a.get i).toList, c.isAlpha) ∧ 
-                              (∀ c ∈ (a.get i).toList, c.isAlpha → c.isUpper) → 
-                              result.get i = true)⌝⦄ := by
+                                  (∀ c ∈ chars, c.isAlpha → c.isUpper))⌝⦄ := by
   sorry

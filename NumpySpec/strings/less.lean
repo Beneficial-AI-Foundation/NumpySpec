@@ -28,6 +28,11 @@ def less {n : Nat} (x1 x2 : Vector String n) : Id (Vector Bool n) :=
 
 /-- Specification: numpy.strings.less returns element-wise lexicographic comparison.
 
+    This function performs element-wise lexicographic comparison between two vectors
+    of strings, returning a boolean vector where each element indicates whether
+    the corresponding element in x1 is lexicographically less than the corresponding
+    element in x2.
+    
     Precondition: True (no special preconditions for string comparison)
     Postcondition: For all indices i, result[i] = (x1[i] < x2[i])
     
@@ -38,6 +43,12 @@ def less {n : Nat} (x1 x2 : Vector String n) : Id (Vector Bool n) :=
     - Trichotomous: for any two strings s1 and s2, exactly one of s1 < s2, s1 = s2, or s1 > s2 holds
     - Decidable: String comparison is decidable for all strings
     - Type-safe: Result vector has same length as input vectors
+    
+    String Comparison Properties:
+    - Empty string is less than any non-empty string
+    - Lexicographic ordering follows dictionary order (case-sensitive)
+    - Comparison is based on Unicode code point values
+    - Preserves strict ordering properties of the underlying string type
 -/
 theorem less_spec {n : Nat} (x1 x2 : Vector String n) :
     ⦃⌜True⌝⦄
@@ -48,8 +59,22 @@ theorem less_spec {n : Nat} (x1 x2 : Vector String n) :
                  (∀ i : Fin n, result.get i = true → ¬(x2.get i < x1.get i)) ∧
                  -- Irreflexivity: no string is less than itself
                  (∀ i : Fin n, x1.get i = x2.get i → result.get i = false) ∧
-                 -- Transitivity property (partial): if x1[i] < x2[i] and we have x3, then x1[i] < x3[i] when x2[i] < x3[i]
+                 -- Transitivity property: if x1[i] < x2[i] and we have a third string x3[i], transitivity holds
                  (∀ i : Fin n, result.get i = true → ∀ s : String, x2.get i < s → x1.get i < s) ∧
                  -- Decidability: result is always boolean (true or false)
-                 (∀ i : Fin n, result.get i = true ∨ result.get i = false)⌝⦄ := by
+                 (∀ i : Fin n, result.get i = true ∨ result.get i = false) ∧
+                 -- Empty string property: empty string is less than any non-empty string
+                 (∀ i : Fin n, x1.get i = "" → x2.get i ≠ "" → result.get i = true) ∧
+                 -- Non-empty string property: non-empty string is not less than empty string
+                 (∀ i : Fin n, x1.get i ≠ "" → x2.get i = "" → result.get i = false) ∧
+                 -- Length invariant: result has same length as input vectors  
+                 (result.toList.length = n) ∧
+                 -- Consistency with String's built-in less-than operator
+                 (∀ i : Fin n, result.get i = true ↔ x1.get i < x2.get i) ∧
+                 -- Prefix property: if s1 is a proper prefix of s2, then s1 < s2
+                 (∀ i : Fin n, (x1.get i).isPrefixOf (x2.get i) → x1.get i ≠ x2.get i → result.get i = true) ∧
+                 -- Strict ordering: if result[i] is true, then x1[i] and x2[i] are different
+                 (∀ i : Fin n, result.get i = true → x1.get i ≠ x2.get i) ∧
+                 -- Totality of comparison: for any two strings, exactly one of <, =, > holds
+                 (∀ i : Fin n, result.get i = true ∨ x1.get i = x2.get i ∨ x2.get i < x1.get i)⌝⦄ := by
   sorry

@@ -14,25 +14,6 @@ import Std.Tactic.Do
 
 open Std.Do
 
-/-- numpy.strings.istitle: Returns true for each element if the element is a titlecased string and there is at least one character, false otherwise.
-
-    A string is considered titlecased if:
-    1. It contains at least one character
-    2. Each word starts with an uppercase letter followed by lowercase letters
-    3. Words are separated by non-alphabetic characters
-    4. There is at least one cased character in the string
-    
-    Examples:
-    - "Title Case" → True
-    - "Numpy Is Great" → True  
-    - "numpy is great" → False
-    - "NUMPY IS GREAT" → False
-    - "" → False
-    - "123" → False
--/
-def istitle {n : Nat} (a : Vector String n) : Id (Vector Bool n) :=
-  sorry
-
 /-- Helper function to check if a string is titlecased according to Python's str.istitle() logic -/
 def isTitlecased (s : String) : Bool :=
   if s.isEmpty then false
@@ -57,6 +38,25 @@ def isTitlecased (s : String) : Bool :=
             -- Non-cased character, next cased char should be uppercase
             checkTitleCase rest true
       checkTitleCase chars true
+
+/-- numpy.strings.istitle: Returns true for each element if the element is a titlecased string and there is at least one character, false otherwise.
+
+    A string is considered titlecased if:
+    1. It contains at least one character
+    2. Each word starts with an uppercase letter followed by lowercase letters
+    3. Words are separated by non-alphabetic characters
+    4. There is at least one cased character in the string
+    
+    Examples:
+    - "Title Case" → True
+    - "Numpy Is Great" → True  
+    - "numpy is great" → False
+    - "NUMPY IS GREAT" → False
+    - "" → False
+    - "123" → False
+-/
+def istitle {n : Nat} (a : Vector String n) : Id (Vector Bool n) :=
+  pure (a.map isTitlecased)
 
 /-- Specification: numpy.strings.istitle returns a vector where each element indicates
     whether the corresponding string element is titlecased.

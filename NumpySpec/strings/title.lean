@@ -34,14 +34,11 @@ open Std.Do
     4. Word boundary detection: non-alphabetic characters separate words
     5. Preserves vector length: result.size = a.size
 -/
-def title {n : Nat} (a : Vector String n) : Id (Vector String n) :=
-  sorry
 
-/-- Helper function to check if a character is at the start of a word.
-    A character is at the start of a word if it's alphabetic and either:
-    1. It's the first character in the string, or
-    2. The previous character is not alphabetic
--/
+-- Helper function to check if a character is at the start of a word.
+-- A character is at the start of a word if it's alphabetic and either:
+-- 1. It's the first character in the string, or
+-- 2. The previous character is not alphabetic
 def isWordStart (s : String) (pos : Nat) : Bool :=
   if pos = 0 then true
   else
@@ -54,13 +51,23 @@ def isWordStart (s : String) (pos : Nat) : Bool :=
         | some prevChar => ¬prevChar.isAlpha
       else false
 
-/-- Helper function to check if a character should be uppercase in title case.
-    A character should be uppercase if it's alphabetic and at the start of a word.
--/
+-- Helper function to check if a character should be uppercase in title case.
+-- A character should be uppercase if it's alphabetic and at the start of a word.
 def shouldBeUpperInTitle (s : String) (pos : Nat) : Bool :=
   match s.get? ⟨pos⟩ with
   | none => false
   | some c => c.isAlpha ∧ isWordStart s pos
+
+-- Helper function to convert a single string to title case
+def titleString (s : String) : String :=
+  let charsList := s.toList
+  let indexedChars := charsList.zipIdx
+  let titleChars := indexedChars.map fun (c, i) => 
+    if shouldBeUpperInTitle s i then c.toUpper else c.toLower
+  String.mk titleChars
+
+def title {n : Nat} (a : Vector String n) : Id (Vector String n) :=
+  pure (a.map titleString)
 
 /-- Specification: numpy.strings.title returns a vector where each string element
     is converted to title case.

@@ -1,3 +1,6 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
 /-!
 {
   "name": "NDArray",
@@ -9,4 +12,27 @@
 }
 -/
 
--- TODO: Implement NDArray
+open Std.Do
+
+/-- NDArray represents a generic n-dimensional array with elements of type T.
+    This is a Vector-based implementation that provides type safety for array dimensions.
+    The type parameter T represents the dtype (element type) of the array. -/
+def NDArray (T : Type) {n : Nat} : Type := Vector T n
+
+/-- Create an NDArray from a Vector. This constructor provides a type-safe way 
+    to create NDArray instances from Vector data. -/
+def fromVector {T : Type} {n : Nat} (v : Vector T n) : Id (NDArray T (n := n)) :=
+  sorry
+
+/-- Specification: fromVector creates an NDArray that preserves all properties
+    of the input Vector. This captures the fundamental property that NDArray is a 
+    type-safe wrapper around Vector that maintains element access, size guarantees,
+    and type constraints. The specification ensures that the resulting NDArray
+    contains exactly the same elements as the input Vector in the same order. -/
+theorem fromVector_spec {T : Type} {n : Nat} (v : Vector T n) :
+    ⦃⌜True⌝⦄
+    fromVector v
+    ⦃⇓result => ⌜result.size = n ∧ 
+                 (∀ i : Fin n, result.get i = v.get i) ∧
+                 (∀ i j : Fin n, i = j → result.get i = result.get j)⌝⦄ := by
+  sorry

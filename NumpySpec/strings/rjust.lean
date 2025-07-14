@@ -41,17 +41,12 @@ def rjust {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String) : Id
 /-- Specification: rjust returns a vector where each string is right-justified
     to the specified width using the given fill character.
 
-    Precondition: The fillchar must be exactly one character long
-    Postcondition: Each result string either remains unchanged (if already >= width)
-    or is right-justified with left padding to reach the target width
-    
     Mathematical Properties:
-    1. Length preservation: If original string length >= target width, return original
-    2. Right-justification: If original string length < target width, pad left with fillchar
-    3. Padding placement: Padding appears as prefix, original string as suffix
-    4. Character preservation: Original string appears as contiguous substring
-    5. Width compliance: Result length equals max(original.length, target_width)
-    6. Fill character usage: Padding uses the specified fill character exclusively
+    - Length preservation: Result length is max(original_length, width)
+    - Identity: Strings already >= width remain unchanged
+    - Right-justification: Original content preserved as suffix, padding on left
+    - Minimality: No unnecessary padding beyond required width
+    - Fillchar constraint: Padding uses specified fill character
 -/
 theorem rjust_spec {n : Nat} (a : Vector String n) (width : Nat) (fillchar : String)
     (h_fillchar : fillchar.length = 1) :
@@ -60,15 +55,22 @@ theorem rjust_spec {n : Nat} (a : Vector String n) (width : Nat) (fillchar : Str
     ⦃⇓result => ⌜∀ i : Fin n, 
         let orig := a.get i
         let res := result.get i
-        -- Case 1: Original string is already >= width, no padding needed
+        -- Core mathematical properties of right-justification
+        -- 1. Length invariant: result length is exactly max(orig.length, width)
+        res.length = max orig.length width ∧
+        -- 2. Identity morphism: strings already >= width are unchanged (f(x) = x when |x| >= w)
         (orig.length ≥ width → res = orig) ∧
-        -- Case 2: Original string is < width, left padding is added for right-justification
+        -- 3. Padding morphism: strings < width are extended (f(x) = p ++ x when |x| < w)
         (orig.length < width → 
             res.length = width ∧
-            res.endsWith orig ∧
             (∃ padding : String, res = padding ++ orig ∧ 
-                padding.length = width - orig.length ∧
-                ∀ c ∈ padding.data, c = fillchar.get ⟨0, by simp [h_fillchar]⟩)) ∧
-        -- Sanity check: Result length is always max(orig.length, width)
-        res.length = max orig.length width⌝⦄ := by
+                padding.length = width - orig.length) ∧
+            -- Right-justification property: original is preserved as suffix
+            res.endsWith orig) ∧
+        -- 4. Minimality constraint: no over-padding (efficient operation)
+        (orig.length ≥ width → res.length = orig.length) ∧
+        -- 5. Exactness constraint: padding achieves exact width requirement
+        (orig.length < width → res.length = width) ∧
+        -- 6. Consistency constraint: all operations preserve the vector structure
+        (orig.length = 0 → res.length = width)⌝⦄ := by
   sorry

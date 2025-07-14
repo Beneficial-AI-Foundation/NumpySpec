@@ -46,6 +46,7 @@ def lower {n : Nat} (a : Vector String n) : Id (Vector String n) :=
     3. Case transformation: Uppercase letters become lowercase, others unchanged
     4. Idempotent property: Applying lower twice gives the same result as applying it once
     5. Empty string handling: Empty strings remain empty
+    6. Character-level correctness: Each character is correctly transformed
 
     Precondition: True (no special preconditions for lowercase conversion)
     Postcondition: For all indices i, result[i] is the lowercase version of a[i]
@@ -56,17 +57,27 @@ theorem lower_spec {n : Nat} (a : Vector String n) :
     ⦃⇓r => ⌜∀ i : Fin n, 
       let original := a.get i
       let result := r.get i
+      -- Fundamental correctness: result matches Lean's built-in toLower
+      (result = original.toLower) ∧
       -- Length preservation: result has same length as original
       (result.length = original.length) ∧
       -- Empty string case: empty input produces empty output
       (original.length = 0 → result = "") ∧
-      -- Case transformation: all uppercase letters become lowercase
+      -- Character-level transformation: each character is correctly converted
       (∀ j : Nat, j < original.length → 
         ∃ origChar : Char, 
           original.get? ⟨j⟩ = some origChar ∧ 
           result.get? ⟨j⟩ = some origChar.toLower) ∧
       -- Idempotent property: applying lower twice gives same result as once
       (result.toLower = result) ∧
-      -- Sanity check: the result should match Lean's built-in toLower
-      (result = original.toLower)⌝⦄ := by
+      -- Case preservation: non-alphabetic characters remain unchanged
+      (∀ j : Nat, j < original.length → 
+        ∃ origChar : Char, 
+          original.get? ⟨j⟩ = some origChar ∧ 
+          (¬origChar.isAlpha → result.get? ⟨j⟩ = some origChar)) ∧
+      -- Alphabetic transformation: uppercase letters become lowercase
+      (∀ j : Nat, j < original.length → 
+        ∃ origChar : Char, 
+          original.get? ⟨j⟩ = some origChar ∧ 
+          (origChar.isUpper → result.get? ⟨j⟩ = some origChar.toLower))⌝⦄ := by
   sorry
