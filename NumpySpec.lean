@@ -1,6 +1,7 @@
 /-!
 # NumpySpec
 
+Root of `NumpySpec` project
 Main entry point for the NumpySpec library, providing NumPy functionality in Lean 4.
 -/
 
