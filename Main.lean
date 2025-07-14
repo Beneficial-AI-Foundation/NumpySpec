@@ -1,4 +1,4 @@
-import NDArray
+import NumpySpec
 /-!
 # NumpySpec
 

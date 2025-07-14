@@ -1,3 +1,8 @@
+import Std.Do.Triple
+import Std.Tactic.Do
+
+open Std.Do
+
 /-!
 {
   "name": "numpy.tril",
@@ -8,11 +13,6 @@
   "code": "@array_function_dispatch(_trilu_dispatcher)\ndef tril(m, k=0):\n    \"\"\"\n    Lower triangle of an array.\n\n    Return a copy of an array with elements above the \`k\`-th diagonal zeroed.\n    For arrays with \`\`ndim\`\` exceeding 2, \`tril\` will apply to the final two\n    axes.\n\n    Parameters\n    ----------\n    m : array_like, shape (..., M, N)\n        Input array.\n    k : int, optional\n        Diagonal above which to zero elements.  \`k = 0\` (the default) is the\n        main diagonal, \`k < 0\` is below it and \`k > 0\` is above.\n\n    Returns\n    -------\n    tril : ndarray, shape (..., M, N)\n        Lower triangle of \`m\`, of same shape and data-type as \`m\`.\n    \"\"\"\n    m = asanyarray(m)\n    mask = tri(*m.shape[-2:], k=k, dtype=bool)\n\n    return where(mask, m, zeros(1, m.dtype))"
 }
 -/
-
-import Std.Do.Triple
-import Std.Tactic.Do
-
-open Std.Do
 
 /-- numpy.tril: Lower triangle of an array.
     
@@ -47,40 +47,15 @@ def tril {n : Nat} (matrix : Vector Float (n * n)) : Id (Vector Float (n * n)) :
 theorem tril_spec {n : Nat} (matrix : Vector Float (n * n)) :
     ⦃⌜True⌝⦄
     tril matrix
-    ⦃⇓result => 
-      (∀ i j : Fin n, i.val ≥ j.val → 
-        result.get ⟨i.val * n + j.val, by
-          have h1 : i.val < n := i.isLt
-          have h2 : j.val < n := j.isLt
-          have h3 : i.val * n + j.val < n * n := by
-            cases' n with n
-            · simp at h1
-            · simp [Nat.succ_mul]
-              have : i.val * (n + 1) ≤ n * (n + 1) := Nat.mul_le_mul_right _ (Nat.le_of_lt_succ h1)
-              have : j.val ≤ n := Nat.le_of_lt_succ h2
-              omega
-          exact h3⟩ = 
-        matrix.get ⟨i.val * n + j.val, by
-          have h1 : i.val < n := i.isLt
-          have h2 : j.val < n := j.isLt
-          have h3 : i.val * n + j.val < n * n := by
-            cases' n with n
-            · simp at h1
-            · simp [Nat.succ_mul]
-              have : i.val * (n + 1) ≤ n * (n + 1) := Nat.mul_le_mul_right _ (Nat.le_of_lt_succ h1)
-              have : j.val ≤ n := Nat.le_of_lt_succ h2
-              omega
-          exact h3⟩) ∧
-      (∀ i j : Fin n, i.val < j.val → 
-        result.get ⟨i.val * n + j.val, by
-          have h1 : i.val < n := i.isLt
-          have h2 : j.val < n := j.isLt
-          have h3 : i.val * n + j.val < n * n := by
-            cases' n with n
-            · simp at h1
-            · simp [Nat.succ_mul]
-              have : i.val * (n + 1) ≤ n * (n + 1) := Nat.mul_le_mul_right _ (Nat.le_of_lt_succ h1)
-              have : j.val ≤ n := Nat.le_of_lt_succ h2
-              omega
-          exact h3⟩ = 0)⦄ := by
+    ⦃⇓result => ⌜
+      -- The result has the same shape as the input
+      result.size = matrix.size ∧
+      -- For the lower triangle (i ≥ j), elements are preserved
+      (∀ i : Fin n, ∀ j : Fin n, i.val ≥ j.val → 
+        ∃ (hi : i.val * n + j.val < n * n) (hj : i.val * n + j.val < n * n),
+          result.get ⟨i.val * n + j.val, hi⟩ = matrix.get ⟨i.val * n + j.val, hj⟩) ∧
+      -- For the upper triangle (i < j), elements are zero
+      (∀ i : Fin n, ∀ j : Fin n, i.val < j.val → 
+        ∃ (hi : i.val * n + j.val < n * n),
+          result.get ⟨i.val * n + j.val, hi⟩ = 0)⌝⦄ := by
   sorry
