@@ -22,5 +22,5 @@ def numpy_square {n : Nat} (x : Vector Float n) : Id (Vector Float n) :=
 theorem numpy_square_spec {n : Nat} (x : Vector Float n) :
     ⦃⌜True⌝⦄
     numpy_square x
-    ⦃⇓result => ∀ i : Fin n, result.get i = x.get i * x.get i⦄ := by
+    ⦃⇓result => ⌜∀ i : Fin n, result.get i = x.get i * x.get i⌝⦄ := by
   sorry

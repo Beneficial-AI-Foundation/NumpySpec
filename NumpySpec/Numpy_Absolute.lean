@@ -23,5 +23,5 @@ def numpy_absolute {n : Nat} (x : Vector Float n) : Id (Vector Float n) :=
 theorem numpy_absolute_spec {n : Nat} (x : Vector Float n) :
     ⦃⌜True⌝⦄
     numpy_absolute x
-    ⦃⇓result => ∀ i : Fin n, result[i] = Float.abs x[i]⦄ := by
+    ⦃⇓result => ⌜∀ i : Fin n, result[i] = Float.abs x[i]⌝⦄ := by
   sorry

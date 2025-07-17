@@ -1,6 +1,7 @@
 /**/.lake/
 external/morphcloud-examples-public/
 .history/
+spec_pipeline/
 
 # Ignore generated artefacts but keep Lean sources
 /generated/**
